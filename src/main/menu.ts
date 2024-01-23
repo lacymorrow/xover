@@ -16,7 +16,6 @@ import {
 	testSoundMenuItem,
 } from './menu-items';
 import { getSetting, setSettings } from './store';
-import tray from './tray';
 import { is } from './util';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
@@ -113,7 +112,6 @@ export default class MenuBuilder {
 				checked: !!getSetting('showDockIcon'),
 				click: () => {
 					setSettings({ showDockIcon: !getSetting('showDockIcon') });
-					dock.initialize();
 				},
 			},
 			{
@@ -123,7 +121,6 @@ export default class MenuBuilder {
 				checked: !!getSetting('showTrayIcon'),
 				click: () => {
 					setSettings({ showTrayIcon: !getSetting('showTrayIcon') });
-					tray.initialize();
 				},
 			},
 			{

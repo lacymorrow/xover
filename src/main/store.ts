@@ -1,9 +1,11 @@
+import { app } from 'electron';
 import Logger from 'electron-log/main';
 import Store from 'electron-store';
 import { APP_MESSAGES_MAX } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
 import { DEFAULT_SETTINGS, SettingsType } from '../config/settings';
 import { $messages } from '../config/strings';
+import tray from './tray';
 import { forEachWindow } from './windows';
 
 export type AppMessageType = string;
@@ -164,6 +166,34 @@ const schema: Store.Schema<StoreType> = {
 
 const store = new Store<StoreType>({ schema });
 
+const synchronizeMain = (settings: Partial<SettingsType>) => {
+	const keys = Object.keys(settings);
+
+	if (keys.includes('locked')) {
+		// forEachWindow((win) => {
+		// 	win.webContents.send(ipcChannels.APP_LOCKED, settings.locked);
+		// });
+	}
+
+	if (keys.includes('showDockIcon')) {
+		app.dock[settings.showDockIcon ? 'show' : 'hide']();
+	}
+
+	if (keys.includes('showTrayIcon')) {
+		if (settings.showTrayIcon) {
+			tray.initialize();
+		} else {
+			tray.destroy();
+		}
+	}
+
+	if (keys.includes('startOnLogin')) {
+		app.setLoginItemSettings({
+			openAtLogin: settings.startOnLogin,
+		});
+	}
+};
+
 const synchronizeApp = () => {
 	forEachWindow((win) => {
 		win.webContents.send(ipcChannels.APP_UPDATED);
@@ -193,6 +223,9 @@ export const setSettings = (settings: Partial<SettingsType>) => {
 		...getSettings(),
 		...settings,
 	});
+
+	// Sync with main: side effects
+	synchronizeMain(settings);
 
 	// Sync with renderer
 	synchronizeApp();
