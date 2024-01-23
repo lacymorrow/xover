@@ -1,4 +1,5 @@
 import { app } from 'electron';
+
 import { notification } from './notifications';
 import sounds from './sounds';
 import { getSetting } from './store';

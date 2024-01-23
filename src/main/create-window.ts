@@ -151,7 +151,7 @@ export const createChildWindow = async () => {
 };
 
 export const createSettingsWindow = async () => {
-	const window = createWindow({ frame: true });
+	const window = createWindow({ frame: true, show: true });
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));

@@ -3,7 +3,7 @@ import Logger from 'electron-log/main';
 import { $messages } from '../config/strings';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
-import { createChildWindow, createMainWindow } from './create-window';
+import { createMainWindow, createSettingsWindow } from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
 import logger from './logger';
@@ -77,5 +77,5 @@ export const idle = async () => {
 
 	Logger.status($messages.idle);
 	sounds.play('STARTUP');
-	windows.childWindow = await createChildWindow();
+	windows.childWindow = await createSettingsWindow();
 };
