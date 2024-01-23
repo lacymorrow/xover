@@ -1,22 +1,22 @@
-import { Layout } from '@/renderer/components/layout/Layout';
-import { GlobalContextProvider } from '@/renderer/context/global-context';
-import { Home } from '@/renderer/pages/Home';
-import { Settings } from '@/renderer/pages/Settings';
+import { MainLayout } from '@/renderer/windows/main/Layout';
+import { Home } from '@/renderer/windows/main/pages/Home';
+import { Settings } from '@/renderer/windows/main/pages/Settings';
 import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 
+import { Layout } from '@/renderer/components/layout/Layout';
 import '@/renderer/styles/globals.scss';
 
 export default function App() {
 	return (
-		<GlobalContextProvider>
+		<Layout>
 			<Router>
-				<Layout>
+				<MainLayout>
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/settings" element={<Settings />} />
 					</Routes>
-				</Layout>
+				</MainLayout>
 			</Router>
-		</GlobalContextProvider>
+		</Layout>
 	);
 }

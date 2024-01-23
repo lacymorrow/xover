@@ -15,8 +15,8 @@ export function Settings() {
 			<div>
 				<h2>{$settings.theme.themeLabel} </h2>
 				<p>{$settings.theme.themeDescription}</p>
-				<ModeToggle />
 			</div>
+			<ModeToggle />
 			<pre>{JSON.stringify(settings, null, 2)}</pre>
 			<Link
 				to={nav.home.path}
