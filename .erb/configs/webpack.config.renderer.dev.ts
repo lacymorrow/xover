@@ -54,6 +54,9 @@ const configuration: webpack.Configuration = {
 		child: {
 			import: path.join(webpackPaths.srcRendererPath, 'child.tsx'),
 		},
+		crosshair: {
+			import: path.join(webpackPaths.srcRendererPath, 'crosshair.tsx'),
+		},
 	},
 	output: {
 		path: webpackPaths.distRendererPath,
@@ -171,6 +174,21 @@ const configuration: webpack.Configuration = {
 		new HtmlWebpackPlugin({
 			chunks: ['child'],
 			filename: path.join('child.html'),
+			template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
+			minify: {
+				collapseWhitespace: true,
+				removeAttributeQuotes: true,
+				removeComments: true,
+			},
+			isBrowser: false,
+			env: process.env.NODE_ENV,
+			isDevelopment: process.env.NODE_ENV !== 'production',
+			nodeModules: webpackPaths.appNodeModulesPath,
+		}),
+
+		new HtmlWebpackPlugin({
+			chunks: ['crosshair'],
+			filename: path.join('crosshair.html'),
 			template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
 			minify: {
 				collapseWhitespace: true,

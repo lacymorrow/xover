@@ -28,6 +28,7 @@ const configuration: webpack.Configuration = {
 	entry: {
 		app: path.join(webpackPaths.srcRendererPath, 'index.tsx'),
 		child: path.join(webpackPaths.srcRendererPath, 'child.tsx'),
+		crosshair: path.join(webpackPaths.srcRendererPath, 'crosshair.tsx'),
 	},
 
 	output: {
@@ -144,6 +145,19 @@ const configuration: webpack.Configuration = {
 		new HtmlWebpackPlugin({
 			chunks: ['child'],
 			filename: 'child.html',
+			template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
+			minify: {
+				collapseWhitespace: true,
+				removeAttributeQuotes: true,
+				removeComments: true,
+			},
+			isBrowser: false,
+			isDevelopment: false,
+		}),
+
+		new HtmlWebpackPlugin({
+			chunks: ['crosshair'],
+			filename: 'crosshair.html',
 			template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
 			minify: {
 				collapseWhitespace: true,

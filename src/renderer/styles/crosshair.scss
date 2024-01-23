@@ -1,0 +1,33 @@
+/* Colors */
+$accent_color: #392a84;
+
+$border_dragging: #569aff;
+
+$default_reticle_fill: #ccc;
+
+:root {
+	--app-bg-color-default: #000000;
+	--app-bg-color: var(--app-bg-color-default);
+
+	--app-accent-color-default: #392a84;
+	--app-accent-color: var(--app-accent-color-default);
+
+	--crosshair-scale: 1;
+	--crosshair-width: 100px;
+	--crosshair-height: 100px;
+	--crosshair-opacity: 1;
+	--reticle-scale: 100;
+	--reticle-opacity: 1;
+	--reticle-color: #{$default_reticle_fill};
+	--tilt-angle: 0deg;
+	--svg-fill-color: inherit;
+	--svg-stroke-color: inherit;
+	--svg-stroke-width: inherit;
+
+	--alt-size: 100px;
+	--alt-opacity: 1;
+}
+
+body {
+	background-color: var(--app-bg-color, var(--app-bg-color-default));
+}

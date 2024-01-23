@@ -4,7 +4,6 @@ import { Settings } from '@/renderer/windows/main/pages/Settings';
 import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 
 import { Layout } from '@/renderer/components/layout/Layout';
-import '@/renderer/styles/globals.scss';
 
 export default function App() {
 	return (

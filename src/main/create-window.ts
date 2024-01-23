@@ -12,7 +12,6 @@ import { APP_FRAME, APP_HEIGHT, APP_WIDTH } from '../config/config';
 import { setupContextMenu } from './context-menu';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
-import { getSetting } from './store';
 import { is, resolveHtmlPath } from './util';
 import windows from './windows';
 
@@ -25,16 +24,12 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		title: app.name,
 		tabbingIdentifier: app.name,
 		frame: APP_FRAME,
+		show: false,
 
 		// closable: false,
 		// fullscreen: true,
-		// fullscreenable: false,
+		fullscreenable: false,
 		// simpleFullscreen: true, // Pre-lion fullscreen support (stays in same space)
-		// hasShadow: false,
-		// maximizable: false,
-		// minimizable: false,
-		// movable: true,
-		// resizable: false,
 
 		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
 		vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
@@ -107,8 +102,14 @@ export const createMainWindow = async () => {
 	const options: BrowserWindowConstructorOptions = {
 		// acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
 		// alwaysOnTop: true,
+
+		hasShadow: false,
+		maximizable: false,
+		minimizable: false,
+		movable: true,
 		show: false,
 		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
+		resizable: false,
 		titleBarStyle: 'hidden', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
 		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
 		trafficLightPosition: { x: 10, y: 9 },
@@ -126,16 +127,11 @@ export const createMainWindow = async () => {
 	const window = createWindow(options);
 
 	window.on('ready-to-show', () => {
-		// Setting: Start minimized
-		if (process.env.START_MINIMIZED || getSetting('startMinimized')) {
-			window.minimize();
-		} else {
-			window.show();
-		}
+		window.show();
 	});
 
 	// Load the window
-	window.loadURL(resolveHtmlPath('index.html'));
+	window.loadURL(resolveHtmlPath('crosshair.html'));
 
 	return window;
 };
@@ -150,6 +146,15 @@ export const createChildWindow = async () => {
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('child.html'));
+
+	return window;
+};
+
+export const createSettingsWindow = async () => {
+	const window = createWindow({ frame: true });
+
+	// Load the window
+	window.loadURL(resolveHtmlPath('index.html'));
 
 	return window;
 };

@@ -43,12 +43,119 @@ const schema: Store.Schema<StoreType> = {
 			showTrayIcon: {
 				type: 'boolean',
 			},
+			startOnLogin: {
+				type: 'boolean',
+			},
+			startLocked: {
+				type: 'boolean',
+			},
 			quitOnWindowClose: {
 				type: 'boolean',
 			},
 			theme: {
 				type: 'string',
 				enum: ['system', 'light', 'dark'],
+			},
+			hardwareAcceleration: {
+				type: 'boolean',
+			},
+			browserGPU: {
+				type: 'boolean',
+			},
+			backgroundColor: {
+				type: 'string',
+			},
+			accentColor: {
+				type: 'string',
+			},
+			locked: {
+				type: 'boolean',
+			},
+			crosshair: {
+				type: 'string',
+			},
+			crosshairSize: {
+				type: 'number',
+			},
+			crosshairOpacity: {
+				type: 'number',
+			},
+			reticleSize: {
+				type: 'number',
+			},
+			reticleOpacity: {
+				type: 'number',
+			},
+			reticleColor: {
+				type: 'string',
+			},
+			fillColor: {
+				type: 'string',
+			},
+			strokeColor: {
+				type: 'string',
+			},
+			strokeWidth: {
+				type: 'number',
+			},
+			followMouse: {
+				type: 'boolean',
+			},
+			alt: {
+				type: 'boolean',
+			},
+			altCrosshair: {
+				type: 'string',
+			},
+			altBehavior: {
+				type: 'string',
+				enum: ['toggle', 'hold'],
+			},
+			altSize: {
+				type: 'number',
+			},
+			altOpacity: {
+				type: 'number',
+			},
+			altInput: {
+				type: 'string',
+				enum: ['mouse', 'keyboard'],
+			},
+			altTrigger: {
+				type: 'number',
+			},
+			hide: {
+				type: 'boolean',
+			},
+			hideBehavior: {
+				type: 'string',
+				enum: ['toggle', 'hold'],
+			},
+			hideInput: {
+				type: 'string',
+				enum: ['mouse', 'keyboard'],
+			},
+			hideTrigger: {
+				type: 'number',
+			},
+			tilt: {
+				type: 'boolean',
+			},
+			tiltAngle: {
+				type: 'number',
+			},
+			tiltBehavior: {
+				type: 'string',
+				enum: ['toggle', 'hold'],
+			},
+			currentlyHidden: {
+				type: 'boolean',
+			},
+			currentTilt: {
+				type: 'number',
+			},
+			resetOnAppStart: {
+				type: 'boolean',
 			},
 		},
 		default: DEFAULT_SETTINGS,

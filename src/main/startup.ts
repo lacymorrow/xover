@@ -11,6 +11,7 @@ import { setupDockMenu } from './menu';
 import protocol from './protocol';
 import { resetApp } from './reset';
 import sounds from './sounds';
+import { getSetting, setSettings } from './store';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import windows from './windows';
@@ -32,6 +33,10 @@ export const startup = () => {
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();
+
+	if (!getSetting('startLocked') && getSetting('locked')) {
+		setSettings({ locked: false });
+	}
 };
 
 export const ready = async () => {

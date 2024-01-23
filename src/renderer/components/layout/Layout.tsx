@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/sonner';
 import { GlobalContextProvider } from '@/renderer/context/global-context';
 import { ThemeProvider } from '@/renderer/context/theme-context';
+import '@/renderer/styles/globals.scss';
 
 import React from 'react';
 
