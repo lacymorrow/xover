@@ -5,7 +5,6 @@ import '@/renderer/styles/globals.scss';
 
 import React from 'react';
 
-// We can't use the ScrollArea here or the scroll will persist between navigations
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<GlobalContextProvider>

@@ -100,6 +100,7 @@ export function GlobalContextProvider({
 			.invoke(ipcChannels.GET_APP_PATHS)
 			.then((paths) => {
 				setAppPaths(paths);
+				console.log(paths);
 				return paths;
 			})
 			.then((paths) => {

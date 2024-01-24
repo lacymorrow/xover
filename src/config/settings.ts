@@ -111,7 +111,8 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	locked: false,
 
-	crosshair: '',
+	crosshair:
+		'/Users/lacymorrow/repo/xover/src/static/crosshairs/Chevron/Cyan.png',
 	crosshairSize: 100,
 	crosshairOpacity: 100,
 

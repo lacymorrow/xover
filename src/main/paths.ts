@@ -9,6 +9,7 @@ export const __main = path.join(__src, 'main');
 export const __renderer = path.join(__src, 'renderer');
 export const __static = path.join(__src, 'static');
 export const __sounds = path.join(__static, 'sounds') + path.sep;
+export const __crosshairs = path.join(__static, 'crosshairs');
 
 export const __resources = app.isPackaged
 	? path.join(process.resourcesPath, 'assets')
@@ -16,4 +17,6 @@ export const __resources = app.isPackaged
 
 export const rendererPaths = {
 	sounds: __sounds,
+	crosshairs: __crosshairs,
+	resources: __resources,
 };

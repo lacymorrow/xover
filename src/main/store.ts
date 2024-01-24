@@ -16,9 +16,15 @@ export interface StoreType {
 	settings: SettingsType;
 
 	appMessageLog: AppMessageLogType;
+
+	crosshairs: string[];
 }
 
 const schema: Store.Schema<StoreType> = {
+	crosshairs: {
+		type: 'array',
+		default: [],
+	},
 	appMessageLog: {
 		type: 'array',
 		default: [],
@@ -245,6 +251,18 @@ export const addAppMessage = (message: AppMessageType) => {
 
 export const getAppMessages = () => {
 	return store.get('appMessageLog');
+};
+
+export const getCrosshairs = () => {
+	return store.get('crosshairs');
+};
+
+export const setCrosshairs = (crosshairs: string[]) => {
+	store.set('crosshairs', crosshairs);
+};
+
+export const clearCrosshairs = () => {
+	store.reset('crosshairs');
 };
 
 export default store;

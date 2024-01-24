@@ -1,17 +1,25 @@
 import { app } from 'electron';
 import Logger from 'electron-log/main';
+import { DIRECTORY_SCAN_DEPTH } from '../config/config';
 import { $messages } from '../config/strings';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
-import { createMainWindow, createSettingsWindow } from './create-window';
+import { createMainWindow } from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
+import { getImages } from './lib/images';
 import logger from './logger';
 import { setupDockMenu } from './menu';
+import { __crosshairs } from './paths';
 import protocol from './protocol';
 import { resetApp } from './reset';
 import sounds from './sounds';
-import { getSetting, setSettings } from './store';
+import {
+	clearCrosshairs,
+	getSetting,
+	setCrosshairs,
+	setSettings,
+} from './store';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import windows from './windows';
@@ -34,7 +42,7 @@ export const startup = () => {
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();
 
-	if (!getSetting('startLocked') && getSetting('locked')) {
+	if (!getSetting('startLocked')) {
 		setSettings({ locked: false });
 	}
 };
@@ -75,7 +83,13 @@ export const ready = async () => {
 export const idle = async () => {
 	// ... do something with your app
 
-	Logger.status($messages.idle);
+	// windows.childWindow = await createSettingsWindow();
+
 	sounds.play('STARTUP');
-	windows.childWindow = await createSettingsWindow();
+
+	clearCrosshairs();
+	setCrosshairs(getImages(__crosshairs, DIRECTORY_SCAN_DEPTH));
+
+	Logger.status($messages.idle);
+	console.log(__dirname);
 };

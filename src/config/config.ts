@@ -1,6 +1,6 @@
 // Constants
-export const APP_WIDTH = 1024;
-export const APP_HEIGHT = 720;
+export const APP_WIDTH = 208;
+export const APP_HEIGHT = 130;
 export const APP_FRAME = false;
 
 export const APP_ASPECT_RATIO = 16 / 10;
@@ -29,3 +29,15 @@ export const VOLUME = 0.15; // System volume in percent
 // 	'wmv',
 // 	'mkv',
 // ];
+
+export const IMAGE_EXTENSIONS = [
+	'.bmp',
+	'.gif',
+	'.png',
+	'.jpg',
+	'.jpeg',
+	'.svg',
+	'.webp',
+];
+
+export const DIRECTORY_SCAN_DEPTH = 2; // How many subdirectories to scan for images

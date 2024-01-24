@@ -8,7 +8,12 @@ import {
 } from 'electron';
 import Logger from 'electron-log/main';
 import path from 'path';
-import { APP_FRAME, APP_HEIGHT, APP_WIDTH } from '../config/config';
+import {
+	APP_ASPECT_RATIO,
+	APP_FRAME,
+	APP_HEIGHT,
+	APP_WIDTH,
+} from '../config/config';
 import { setupContextMenu } from './context-menu';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
@@ -51,6 +56,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	};
 
 	options.webPreferences = {
+		sandbox: false, // todo: enable
 		webSecurity: !is.development, // Required for loading sounds, comment out if not using sounds
 		// Prevent throttling when the window is in the background:
 		// backgroundThrottling: false,
@@ -100,12 +106,11 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 
 export const createMainWindow = async () => {
 	const options: BrowserWindowConstructorOptions = {
-		// acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
-		// alwaysOnTop: true,
+		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
+		alwaysOnTop: true,
 
 		hasShadow: false,
 		maximizable: false,
-		minimizable: false,
 		movable: true,
 		show: false,
 		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
@@ -124,7 +129,20 @@ export const createMainWindow = async () => {
 		minHeight: 420,
 	};
 
+	if (is.windows) {
+		options.type = 'toolbar';
+	}
+
 	const window = createWindow(options);
+
+	window.setAspectRatio(APP_ASPECT_RATIO);
+
+	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706
+	window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+
+	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
+	window.setAlwaysOnTop(true, 'screen-saver', 1);
+	window.setFullScreenable(false);
 
 	window.on('ready-to-show', () => {
 		window.show();
