@@ -9,6 +9,21 @@ export default function CrosshairApp() {
 	const { settings, appPaths } = useGlobalContext();
 
 	useEffect(() => {
+		// Properties to apply to renderer every sync
+		// const properties = {
+		// 	'--crosshair-width': `${options.crosshair.size}px`,
+		// 	'--crosshair-height': `${options.crosshair.size}px`,
+		// 	'--crosshair-opacity': (options.crosshair.opacity || 100) / 100,
+		// 	'--reticle-fill-color': options.crosshair.color,
+		// 	'--reticle-scale': options.crosshair.reticleScale,
+		// 	'--tilt-angle': options.actions.tiltAngle,
+		// 	'--app-bg-color': 'unset',
+		// 	'--app-highlight-color': 'unset',
+		// 	'--svg-fill-color': 'unset',
+		// 	'--svg-stroke-color': 'unset',
+		// 	'--svg-stroke-width': 'unset',
+		// };
+
 		document.documentElement.style.setProperty(
 			'--app-bg-color',
 			settings.backgroundColor,

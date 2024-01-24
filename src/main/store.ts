@@ -109,7 +109,7 @@ const schema: Store.Schema<StoreType> = {
 			followMouse: {
 				type: 'boolean',
 			},
-			alt: {
+			altActionEnabled: {
 				type: 'boolean',
 			},
 			altCrosshair: {
@@ -132,7 +132,7 @@ const schema: Store.Schema<StoreType> = {
 			altTrigger: {
 				type: 'number',
 			},
-			hide: {
+			hideActionEnabled: {
 				type: 'boolean',
 			},
 			hideBehavior: {
@@ -146,7 +146,7 @@ const schema: Store.Schema<StoreType> = {
 			hideTrigger: {
 				type: 'number',
 			},
-			tilt: {
+			tiltActionEnabled: {
 				type: 'boolean',
 			},
 			tiltAngle: {

@@ -17,6 +17,7 @@ import {
 import { setupContextMenu } from './context-menu';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
+import { getSetting } from './store';
 import { is, resolveHtmlPath } from './util';
 import windows from './windows';
 
@@ -146,6 +147,17 @@ export const createMainWindow = async () => {
 
 	window.on('ready-to-show', () => {
 		window.show();
+	});
+
+	window.on('will-resize', () => {});
+
+	window.on('closed', () => {
+		windows.mainWindow = null;
+
+		// Quit if main window closes
+		if (!is.macos || getSetting('quitOnWindowClose')) {
+			app.quit();
+		}
 	});
 
 	// Load the window
