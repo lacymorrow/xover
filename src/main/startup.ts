@@ -7,6 +7,7 @@ import { AutoUpdate } from './auto-update';
 import { createMainWindow } from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
+import kb from './keyboard';
 import { getImages } from './lib/images';
 import logger from './logger';
 import { setupDockMenu } from './menu';
@@ -47,6 +48,9 @@ export const ready = async () => {
 
 	// Add remaining app listeners
 	appListeners.ready();
+
+	// Setup keyboard shortcuts
+	kb.initialize();
 
 	// Create the main browser window.
 	windows.mainWindow = await createMainWindow();

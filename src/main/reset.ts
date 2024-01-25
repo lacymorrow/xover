@@ -1,6 +1,6 @@
-import { SettingsType } from '@/config/settings';
+import { SettingsType } from '../config/settings';
 import sound from './sounds';
-import { getSetting, resetStore, setSettings } from './store';
+import { getSetting, resetStore, setSettings } from './store-actions';
 import { is } from './util';
 
 export const resetApp = () => {
