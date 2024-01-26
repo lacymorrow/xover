@@ -181,7 +181,19 @@ export const createChildWindow = async () => {
 };
 
 export const createSettingsWindow = async () => {
+	// if locked, do nothing
+	if (getSetting('locked')) {
+		return;
+	}
+
+	// if window is open without focus, focus it.
+	// if window is open with focus, center it.
+	// if window is focused and centered, close it.
+
+	// open
 	const window = createWindow({ frame: true, show: true });
+
+	// focus/center window
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));
