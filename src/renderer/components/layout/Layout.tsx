@@ -7,11 +7,13 @@ import React from 'react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<GlobalContextProvider>
-			<ThemeProvider>
-				{children}
-				<Toaster />
-			</ThemeProvider>
-		</GlobalContextProvider>
+		<React.StrictMode>
+			<GlobalContextProvider>
+				<ThemeProvider>
+					{children}
+					<Toaster />
+				</ThemeProvider>
+			</GlobalContextProvider>
+		</React.StrictMode>
 	);
 }

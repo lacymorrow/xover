@@ -4,11 +4,13 @@ export type ThemeType = 'system' | 'light' | 'dark';
 export type IOHookBehaviorType = 'toggle' | 'hold';
 export type IOHookInputType = 'mouse' | 'keyboard';
 
+export type NotificationType = 'system' | 'app' | 'all';
+
 export interface SettingsType {
 	allowSounds: boolean;
 	autoUpdate: boolean;
 	allowNotifications: boolean;
-	notifcationType: 'default' | 'system' | 'all';
+	notifcationType: NotificationType;
 	showDockIcon: boolean; // macOS only
 	showTrayIcon: boolean;
 	quitOnWindowClose: boolean;
