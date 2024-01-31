@@ -1,9 +1,14 @@
+import { CustomAcceleratorsType } from '@/types/keyboard';
 import { app } from 'electron';
 import Logger from 'electron-log/main';
 import Store from 'electron-store';
 import { APP_MESSAGES_MAX } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
-import { DEFAULT_SETTINGS, SettingsType } from '../config/settings';
+import {
+	DEFAULT_KEYBINDS,
+	DEFAULT_SETTINGS,
+	SettingsType,
+} from '../config/settings';
 import { $messages } from '../config/strings';
 import tray from './tray';
 import { forEachWindow } from './windows';
@@ -14,9 +19,8 @@ export type AppMessageLogType = AppMessageType[];
 
 export interface StoreType {
 	settings: SettingsType;
-
-	appMessageLog: AppMessageLogType;
-
+	appMessageLog: AppMessageLogType; // Public-facing console.log()
+	keybinds: CustomAcceleratorsType; // Custom keybinds/accelerators/global shortcuts
 	crosshairs: string[];
 }
 
@@ -28,6 +32,18 @@ const schema: Store.Schema<StoreType> = {
 	appMessageLog: {
 		type: 'array',
 		default: [],
+	},
+	keybinds: {
+		type: 'object',
+		properties: {
+			quit: {
+				type: 'string',
+			},
+			reset: {
+				type: 'string',
+			},
+		},
+		default: DEFAULT_KEYBINDS,
 	},
 	settings: {
 		type: 'object',
@@ -109,7 +125,7 @@ const schema: Store.Schema<StoreType> = {
 			followMouse: {
 				type: 'boolean',
 			},
-			alt: {
+			altActionEnabled: {
 				type: 'boolean',
 			},
 			altCrosshair: {
@@ -132,7 +148,7 @@ const schema: Store.Schema<StoreType> = {
 			altTrigger: {
 				type: 'number',
 			},
-			hide: {
+			hideActionEnabled: {
 				type: 'boolean',
 			},
 			hideBehavior: {
@@ -146,7 +162,7 @@ const schema: Store.Schema<StoreType> = {
 			hideTrigger: {
 				type: 'number',
 			},
-			tilt: {
+			tiltActionEnabled: {
 				type: 'boolean',
 			},
 			tiltAngle: {

@@ -36,8 +36,10 @@ export const IMAGE_EXTENSIONS = [
 	'.png',
 	'.jpg',
 	'.jpeg',
+	'.tiff',
 	'.svg',
 	'.webp',
 ];
+// gif|icns|ico|jpg|png|otf|eot|woff|woff2|ttf|svg|webp
 
 export const DIRECTORY_SCAN_DEPTH = 2; // How many subdirectories to scan for images

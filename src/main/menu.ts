@@ -15,7 +15,7 @@ import {
 	testNotificationMenuItem,
 	testSoundMenuItem,
 } from './menu-items';
-import { getSetting, setSettings } from './store';
+import { getSetting, setSettings } from './store-actions';
 import { is } from './util';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {

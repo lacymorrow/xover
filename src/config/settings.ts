@@ -1,3 +1,5 @@
+import { CustomAcceleratorsType } from '@/types/keyboard';
+
 export type ThemeType = 'system' | 'light' | 'dark';
 export type IOHookBehaviorType = 'toggle' | 'hold';
 export type IOHookInputType = 'mouse' | 'keyboard';
@@ -39,7 +41,7 @@ export interface SettingsType {
 	// iohook
 	followMouse: boolean;
 
-	alt: boolean;
+	altActionEnabled: boolean;
 	altCrosshair: string;
 	altBehavior: IOHookBehaviorType; // toggle/hold
 	altSize: number;
@@ -47,12 +49,12 @@ export interface SettingsType {
 	altInput: IOHookInputType; // mouse/keyboard
 	altTrigger: number;
 
-	hide: boolean;
+	hideActionEnabled: boolean;
 	hideBehavior: IOHookBehaviorType; // toggle/hold
 	hideInput: IOHookInputType; // mouse/keyboard
 	hideTrigger: number;
 
-	tilt: boolean;
+	tiltActionEnabled: boolean;
 	tiltAngle: number;
 	tiltBehavior: IOHookBehaviorType; // toggle/hold
 	tiltInput: IOHookInputType; // mouse/keyboard
@@ -97,7 +99,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	notifcationType: 'all',
 	showDockIcon: true,
 	showTrayIcon: true,
-	quitOnWindowClose: false,
+	quitOnWindowClose: true,
 
 	theme: 'system',
 
@@ -127,7 +129,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	// iohook
 	followMouse: false,
 
-	alt: false,
+	altActionEnabled: false,
 	altCrosshair: '',
 	altBehavior: 'hold', // toggle/hold
 	altSize: 100,
@@ -135,12 +137,12 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	altTrigger: 1,
 	altInput: 'mouse',
 
-	hide: false,
+	hideActionEnabled: false,
 	hideBehavior: 'hold', // toggle/hold
 	hideTrigger: 1,
 	hideInput: 'mouse',
 
-	tilt: false,
+	tiltActionEnabled: false,
 	tiltAngle: 15,
 	tiltBehavior: 'hold', // toggle/hold
 	tiltTrigger: 1,
@@ -180,4 +182,14 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	currentlyHidden: false,
 	currentTilt: 0,
 	resetOnAppStart: false, // for debugging, reset via cli
+};
+
+// see src/main/keyboard-shortcuts.ts
+// a shortcut must have an action, keybind, and fn
+const accelerator = 'Control+Shift+Alt';
+
+export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
+	quit: `${accelerator}+Q`,
+	reset: `${accelerator}+R`,
+	// reset: '', // empty string or undefined disables a shortcut
 };

@@ -7,19 +7,15 @@ import { AutoUpdate } from './auto-update';
 import { createMainWindow } from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
+import kb from './keyboard';
 import { getImages } from './lib/images';
 import logger from './logger';
 import { setupDockMenu } from './menu';
 import { __crosshairs, __resources } from './paths';
 import protocol from './protocol';
-import { resetApp } from './reset';
+import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
-import {
-	clearCrosshairs,
-	getSetting,
-	setCrosshairs,
-	setSettings,
-} from './store';
+import { clearCrosshairs, setCrosshairs } from './store';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import windows from './windows';
@@ -31,20 +27,13 @@ export const startup = () => {
 	// Initialize the error handler
 	errorHandling.initialize();
 
-	if (is.debug) {
-		// Reset the app and store to default settings
-		resetApp();
-	}
+	refreshSettingsOnAppStart();
 
 	// Enable electron debug and source map support
 	debugging.initialize();
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();
-
-	if (!getSetting('startLocked')) {
-		setSettings({ locked: false });
-	}
 };
 
 export const ready = async () => {
@@ -59,6 +48,9 @@ export const ready = async () => {
 
 	// Add remaining app listeners
 	appListeners.ready();
+
+	// Setup keyboard shortcuts
+	kb.initialize();
 
 	// Create the main browser window.
 	windows.mainWindow = await createMainWindow();
@@ -83,13 +75,18 @@ export const ready = async () => {
 export const idle = async () => {
 	// ... do something with your app
 
-	// windows.childWindow = await createSettingsWindow();
-
 	sounds.play('STARTUP');
 
 	clearCrosshairs();
-	setCrosshairs(getImages(__resources, DIRECTORY_SCAN_DEPTH));
+	getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
+		.then((images) => {
+			setCrosshairs(images);
+		})
+		.catch((error) => {
+			Logger.error(error);
+		});
+
+	// windows.childWindow = await createSettingsWindow();
 
 	Logger.status($messages.idle);
-	console.log(__dirname);
 };
