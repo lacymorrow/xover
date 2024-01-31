@@ -10,7 +10,7 @@ import errorHandling from './error-handling';
 import { getImages } from './lib/images';
 import logger from './logger';
 import { setupDockMenu } from './menu';
-import { __crosshairs } from './paths';
+import { __crosshairs, __resources } from './paths';
 import protocol from './protocol';
 import { resetApp } from './reset';
 import sounds from './sounds';
@@ -88,7 +88,7 @@ export const idle = async () => {
 	sounds.play('STARTUP');
 
 	clearCrosshairs();
-	setCrosshairs(getImages(__crosshairs, DIRECTORY_SCAN_DEPTH));
+	setCrosshairs(getImages(__resources, DIRECTORY_SCAN_DEPTH));
 
 	Logger.status($messages.idle);
 	console.log(__dirname);

@@ -40,11 +40,6 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
 		useContentSize: true, // The width and height would be used as web page's size, which means the actual window's size will include window frame's size and be slightly larger. Default is false.
 
-		width: APP_WIDTH,
-		minWidth: 550,
-		height: APP_HEIGHT,
-		minHeight: 420,
-
 		// Conditionally enable features based on the platform
 		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
 		// ...(is.windows ? { type: 'toolbar' } : {}),
@@ -123,10 +118,10 @@ export const createMainWindow = async () => {
 		// backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
 		vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
 
-		width: APP_WIDTH,
-		minWidth: 550,
-		height: APP_HEIGHT,
-		minHeight: 420,
+		// width: APP_WIDTH,
+		// minWidth: 550,
+		// height: APP_HEIGHT,
+		// minHeight: 420,
 	};
 
 	if (is.windows) {
