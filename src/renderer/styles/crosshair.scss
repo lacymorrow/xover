@@ -1,11 +1,5 @@
-/* Colors */
-$accent_color: #392a84;
-
-$border_dragging: #569aff;
-
-$default_reticle_fill: #ccc;
-
 :root {
+	/* Colors */
 	--app-bg-color-default: #000000;
 	--app-bg-color: var(--app-bg-color-default);
 
@@ -18,7 +12,7 @@ $default_reticle_fill: #ccc;
 	--crosshair-opacity: 1;
 	--reticle-scale: 100;
 	--reticle-opacity: 1;
-	--reticle-color: #{$default_reticle_fill};
+	--reticle-color: #ccc;
 	--tilt-angle: 0deg;
 	--svg-fill-color: inherit;
 	--svg-stroke-color: inherit;
@@ -26,6 +20,20 @@ $default_reticle_fill: #ccc;
 
 	--alt-size: 100px;
 	--alt-opacity: 1;
+}
+
+* {
+	/*
+		Prevent images from being draggable
+	*/
+	-webkit-user-drag: none;
+
+	/*
+		Text selection can accidentally occur within draggable regions,
+		so it's recommended to also use the CSS property user-select: none on the element to
+		avoid accidental text selection.
+	*/
+	user-select: none;
 }
 
 body {
