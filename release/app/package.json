@@ -19,5 +19,19 @@
 		"postinstall": "npm run rebuild && npm run link-modules",
 		"link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
 	},
-	"dependencies": {}
+	"iohook": {
+		"targets": [
+			"node-83",
+			"electron-87"
+		],
+		"platforms": [
+			"win32",
+			"darwin",
+			"linux"
+		],
+		"arches": [
+			"x64",
+			"ia32"
+		]
+	}
 }

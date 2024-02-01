@@ -111,7 +111,7 @@ export const createMainWindow = async () => {
 		show: false,
 		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
 		resizable: false,
-		titleBarStyle: 'customButtonsOnHover', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+		titleBarStyle: 'hidden', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
 		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
 		trafficLightPosition: { x: 10, y: 9 },
 

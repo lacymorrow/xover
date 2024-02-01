@@ -1,5 +1,6 @@
 import { app } from 'electron';
 import Logger from 'electron-log';
+import ioHook from 'iohook';
 import sounds from '../sounds';
 import { getSetting, setSettings } from '../store-actions';
 import windows from '../windows';
@@ -25,6 +26,7 @@ export const setAppLock = (locked: boolean) => {
 		sounds.play('LOCK');
 
 		app.dock.hide();
+		ioHook.start(true);
 	} else {
 		sounds.play('UNLOCK');
 
