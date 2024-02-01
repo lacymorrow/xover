@@ -18,7 +18,6 @@ import sounds from './sounds';
 import { clearCrosshairs, setCrosshairs } from './store-actions';
 import tray from './tray';
 import { debugInfo, is } from './util';
-import windows from './windows';
 
 export const startup = () => {
 	// Initialize logger
@@ -53,7 +52,7 @@ export const ready = async () => {
 	kb.initialize();
 
 	// Create the main browser window.
-	windows.mainWindow = await createMainWindow();
+	await createMainWindow();
 
 	// Setup Dock Menu
 	setupDockMenu();

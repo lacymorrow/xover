@@ -1,45 +1,58 @@
 import { app } from 'electron';
 import Logger from 'electron-log';
 import sounds from '../sounds';
-import { getSetting, setSettings } from '../store-actions';
+import { getSetting, getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
 
-export const setAppLock = (locked: boolean) => {
-	Logger.status(`App is ${locked ? 'locked' : 'unlocked'}`);
-	// hide settings
+export const setAppLock = (isLocked: boolean) => {
+	const { followMouse, showDockIcon } = getSettings();
+	// todo
+	// iohook
+	// if unlock + follow mouse = reset position
+	// unregister iohook
+	// enable move listener (save position)
+
 	if (!windows.mainWindow) {
 		return;
 	}
+	Logger.status(`App is ${isLocked ? 'locked' : 'unlocked'}`);
 
-	windows.childWindow?.hide();
-	windows.mainWindow.closable = !locked;
-	windows.mainWindow.maximizable = !locked;
-	windows.mainWindow.minimizable = !locked;
-	windows.mainWindow.movable = !locked;
-	windows.mainWindow.resizable = !locked;
-	windows.mainWindow.setFocusable(!locked);
-	windows.mainWindow.setIgnoreMouseEvents(locked);
-	windows.mainWindow.removeAllListeners('move');
+	windows.childWindow?.hide(); // hide settings window
+	windows.mainWindow.closable = !isLocked;
+	// windows.mainWindow.minimizable = !isLocked;
+	windows.mainWindow.movable = !isLocked;
+	windows.mainWindow.setFocusable(!isLocked);
+	windows.mainWindow.setIgnoreMouseEvents(isLocked);
 
-	if (locked) {
+	if (isLocked) {
 		sounds.play('LOCK');
+
+		windows.mainWindow.removeAllListeners('move');
 
 		app.dock.hide();
 	} else {
 		sounds.play('UNLOCK');
 
-		if (getSetting('followMouse')) {
+		// move listener
+		// windows.mainWindow.on('move', () => {
+		// 	if (windows.mainWindow) {
+		// 		const position = windows.mainWindow.getPosition();
+		// 		setSettings({ position });
+		// 	}
+		// });
+
+		if (followMouse) {
 			// crossover.resetPosition();
 		}
 
-		if (getSetting('showDockIcon')) {
+		if (showDockIcon) {
 			app.dock.show();
 		}
 	}
 };
 
 export const toggleAppLock = () => {
-	const locked = !getSetting('locked');
-	setAppLock(locked);
-	setSettings({ locked });
+	const isLocked = !getSetting('isLocked');
+	setAppLock(isLocked);
+	setSettings({ isLocked });
 };

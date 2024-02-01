@@ -92,6 +92,9 @@
 	.drag {
 		-webkit-app-region: drag;
 		cursor: move;
+		&:active {
+			cursor: crosshair;
+		}
 	}
 
 	.no-drag {

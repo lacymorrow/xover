@@ -57,6 +57,9 @@ const schema: Store.Schema<StoreType> = {
 			showDockIcon: {
 				type: 'boolean',
 			},
+			showTaskbarIcon: {
+				type: 'boolean',
+			},
 			showTrayIcon: {
 				type: 'boolean',
 			},
@@ -84,9 +87,6 @@ const schema: Store.Schema<StoreType> = {
 			},
 			accentColor: {
 				type: 'string',
-			},
-			locked: {
-				type: 'boolean',
 			},
 			crosshair: {
 				type: 'string',
@@ -165,7 +165,10 @@ const schema: Store.Schema<StoreType> = {
 				type: 'string',
 				enum: ['toggle', 'hold'],
 			},
-			currentlyHidden: {
+			isLocked: {
+				type: 'boolean',
+			},
+			isHidden: {
 				type: 'boolean',
 			},
 			currentTilt: {

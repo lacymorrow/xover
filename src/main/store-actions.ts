@@ -30,25 +30,6 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 				openAtLogin: changedSettings.startOnLogin,
 			});
 		}
-
-		// app size
-
-		if (keys.includes('locked')) {
-			// hide other windows
-			// !closable
-			// !minimizable
-			// !maximizable
-			// !resizable
-			// !movable
-			// !focusable
-			// dock visibliity
-			// setIgnoreMouseEvents
-			// 			targetWindow.removeAllListeners( 'move' )
-			// iohook
-			// if unlock + follow mouse = reset position
-			// unregister iohook
-			// enable move listener (save position)
-		}
 	}
 
 	// Sync with renderer

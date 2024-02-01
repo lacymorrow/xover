@@ -17,7 +17,7 @@ import {
 import { setupContextMenu } from './context-menu';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
-import { getSetting } from './store-actions';
+import { getSettings } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import windows from './windows';
 
@@ -101,19 +101,24 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 };
 
 export const createMainWindow = async () => {
+	const { quitOnWindowClose, showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
 		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
 		alwaysOnTop: true,
-
+		frame: false,
 		hasShadow: false,
 		maximizable: false,
+		minimizable: false,
+
+		closable: true,
 		movable: true,
+
 		show: false,
-		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
+		skipTaskbar: !showTaskbarIcon, // Whether to show the window in taskbar. Default is false.
 		resizable: false,
-		titleBarStyle: 'customButtonsOnHover', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+		// titleBarStyle: 'customButtonsOnHover', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
 		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
-		trafficLightPosition: { x: 10, y: 9 },
+		// trafficLightPosition: { x: 10, y: 9 },
 
 		transparent: true, // Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.
 		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
@@ -139,6 +144,8 @@ export const createMainWindow = async () => {
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
 	window.setFullScreenable(false);
+	window.closable = true;
+	window.minimizable = true;
 
 	window.on('ready-to-show', () => {
 		window.show();
@@ -147,10 +154,8 @@ export const createMainWindow = async () => {
 	window.on('will-resize', () => {});
 
 	window.on('closed', () => {
-		windows.mainWindow = null;
-
 		// Quit if main window closes
-		if (!is.macos || getSetting('quitOnWindowClose')) {
+		if (!is.macos || quitOnWindowClose) {
 			app.quit();
 		}
 	});
@@ -158,7 +163,8 @@ export const createMainWindow = async () => {
 	// Load the window
 	window.loadURL(resolveHtmlPath('crosshair.html'));
 
-	return window;
+	windows.mainWindow = window;
+	windows.mainWindow.closable = true;
 };
 
 export const createChildWindow = async () => {
@@ -176,18 +182,14 @@ export const createChildWindow = async () => {
 };
 
 export const createSettingsWindow = async () => {
-	// if locked, do nothing
-	if (getSetting('locked')) {
-		return;
-	}
+	const options = { show: true };
+	const window = createWindow(options);
 
-	// open
-	windows.childWindow = createWindow({ show: true });
-
-	windows.childWindow.on('closed', () => {
-		windows.childWindow = createWindow({ show: false });
+	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
+	window.on('closed', () => {
+		windows.childWindow = createWindow(options);
 	});
 
 	// Load the window
-	windows.childWindow.loadURL(resolveHtmlPath('index.html'));
+	window.loadURL(resolveHtmlPath('index.html'));
 };
