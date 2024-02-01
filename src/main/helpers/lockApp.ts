@@ -13,6 +13,10 @@ export const setAppLock = (locked: boolean) => {
 
 	windows.childWindow?.hide();
 	windows.mainWindow.closable = !locked;
+	windows.mainWindow.maximizable = !locked;
+	windows.mainWindow.minimizable = !locked;
+	windows.mainWindow.movable = !locked;
+	windows.mainWindow.resizable = !locked;
 	windows.mainWindow.setFocusable(!locked);
 	windows.mainWindow.setIgnoreMouseEvents(locked);
 	windows.mainWindow.removeAllListeners('move');
