@@ -153,6 +153,10 @@ export const createMainWindow = async () => {
 		if (!is.macos || getSetting('quitOnWindowClose')) {
 			app.quit();
 		}
+
+		if (is.debug) {
+			window.webContents.openDevTools();
+		}
 	});
 
 	// Load the window
