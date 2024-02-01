@@ -37,8 +37,8 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		fullscreenable: false,
 		// simpleFullscreen: true, // Pre-lion fullscreen support (stays in same space)
 
-		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
-		vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
+		// backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
+		// vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
 		useContentSize: true, // The width and height would be used as web page's size, which means the actual window's size will include window frame's size and be slightly larger. Default is false.
 
 		// Conditionally enable features based on the platform
@@ -111,18 +111,18 @@ export const createMainWindow = async () => {
 		show: false,
 		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
 		resizable: false,
-		titleBarStyle: 'hidden', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+		titleBarStyle: 'customButtonsOnHover', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
 		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
 		trafficLightPosition: { x: 10, y: 9 },
 
 		transparent: true, // Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.
-		// backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
-		vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
+		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
+		// vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
 
-		// width: APP_WIDTH,
-		// minWidth: 550,
-		// height: APP_HEIGHT,
-		// minHeight: 420,
+		width: APP_WIDTH,
+		minWidth: APP_WIDTH,
+		height: APP_HEIGHT,
+		minHeight: APP_HEIGHT,
 	};
 
 	if (is.windows) {
@@ -181,17 +181,13 @@ export const createSettingsWindow = async () => {
 		return;
 	}
 
-	// if window is open without focus, focus it.
-	// if window is open with focus, center it.
-	// if window is focused and centered, close it.
-
 	// open
-	const window = createWindow({ frame: true, show: true });
+	windows.childWindow = createWindow({ show: true });
 
-	// focus/center window
+	windows.childWindow.on('closed', () => {
+		windows.childWindow = createWindow({ show: false });
+	});
 
 	// Load the window
-	window.loadURL(resolveHtmlPath('index.html'));
-
-	return window;
+	windows.childWindow.loadURL(resolveHtmlPath('index.html'));
 };

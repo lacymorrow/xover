@@ -4,18 +4,18 @@ import { DIRECTORY_SCAN_DEPTH } from '../config/config';
 import { $messages } from '../config/strings';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
-import { createMainWindow } from './create-window';
+import { createMainWindow, createSettingsWindow } from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
+import { getImages } from './helpers/getImages';
 import kb from './keyboard';
-import { getImages } from './lib/images';
 import logger from './logger';
 import { setupDockMenu } from './menu';
-import { __crosshairs, __resources } from './paths';
+import { __crosshairs } from './paths';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
-import { clearCrosshairs, setCrosshairs } from './store';
+import { clearCrosshairs, setCrosshairs } from './store-actions';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import windows from './windows';
@@ -86,7 +86,7 @@ export const idle = async () => {
 			Logger.error(error);
 		});
 
-	// windows.childWindow = await createSettingsWindow();
+	await createSettingsWindow();
 
 	Logger.status($messages.idle);
 };

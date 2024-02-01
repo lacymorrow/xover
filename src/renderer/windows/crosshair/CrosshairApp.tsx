@@ -31,7 +31,11 @@ export default function CrosshairApp() {
 	}, [settings, appPaths]);
 
 	return (
-		<div className={cn('w-full h-full', !settings.locked && 'drag')}>
+		<div className={cn('w-full h-full relative', !settings.locked && 'drag')}>
+			<div
+				id="background"
+				className="absolute -z-10 top-0 left-0 bottom-0 right-0"
+			/>
 			<img
 				src={settings.crosshair ? `file://${settings.crosshair}` : crosshair}
 				alt=""

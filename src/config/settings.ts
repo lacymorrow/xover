@@ -166,20 +166,6 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	keyProfile2: '',
 	keyProfile3: '',
 
-	// reset: 'Control+Shift+Alt+R',
-	// lock: 'Control+Shift+Alt+X',
-	// center: 'Control+Shift+Alt+C',
-	// hide: 'Control+Shift+Alt+H',
-	// duplicate: 'Control+Shift+Alt+D',
-	// changeDisplay: 'Control+Shift+Alt+M',
-	// moveUp: 'Control+Shift+Alt+Up',
-	// moveDown: 'Control+Shift+Alt+Down',
-	// moveLeft: 'Control+Shift+Alt+Left',
-	// moveRight: 'Control+Shift+Alt+Right',
-	// nextWindow: 'Control+Shift+Alt+O',
-	// about: 'Control+Shift+Alt+A',
-	// quit: 'Control+Shift+Alt+Q',
-
 	// temporary
 	currentlyHidden: false,
 	currentTilt: 0,
@@ -193,5 +179,17 @@ const accelerator = 'Control+Shift+Alt';
 export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
 	quit: `${accelerator}+Q`,
 	reset: `${accelerator}+R`,
-	// reset: '', // empty string or undefined disables a shortcut
+	moveUp: `${accelerator}+Up`,
+	moveDown: `${accelerator}+Down`,
+	moveLeft: `${accelerator}+Left`,
+	moveRight: `${accelerator}+Right`,
+	duplicate: `${accelerator}+D`,
+	lock: `${accelerator}+X`,
+	hide: `${accelerator}+H`,
+	center: `${accelerator}+C`,
+	changeDisplay: `${accelerator}+M`,
+	nextWindow: `${accelerator}+N`,
+	// profile1: `${accelerator}+1`,
+	// profile2: `${accelerator}+2`,
+	// profile3: `${accelerator}+3`,
 };

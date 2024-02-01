@@ -1,4 +1,6 @@
 :root {
+	--app-opacity: 0.5;
+
 	/* Colors */
 	--app-bg-color-default: #000000;
 	--app-bg-color: var(--app-bg-color-default);
@@ -37,5 +39,10 @@
 }
 
 body {
+	background: none;
+}
+
+#background {
 	background-color: var(--app-bg-color, var(--app-bg-color-default));
+	opacity: var(--app-opacity, 1);
 }
