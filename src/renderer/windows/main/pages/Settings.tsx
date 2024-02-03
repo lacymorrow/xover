@@ -1,6 +1,7 @@
 import { buttonVariants } from '@/components/ui/button';
 import { $settings } from '@/config/strings';
 import { cn } from '@/lib/utils';
+import { ColorPickerInput } from '@/renderer/components/ui/ColorPickerInput';
 import { nav } from '@/renderer/config/nav';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { Link } from 'react-router-dom';
@@ -22,6 +23,7 @@ export function Settings() {
 			>
 				{nav.home.title}
 			</Link>
+			<ColorPickerInput />
 		</div>
 	);
 }

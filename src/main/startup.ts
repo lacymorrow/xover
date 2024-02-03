@@ -7,7 +7,6 @@ import { AutoUpdate } from './auto-update';
 import { createMainWindow, createSettingsWindow } from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
-import { getImages } from './helpers/getImages';
 import kb from './keyboard';
 import logger from './logger';
 import { setupDockMenu } from './menu';
@@ -15,9 +14,10 @@ import { __crosshairs } from './paths';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
-import { clearCrosshairs, setCrosshairs } from './store-actions';
+import { setCrosshairImages } from './store-actions';
 import tray from './tray';
 import { debugInfo, is } from './util';
+import { getImages } from './utils/getImages';
 
 export const startup = () => {
 	// Initialize logger
@@ -76,10 +76,9 @@ export const idle = async () => {
 
 	sounds.play('STARTUP');
 
-	clearCrosshairs();
 	getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
 		.then((images) => {
-			setCrosshairs(images);
+			setCrosshairImages(images);
 		})
 		.catch((error) => {
 			Logger.error(error);

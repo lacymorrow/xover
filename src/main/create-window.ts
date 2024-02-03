@@ -19,6 +19,8 @@ import MenuBuilder from './menu';
 import { __resources } from './paths';
 import { getSettings } from './store-actions';
 import { is, resolveHtmlPath } from './util';
+import { restoreWindowPosition } from './utils/restoreWindowPosition';
+import { savePosition } from './utils/savePosition';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
@@ -144,8 +146,6 @@ export const createMainWindow = async () => {
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
 	window.setFullScreenable(false);
-	window.closable = true;
-	window.minimizable = true;
 
 	window.on('ready-to-show', () => {
 		window.show();
@@ -160,11 +160,18 @@ export const createMainWindow = async () => {
 		}
 	});
 
+	window.on('move', () => {
+		// Save position
+		savePosition(window);
+	});
+
+	// Restore saved position
+	restoreWindowPosition(window);
+
 	// Load the window
 	window.loadURL(resolveHtmlPath('crosshair.html'));
 
 	windows.mainWindow = window;
-	windows.mainWindow.closable = true;
 };
 
 export const createChildWindow = async () => {
@@ -182,14 +189,16 @@ export const createChildWindow = async () => {
 };
 
 export const createSettingsWindow = async () => {
-	const options = { show: true };
+	const options = {};
 	const window = createWindow(options);
 
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
 	window.on('closed', () => {
-		windows.childWindow = createWindow(options);
+		windows.settingsWindow = createWindow(options);
 	});
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));
+
+	windows.settingsWindow = window;
 };

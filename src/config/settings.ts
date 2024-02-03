@@ -26,8 +26,6 @@ export interface SettingsType {
 	backgroundColor: string;
 	accentColor: string;
 
-	isLocked: boolean;
-
 	crosshair: string;
 	crosshairSize: number;
 	crosshairOpacity: number;
@@ -63,10 +61,14 @@ export interface SettingsType {
 	tiltInput: IOHookInputType; // mouse/keyboard
 	tiltTrigger: number;
 
+	isLocked: boolean;
+
 	// temporary
 	isHidden: boolean;
+	isSettingsWindowOpen: boolean;
 	currentTilt: number;
 	resetOnAppStart: boolean; // for debugging, reset via cli
+	hadFirstRun: boolean;
 
 	// vibrancy: 'none' | 'sidebar' | 'full';
 	// lastWindowState: {
@@ -134,11 +136,14 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	tiltTrigger: 1,
 	tiltInput: 'mouse',
 
-	// temporary
 	isLocked: false,
+
+	// temporary
+	isSettingsWindowOpen: false,
 	isHidden: false,
 	currentTilt: 0,
 	resetOnAppStart: false, // for debugging, reset via cli
+	hadFirstRun: false,
 };
 
 // see src/main/keyboard-shortcuts.ts

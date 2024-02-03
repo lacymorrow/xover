@@ -3,6 +3,7 @@ import Logger from 'electron-log';
 import sounds from '../sounds';
 import { getSetting, getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
+import { restoreWindowPosition } from './restoreWindowPosition';
 
 export const setAppLock = (isLocked: boolean) => {
 	const { followMouse, showDockIcon } = getSettings();
@@ -17,7 +18,7 @@ export const setAppLock = (isLocked: boolean) => {
 	}
 	Logger.status(`App is ${isLocked ? 'locked' : 'unlocked'}`);
 
-	windows.childWindow?.hide(); // hide settings window
+	windows.settingsWindow?.hide(); // hide settings window
 	windows.mainWindow.closable = !isLocked;
 	// windows.mainWindow.minimizable = !isLocked;
 	windows.mainWindow.movable = !isLocked;
@@ -27,22 +28,12 @@ export const setAppLock = (isLocked: boolean) => {
 	if (isLocked) {
 		sounds.play('LOCK');
 
-		windows.mainWindow.removeAllListeners('move');
-
 		app.dock.hide();
 	} else {
 		sounds.play('UNLOCK');
 
-		// move listener
-		// windows.mainWindow.on('move', () => {
-		// 	if (windows.mainWindow) {
-		// 		const position = windows.mainWindow.getPosition();
-		// 		setSettings({ position });
-		// 	}
-		// });
-
 		if (followMouse) {
-			// crossover.resetPosition();
+			restoreWindowPosition(windows.mainWindow);
 		}
 
 		if (showDockIcon) {

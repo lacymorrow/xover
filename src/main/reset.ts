@@ -19,6 +19,7 @@ export const refreshSettingsOnAppStart = () => {
 	// Reset settings to default on app start
 	const resetSettings: Partial<SettingsType> = {
 		isHidden: false,
+		isSettingsWindowOpen: false,
 		currentTilt: 0,
 		resetOnAppStart: false,
 	};

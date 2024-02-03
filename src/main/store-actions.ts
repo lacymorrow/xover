@@ -87,16 +87,12 @@ export const getKeybinds = () => {
 	return store.get('keybinds');
 };
 
-export const getCrosshairs = () => {
-	return store.get('crosshairs');
+export const getCrosshairImages = () => {
+	return store.get('images');
 };
 
-export const setCrosshairs = (crosshairs: string[]) => {
-	store.set('crosshairs', crosshairs);
-};
-
-export const clearCrosshairs = () => {
-	store.reset('crosshairs');
+export const setCrosshairImages = (images: string[]) => {
+	store.set('images', images);
 };
 
 export default store;
