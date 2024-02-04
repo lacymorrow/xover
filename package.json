@@ -137,10 +137,7 @@
 		"electron-store": "^8.1.0",
 		"electron-unhandled": "^4.0.1",
 		"electron-updater": "^6.1.7",
-<<<<<<< HEAD
 		"iohook": "^0.9.3",
-=======
->>>>>>> 9a1c60b59488ca2189cb4992f0355d6b9f8f4667
 		"is-online": "^10.0.0",
 		"lucide-react": "^0.312.0",
 		"next-themes": "^0.2.1",
