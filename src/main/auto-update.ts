@@ -27,6 +27,11 @@ export class AutoUpdate {
 	}
 }
 
+const checkForUpdates = () => {
+	console.log('Checking for updates');
+	autoUpdater.checkForUpdatesAndNotify();
+};
+
 const install = () => autoUpdater.quitAndInstall();
 
 const onDownloadProgress = (progressObject: ProgressInfo) => {
@@ -74,7 +79,7 @@ const onUpdateDownloaded = () => {
 			title: 'CrossOver has been Updated',
 			body: 'Relaunch to take effect',
 		});
-		// sound.play( 'DONE' ) // uncomment if we make notification silent
+		// sound.play( 'DONE' ) // comment if we make notification silent
 	} catch (error) {
 		Logger.error(error);
 	}
@@ -112,6 +117,7 @@ const update = () => {
 };
 
 export default {
+	checkForUpdates,
 	install,
 	onDownloadProgress,
 	onUpdateAvailable,

@@ -18,6 +18,8 @@ const register = () => {
 
 	app.on('will-quit', () => {
 		// Unregister all shortcuts.
+		// todo: iohook
+		// iohook.unregisterAll();
 		keyboard.unregisterAll();
 	});
 

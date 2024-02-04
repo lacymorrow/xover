@@ -1,7 +1,6 @@
 import { buttonVariants } from '@/components/ui/button';
 import { $settings } from '@/config/strings';
 import { cn } from '@/lib/utils';
-import { MyDropzone } from '@/renderer/components/app/Dropzone';
 import { ColorPickerInput } from '@/renderer/components/ui/ColorPickerInput';
 import { nav } from '@/renderer/config/nav';
 import { useGlobalContext } from '@/renderer/context/global-context';
@@ -17,7 +16,6 @@ export function Settings() {
 				<h2>{$settings.theme.themeLabel} </h2>
 				<p>{$settings.theme.themeDescription}</p>
 			</div>
-			<MyDropzone />
 			<Link
 				to={nav.home.href}
 				className={cn(buttonVariants())}

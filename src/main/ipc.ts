@@ -1,8 +1,10 @@
 import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
 import { SettingsType } from '../config/settings';
+import autoUpdate from './auto-update';
 import { serializeMenu, triggerMenuItemById } from './menu';
 import { rendererPaths } from './paths';
+import { resetApp } from './reset';
 import { idle } from './startup';
 import { getAppMessages, getSettings, setSettings } from './store-actions';
 import { openSettingsWindow } from './utils/openSettingsWindow';
@@ -60,8 +62,15 @@ export default {
 			app.quit();
 		});
 
+		ipcMain.on(ipcChannels.RESET_APP, () => {
+			resetApp();
+		});
+
+		ipcMain.on(ipcChannels.UPDATE_APP, () => {
+			autoUpdate.checkForUpdates();
+		});
+
 		ipcMain.on(ipcChannels.CENTER_WINDOW, (event) => {
-			console.log('centering window');
 			const window = BrowserWindow.fromId(event.sender.id);
 			if (!window) {
 				return;
@@ -71,8 +80,6 @@ export default {
 		});
 
 		// OPEN_FILE,
-		// QUIT_APP,
-		// RESET_APP,
 		// UPDATE_APP,
 		// SET_CROSSHAIR,
 	},

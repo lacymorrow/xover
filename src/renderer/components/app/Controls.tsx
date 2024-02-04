@@ -1,3 +1,5 @@
+import { QuitButton } from './QuitButton';
+import { ResetButton } from './ResetButton';
 import { SettingsButton } from './SettingsButton';
 
 export function Controls() {
@@ -6,8 +8,8 @@ export function Controls() {
 			id="controls"
 			className="grid grid-cols-[auto_auto] justify-between content-between h-full"
 		>
-			<SettingsButton />
-			<SettingsButton />
+			<QuitButton />
+			<ResetButton />
 
 			<SettingsButton />
 			<SettingsButton />
