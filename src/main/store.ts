@@ -14,11 +14,19 @@ export interface StoreType {
 	settings: SettingsType;
 	appMessageLog: AppMessageLogType; // Public-facing console.log()
 	keybinds: CustomAcceleratorsType; // Custom keybinds/accelerators/global shortcuts
-	crosshairs: string[];
+	images: string[];
+	windows: any[];
 }
 
 const schema: Store.Schema<StoreType> = {
-	crosshairs: {
+	windows: {
+		type: 'array',
+		default: [],
+		items: {
+			type: 'object',
+		},
+	},
+	images: {
 		type: 'array',
 		default: [],
 	},
@@ -57,6 +65,9 @@ const schema: Store.Schema<StoreType> = {
 			showDockIcon: {
 				type: 'boolean',
 			},
+			showTaskbarIcon: {
+				type: 'boolean',
+			},
 			showTrayIcon: {
 				type: 'boolean',
 			},
@@ -79,14 +90,31 @@ const schema: Store.Schema<StoreType> = {
 			browserGPU: {
 				type: 'boolean',
 			},
+
+			isLocked: {
+				type: 'boolean',
+			},
+			isHidden: {
+				type: 'boolean',
+			},
+			isSettingsWindowOpen: {
+				type: 'boolean',
+			},
+			currentTilt: {
+				type: 'number',
+			},
+			resetOnAppStart: {
+				type: 'boolean',
+			},
+			hadFirstRun: {
+				type: 'boolean',
+			},
+
 			backgroundColor: {
 				type: 'string',
 			},
 			accentColor: {
 				type: 'string',
-			},
-			locked: {
-				type: 'boolean',
 			},
 			crosshair: {
 				type: 'string',
@@ -164,15 +192,6 @@ const schema: Store.Schema<StoreType> = {
 			tiltBehavior: {
 				type: 'string',
 				enum: ['toggle', 'hold'],
-			},
-			currentlyHidden: {
-				type: 'boolean',
-			},
-			currentTilt: {
-				type: 'number',
-			},
-			resetOnAppStart: {
-				type: 'boolean',
 			},
 		},
 		default: DEFAULT_SETTINGS,

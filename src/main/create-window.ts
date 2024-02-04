@@ -4,7 +4,6 @@ import {
 	BrowserWindowConstructorOptions,
 	IpcMainEvent,
 	app,
-	shell,
 } from 'electron';
 import Logger from 'electron-log/main';
 import path from 'path';
@@ -17,8 +16,10 @@ import {
 import { setupContextMenu } from './context-menu';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
-import { getSetting } from './store-actions';
+import { getSettings, setSettings } from './store-actions';
 import { is, resolveHtmlPath } from './util';
+import { restoreWindowPosition } from './utils/restoreWindowPosition';
+import { savePosition } from './utils/savePosition';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
@@ -85,10 +86,12 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	});
 
 	// Open urls in the user's browser
-	browserWindow.webContents.setWindowOpenHandler((data) => {
-		shell.openExternal(data.url);
-		return { action: 'deny' };
-	});
+	if (browserWindow.webContents.setWindowOpenHandler) {
+		browserWindow.webContents.setWindowOpenHandler((data) => {
+			// shell.openExternal(data.url);
+			return { action: 'deny' };
+		});
+	}
 
 	// Create application menu
 	const menuBuilder = new MenuBuilder(browserWindow);
@@ -101,19 +104,28 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 };
 
 export const createMainWindow = async () => {
+	const { quitOnWindowClose, showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
 		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
 		alwaysOnTop: true,
-
+		frame: false,
 		hasShadow: false,
 		maximizable: false,
+		minimizable: false,
+
+		closable: true,
 		movable: true,
+
 		show: false,
-		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
+		skipTaskbar: !showTaskbarIcon, // Whether to show the window in taskbar. Default is false.
 		resizable: false,
+<<<<<<< HEAD
 		titleBarStyle: 'hidden', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+=======
+		// titleBarStyle: 'customButtonsOnHover', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+>>>>>>> 9a1c60b59488ca2189cb4992f0355d6b9f8f4667
 		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
-		trafficLightPosition: { x: 10, y: 9 },
+		// trafficLightPosition: { x: 10, y: 9 },
 
 		transparent: true, // Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.
 		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
@@ -147,22 +159,28 @@ export const createMainWindow = async () => {
 	window.on('will-resize', () => {});
 
 	window.on('closed', () => {
-		windows.mainWindow = null;
-
 		// Quit if main window closes
-		if (!is.macos || getSetting('quitOnWindowClose')) {
+		if (!is.macos || quitOnWindowClose) {
 			app.quit();
 		}
 
-		if (is.debug) {
+		if (is.debug && !window.isDestroyed()) {
 			window.webContents.openDevTools();
 		}
 	});
 
+	window.on('move', () => {
+		// Save position
+		savePosition(window);
+	});
+
+	// Restore saved position
+	restoreWindowPosition(window);
+
 	// Load the window
 	window.loadURL(resolveHtmlPath('crosshair.html'));
 
-	return window;
+	windows.mainWindow = window;
 };
 
 export const createChildWindow = async () => {
@@ -180,18 +198,23 @@ export const createChildWindow = async () => {
 };
 
 export const createSettingsWindow = async () => {
-	// if locked, do nothing
-	if (getSetting('locked')) {
-		return;
-	}
+	const options = {};
+	const window = createWindow(options);
 
-	// open
-	windows.childWindow = createWindow({ show: true });
-
-	windows.childWindow.on('closed', () => {
-		windows.childWindow = createWindow({ show: false });
+	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
+	window.on('closed', () => {
+		windows.settingsWindow = createWindow(options);
+		setSettings({ isSettingsWindowOpen: false });
 	});
 
+	// // Hide window when clicked away
+	// window.on('blur', () => {
+	// 	window.hide();
+	// 	setSettings({ isSettingsWindowOpen: false });
+	// });
+
 	// Load the window
-	windows.childWindow.loadURL(resolveHtmlPath('index.html'));
+	window.loadURL(resolveHtmlPath('index.html'));
+
+	windows.settingsWindow = window;
 };

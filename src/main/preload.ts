@@ -8,7 +8,7 @@ const channels = Object.values(ipcChannels);
 const electronHandler = {
 	isMac: process.platform === 'darwin',
 	setSettings: (settings: Partial<SettingsType>) =>
-		ipcRenderer.invoke(ipcChannels.SET_SETTINGS, settings),
+		ipcRenderer.send(ipcChannels.SET_SETTINGS, settings),
 	triggerAppMenuItemById: (id: string) =>
 		ipcRenderer.send(ipcChannels.TRIGGER_APP_MENU_ITEM_BY_ID, id),
 	openUrl: (url: string) => ipcRenderer.send(ipcChannels.OPEN_URL, url),

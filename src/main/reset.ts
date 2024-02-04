@@ -1,6 +1,6 @@
 import { SettingsType } from '../config/settings';
 import sound from './sounds';
-import { getSetting, resetStore, setSettings } from './store-actions';
+import { getSettings, resetStore, setSettings } from './store-actions';
 import { is } from './util';
 
 export const resetApp = () => {
@@ -10,19 +10,24 @@ export const resetApp = () => {
 };
 
 export const refreshSettingsOnAppStart = () => {
-	if (is.debug || getSetting('resetOnAppStart')) {
+	const { resetOnAppStart, startLocked } = getSettings();
+	if (is.debug || resetOnAppStart) {
 		resetApp();
 		return;
 	}
 
+	// Reset settings to default on app start
 	const resetSettings: Partial<SettingsType> = {
-		currentlyHidden: false,
+		isHidden: false,
+		isSettingsWindowOpen: false,
 		currentTilt: 0,
 		resetOnAppStart: false,
 	};
 
-	if (!getSetting('startLocked')) {
-		resetSettings.locked = false;
+	// Unlock app if it was locked (unless it's set to start locked)
+	if (!startLocked) {
+		resetSettings.isLocked = false;
 	}
+
 	setSettings(resetSettings);
 };

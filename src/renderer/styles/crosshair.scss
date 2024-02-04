@@ -42,6 +42,18 @@ body {
 	background: none;
 }
 
+.is-draggable {
+	cursor: crosshair;
+}
+
+.is-locked {
+	#background,
+	#controls {
+		display: none;
+	}
+}
+
+/* Application background */
 #background {
 	background-color: var(--app-bg-color, var(--app-bg-color-default));
 	opacity: var(--app-opacity, 1);

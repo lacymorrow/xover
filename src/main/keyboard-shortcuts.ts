@@ -1,7 +1,8 @@
 import { KeyboardShortcut } from '@/types/keyboard';
 import { app } from 'electron';
-import { toggleAppLock } from './helpers/lockApp';
 import { resetApp } from './reset';
+import { toggleAppLock } from './utils/lockApp';
+import { activeWindow, centerWindow } from './utils/windows';
 import windows from './windows';
 
 export const keyboardShortcuts: KeyboardShortcut[] = [
@@ -35,7 +36,12 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'center',
 		fn() {
-			windows?.mainWindow?.center();
+			const win = activeWindow() || windows.mainWindow;
+			if (!win) {
+				return;
+			}
+
+			centerWindow({ window: win, animated: true });
 		},
 	},
 

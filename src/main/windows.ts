@@ -1,8 +1,11 @@
 import { BrowserWindow } from 'electron';
 
+export type WindowInstanceType = BrowserWindow | null;
+
 interface WindowsType {
-	mainWindow: BrowserWindow | null;
-	childWindow: BrowserWindow | null;
+	mainWindow: WindowInstanceType;
+	childWindow: WindowInstanceType;
+	settingsWindow: WindowInstanceType;
 	tray: any;
 }
 
@@ -10,19 +13,23 @@ interface WindowsType {
 const windows: WindowsType = {
 	mainWindow: null,
 	childWindow: null,
+	settingsWindow: null,
 	tray: null,
 };
 
 export class Windows {
-	main: BrowserWindow | null;
+	main: WindowInstanceType;
 
-	child: BrowserWindow | null;
+	child: WindowInstanceType;
+
+	settings: WindowInstanceType;
 
 	tray: any;
 
 	constructor() {
 		this.main = null;
 		this.child = null;
+		this.settings = null;
 		this.tray = null;
 	}
 
@@ -30,7 +37,7 @@ export class Windows {
 		return this.main;
 	}
 
-	set mainWindow(window: BrowserWindow | null) {
+	set mainWindow(window: WindowInstanceType) {
 		this.main = window;
 	}
 
@@ -38,8 +45,16 @@ export class Windows {
 		return this.child;
 	}
 
-	set childWindow(window: BrowserWindow | null) {
+	set childWindow(window: WindowInstanceType) {
 		this.child = window;
+	}
+
+	get settingsWindow() {
+		return this.settings;
+	}
+
+	set settingsWindow(window: WindowInstanceType) {
+		this.settings = window;
 	}
 
 	get t(): any {

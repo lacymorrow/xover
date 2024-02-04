@@ -3,11 +3,14 @@ import { globalShortcut } from 'electron';
 import Logger from 'electron-log';
 import { keyboardShortcuts } from './keyboard-shortcuts';
 import store from './store';
+import { setSettings } from './store-actions';
+import windows from './windows';
 
 // eslint-disable-next-line no-undef
 interface ShortcutType extends Electron.GlobalShortcut {
 	initialize: () => void;
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
+	registerEscapeKey: () => void;
 }
 
 const registerKeyboardShortcuts = () => {
@@ -35,6 +38,16 @@ const registerKeyboardShortcuts = () => {
 	});
 };
 
+const registerEscapeKey = () => {
+	// Register escape key
+	globalShortcut.register('Escape', () => {
+		Logger.info('Escape key pressed');
+		windows.settingsWindow?.hide();
+		setSettings({ isSettingsWindowOpen: false });
+		globalShortcut.unregister('Escape');
+	});
+};
+
 const kb: ShortcutType = {
 	initialize: () => {
 		registerKeyboardShortcuts();
@@ -50,6 +63,8 @@ const kb: ShortcutType = {
 
 		registerKeyboardShortcuts();
 	},
+
+	registerEscapeKey,
 
 	// Inherit all methods from Electron's globalShortcut
 	...globalShortcut,

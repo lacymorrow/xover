@@ -12,6 +12,7 @@ export interface SettingsType {
 	allowNotifications: boolean;
 	notifcationType: NotificationType;
 	showDockIcon: boolean; // macOS only
+	showTaskbarIcon: boolean; // windows only
 	showTrayIcon: boolean;
 	quitOnWindowClose: boolean;
 
@@ -24,8 +25,6 @@ export interface SettingsType {
 
 	backgroundColor: string;
 	accentColor: string;
-
-	locked: boolean;
 
 	crosshair: string;
 	crosshairSize: number;
@@ -62,26 +61,14 @@ export interface SettingsType {
 	tiltInput: IOHookInputType; // mouse/keyboard
 	tiltTrigger: number;
 
-	// keybinds
-	keyLock: string;
-	keyHide: string;
-	keyCenter: string;
-	keyNew: string;
-	keyFocus: string;
-	keyChangeDisplay: string;
-	keyUp: string;
-	keyDown: string;
-	keyLeft: string;
-	keyRight: string;
-	keyReset: string;
-	keyProfile1: string;
-	keyProfile2: string;
-	keyProfile3: string;
+	isLocked: boolean;
 
 	// temporary
-	currentlyHidden: boolean;
+	isHidden: boolean;
+	isSettingsWindowOpen: boolean;
 	currentTilt: number;
 	resetOnAppStart: boolean; // for debugging, reset via cli
+	hadFirstRun: boolean;
 
 	// vibrancy: 'none' | 'sidebar' | 'full';
 	// lastWindowState: {
@@ -100,6 +87,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	allowNotifications: true,
 	notifcationType: 'all',
 	showDockIcon: true,
+	showTaskbarIcon: true,
 	showTrayIcon: true,
 	quitOnWindowClose: true,
 
@@ -112,8 +100,6 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	backgroundColor: '#b80f9c',
 	accentColor: '',
-
-	locked: false,
 
 	crosshair: '',
 	crosshairSize: 100,
@@ -131,11 +117,11 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	// iohook
 	followMouse: false,
 
-	altActionEnabled: false,
 	altCrosshair: '',
 	altBehavior: 'hold', // toggle/hold
 	altSize: 100,
 	altOpacity: 100,
+	altActionEnabled: false,
 	altTrigger: 1,
 	altInput: 'mouse',
 
@@ -150,26 +136,14 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	tiltTrigger: 1,
 	tiltInput: 'mouse',
 
-	// keybinds
-	keyLock: '',
-	keyHide: '',
-	keyCenter: '',
-	keyNew: '',
-	keyFocus: '',
-	keyChangeDisplay: '',
-	keyUp: '',
-	keyDown: '',
-	keyLeft: '',
-	keyRight: '',
-	keyReset: '',
-	keyProfile1: '',
-	keyProfile2: '',
-	keyProfile3: '',
+	isLocked: false,
 
 	// temporary
-	currentlyHidden: false,
+	isSettingsWindowOpen: false,
+	isHidden: false,
 	currentTilt: 0,
 	resetOnAppStart: false, // for debugging, reset via cli
+	hadFirstRun: false,
 };
 
 // see src/main/keyboard-shortcuts.ts
