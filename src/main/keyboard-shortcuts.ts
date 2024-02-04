@@ -32,9 +32,18 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		},
 	},
 
+	// Hide Window
+	{
+		action: 'hide',
+		fn() {
+			// windows.showHideWindow();
+		},
+	},
+
 	// Center Window
 	{
 		action: 'center',
+		ignoreWhenLocked: true,
 		fn() {
 			const win = activeWindow() || windows.mainWindow;
 			if (!win) {
@@ -45,17 +54,10 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		},
 	},
 
-	// Hide Window
-	{
-		action: 'hide',
-		fn() {
-			// windows.showHideWindow();
-		},
-	},
-
 	// Move to next display
 	{
 		action: 'changeDisplay',
+		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveToNextDisplay();
 		},
@@ -64,6 +66,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Focus next window
 	{
 		action: 'nextWindow',
+		ignoreWhenLocked: true,
 		fn() {
 			// windows.nextWindow();
 		},
@@ -72,6 +75,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Duplicate main window
 	{
 		action: 'duplicate',
+		ignoreWhenLocked: true,
 		fn() {
 			// crossover.initShadowWindow();
 		},
@@ -80,6 +84,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Move window up
 	{
 		action: 'moveUp',
+		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'up' });
 		},
@@ -88,6 +93,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Move window down
 	{
 		action: 'moveDown',
+		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'down' });
 		},
@@ -96,6 +102,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Move window left
 	{
 		action: 'moveLeft',
+		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'left' });
 		},
@@ -104,6 +111,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Move window right
 	{
 		action: 'moveRight',
+		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'right' });
 		},

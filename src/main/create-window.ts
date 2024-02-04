@@ -40,7 +40,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 
 		// backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
 		// vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
-		useContentSize: true, // The width and height would be used as web page's size, which means the actual window's size will include window frame's size and be slightly larger. Default is false.
+		useContentSize: false, // The width and height would be used as web page's size, which means the actual window's size will include window frame's size and be slightly larger. Default is false.
 
 		// Conditionally enable features based on the platform
 		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions

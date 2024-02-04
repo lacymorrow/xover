@@ -1,4 +1,5 @@
 import { BrowserWindow, Rectangle, Size, screen } from 'electron';
+import Logger from 'electron-log';
 import { is } from '../util';
 import { WindowInstanceType } from '../windows';
 
@@ -111,6 +112,7 @@ export const getWindowBoundsCentered = (
 Center a window on the screen.
 */
 export const centerWindow = (options?: CenterWindowOptions) => {
+	Logger.status('Centering window');
 	const window = options?.window ?? activeWindow();
 	if (!window) {
 		throw new Error('No active window');
@@ -119,6 +121,7 @@ export const centerWindow = (options?: CenterWindowOptions) => {
 	const opts = {
 		window,
 		animated: false,
+		useFullBounds: false,
 		...options,
 	};
 

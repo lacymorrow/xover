@@ -13,6 +13,9 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	if (changedSettings) {
 		const keys = Object.keys(changedSettings);
 
+		if (keys.includes('isLocked')) {
+		}
+
 		if (keys.includes('showDockIcon')) {
 			app.dock[changedSettings.showDockIcon ? 'show' : 'hide']();
 		}
@@ -80,11 +83,6 @@ export const addAppMessage = (message: AppMessageType) => {
 
 export const getAppMessages = () => {
 	return store.get('appMessageLog');
-};
-
-export const getKeybinds = () => {
-	// Custom keybinds for actions in src/main/keyboard-shortcuts.ts
-	return store.get('keybinds');
 };
 
 export const getCrosshairImages = () => {

@@ -8,22 +8,22 @@ import windows from './windows';
 
 // eslint-disable-next-line no-undef
 interface ShortcutType extends Electron.GlobalShortcut {
-	initialize: () => void;
-	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
 	registerEscapeKey: () => void;
+	registerKeyboardShortcuts: (options?: { isLocked: boolean }) => void;
+	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
 }
 
-const registerKeyboardShortcuts = () => {
+const registerKeyboardShortcuts = (options?: { isLocked: boolean }) => {
 	globalShortcut.unregisterAll();
 
 	// Register all shortcuts
 	const keybinds = store.get('keybinds');
 	keyboardShortcuts.forEach((shortcut) => {
-		const { action, fn } = shortcut;
+		const { action, fn, ignoreWhenLocked } = shortcut;
 		const keybind = keybinds[action];
 
 		// Custom shortcuts
-		if (!action || !fn || !keybind) {
+		if (!action || !fn || !keybind || (options?.isLocked && ignoreWhenLocked)) {
 			// Disable shortcut
 			Logger.info(`No keybind for ${action}`);
 			return;
@@ -49,10 +49,7 @@ const registerEscapeKey = () => {
 };
 
 const kb: ShortcutType = {
-	initialize: () => {
-		registerKeyboardShortcuts();
-	},
-
+	registerKeyboardShortcuts,
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => {
 		const currentKeybinds = store.get('keybinds');
 
