@@ -109,6 +109,7 @@ export function GlobalContextProvider({
 
 				// Setup listener to play sounds
 				window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound: any) => {
+					if (!settings.allowSounds) return;
 					play({ name: sound, path: paths.sounds });
 				});
 			})
@@ -134,7 +135,7 @@ export function GlobalContextProvider({
 				ipcChannels.APP_NOTIFICATION,
 			);
 		};
-	}, []);
+	}, [settings.allowSounds]);
 
 	// Electron API functions
 	const setSettings = useCallback((newSettings: Partial<SettingsType>) => {

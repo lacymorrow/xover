@@ -13,9 +13,6 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	if (changedSettings) {
 		const keys = Object.keys(changedSettings);
 
-		if (keys.includes('isLocked')) {
-		}
-
 		if (keys.includes('showDockIcon')) {
 			app.dock[changedSettings.showDockIcon ? 'show' : 'hide']();
 		}
