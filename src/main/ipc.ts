@@ -1,4 +1,4 @@
-import { Menu, app, ipcMain, shell } from 'electron';
+import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
 import { SettingsType } from '../config/settings';
 import { serializeMenu, triggerMenuItemById } from './menu';
@@ -6,6 +6,7 @@ import { rendererPaths } from './paths';
 import { idle } from './startup';
 import { getAppMessages, getSettings, setSettings } from './store-actions';
 import { openSettingsWindow } from './utils/openSettingsWindow';
+import { centerWindow } from './utils/windows';
 
 export default {
 	initialize() {
@@ -59,11 +60,20 @@ export default {
 			app.quit();
 		});
 
+		ipcMain.on(ipcChannels.CENTER_WINDOW, (event) => {
+			console.log('centering window');
+			const window = BrowserWindow.fromId(event.sender.id);
+			if (!window) {
+				return;
+			}
+
+			centerWindow({ window, animated: true });
+		});
+
 		// OPEN_FILE,
 		// QUIT_APP,
 		// RESET_APP,
 		// UPDATE_APP,
-		// CENTER_WINDOW,
 		// SET_CROSSHAIR,
 	},
 };

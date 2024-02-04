@@ -22,7 +22,7 @@ export const openSettingsWindow = () => {
 
 	// If the settings window is open but not centered, center it
 	if (!isWindowCentered(windows.settingsWindow)) {
-		centerWindow({ window: windows.settingsWindow });
+		centerWindow({ window: windows.settingsWindow, animated: true });
 		return;
 	}
 

@@ -5,7 +5,7 @@ import EXIT_CODES from '../config/exit-codes';
 import { $errors } from '../config/strings';
 import { createMainWindow } from './create-window';
 import keyboard from './keyboard';
-import { getSetting } from './store-actions';
+import { getSettings } from './store-actions';
 import { is } from './util';
 import windows from './windows';
 
@@ -13,6 +13,8 @@ const register = () => {
 	/**
 	 * Add app event listeners...
 	 */
+
+	const { quitOnWindowClose } = getSettings();
 
 	app.on('will-quit', () => {
 		// Unregister all shortcuts.
@@ -33,19 +35,21 @@ const register = () => {
 	app.on('window-all-closed', () => {
 		// Respect the OSX convention of having the application in memory even
 		// after all windows have been closed
-		if (!is.macos || getSetting('quitOnWindowClose')) {
+		if (!is.macos || quitOnWindowClose) {
 			app.quit();
 		}
 	});
 
 	// Security measures
 	app.on('web-contents-created', (_event, webContents) => {
-		// Security #13: Prevent navigation
-		// https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
-		webContents.on('will-navigate', (event, _navigationUrl) => {
-			Logger.warn($errors.blockedNavigation, _navigationUrl);
-			event.preventDefault();
-		});
+		if (!is.debug) {
+			// Security #13: Prevent navigation
+			// https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
+			webContents.on('will-navigate', (event, _navigationUrl) => {
+				Logger.warn($errors.blockedNavigation, _navigationUrl);
+				event.preventDefault();
+			});
+		}
 	});
 };
 

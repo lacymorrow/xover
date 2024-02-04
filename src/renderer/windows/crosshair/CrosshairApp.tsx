@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
+import { Controls } from '@/renderer/components/app/Controls';
+import { Crosshair } from '@/renderer/components/app/Crosshair';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
-import { useEffect } from 'react';
 
-import { Controls } from '@/renderer/components/app/Controls';
-import crosshair from '@/static/crosshairs/Actual/leupold-dot.png';
+import { useEffect } from 'react';
 
 export default function CrosshairApp() {
 	const { settings, appPaths } = useGlobalContext();
@@ -41,20 +41,9 @@ export default function CrosshairApp() {
 				id="background"
 				className="absolute -z-10 top-0 left-0 bottom-0 right-0"
 			/>
-			<div
-				id="crosshair"
-				className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-			>
-				<div id="sight">
-					<img
-						src={
-							settings.crosshair ? `file://${settings.crosshair}` : crosshair
-						}
-						alt=""
-					/>
-				</div>
-				<div id="reticle" />
-			</div>
+
+			<Crosshair />
+
 			<Controls />
 		</div>
 	);
