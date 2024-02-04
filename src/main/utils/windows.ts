@@ -1,5 +1,6 @@
 import { BrowserWindow, Rectangle, Size, screen } from 'electron';
 import { is } from '../util';
+import { WindowInstanceType } from '../windows';
 
 export type GetWindowBoundsCenteredOptions = {
 	/**
@@ -123,4 +124,11 @@ export const centerWindow = (options?: CenterWindowOptions) => {
 
 	const bounds = getWindowBoundsCentered(opts);
 	window.setBounds(bounds, opts.animated);
+};
+
+export const isWindowCentered = (window: WindowInstanceType) => {
+	if (!window) return false;
+	const centered = getWindowBoundsCentered({ window, useFullBounds: true });
+	const bounds = window.getBounds();
+	return centered.x === bounds.x && centered.y === bounds.y;
 };

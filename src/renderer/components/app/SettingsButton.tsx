@@ -4,7 +4,6 @@ import { IconButton } from '../ui/IconButton';
 
 export function SettingsButton() {
 	const handleClick = () => {
-		// Open settings modal
 		window.electron.ipcRenderer.send(ipcChannels.OPEN_SETTINGS);
 	};
 	return (

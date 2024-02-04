@@ -68,48 +68,4 @@ export const forEachWindow = (callback: (window: BrowserWindow) => void) => {
 	});
 };
 
-export const getWindowBoundsCentered = (options: {
-	window?: BrowserWindow;
-	size?: { width: number; height: number };
-	useFullBounds?: boolean;
-}) => {
-	options = {
-		window: BrowserWindow.getFocusedWindow(),
-		...options,
-	};
-
-	const currentDisplay = screen.getDisplayNearestPoint(
-		screen.getCursorScreenPoint(),
-	);
-	const [width, height] = options.window.getSize();
-	const windowSize = options.size || { width, height };
-	const screenSize = options.useFullBounds
-		? currentDisplay.bounds
-		: currentDisplay.workArea;
-	const x = Math.floor(
-		screenSize.x + (screenSize.width / 2 - windowSize.width / 2),
-	);
-	const y = Math.floor(
-		(screenSize.height + screenSize.y) / 2 - windowSize.height / 2,
-	);
-
-	return {
-		x,
-		y,
-		width: windowSize.width,
-		height: windowSize.height,
-	};
-};
-
-const centerWindow = (options) => {
-	options = {
-		window: activeWindow(),
-		animated: true,
-		...options,
-	};
-
-	const bounds = getWindowBoundsCentered(options);
-	options.window.setBounds(bounds, options.animated);
-};
-
 export default windows;

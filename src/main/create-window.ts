@@ -4,7 +4,6 @@ import {
 	BrowserWindowConstructorOptions,
 	IpcMainEvent,
 	app,
-	shell,
 } from 'electron';
 import Logger from 'electron-log/main';
 import path from 'path';
@@ -17,7 +16,7 @@ import {
 import { setupContextMenu } from './context-menu';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
-import { getSettings } from './store-actions';
+import { getSettings, setSettings } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import { restoreWindowPosition } from './utils/restoreWindowPosition';
 import { savePosition } from './utils/savePosition';
@@ -87,10 +86,12 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	});
 
 	// Open urls in the user's browser
-	browserWindow.webContents.setWindowOpenHandler((data) => {
-		shell.openExternal(data.url);
-		return { action: 'deny' };
-	});
+	if (browserWindow.webContents.setWindowOpenHandler) {
+		browserWindow.webContents.setWindowOpenHandler((data) => {
+			// shell.openExternal(data.url);
+			return { action: 'deny' };
+		});
+	}
 
 	// Create application menu
 	const menuBuilder = new MenuBuilder(browserWindow);
@@ -159,7 +160,7 @@ export const createMainWindow = async () => {
 			app.quit();
 		}
 
-		if (is.debug) {
+		if (is.debug && !window.isDestroyed()) {
 			window.webContents.openDevTools();
 		}
 	});
@@ -199,7 +200,14 @@ export const createSettingsWindow = async () => {
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
 	window.on('closed', () => {
 		windows.settingsWindow = createWindow(options);
+		setSettings({ isSettingsWindowOpen: false });
 	});
+
+	// // Hide window when clicked away
+	// window.on('blur', () => {
+	// 	window.hide();
+	// 	setSettings({ isSettingsWindowOpen: false });
+	// });
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));
