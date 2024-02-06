@@ -6,7 +6,7 @@ import { is } from './util';
 
 export const restartApp = () => {
 	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
-	app.quit(); // maybe the application will be closed; maybe not
+	app.quit(); // Must be called after app.relaunch() to actually quit the app
 };
 
 export const resetApp = () => {
@@ -17,10 +17,10 @@ export const resetApp = () => {
 
 export const refreshSettingsOnAppStart = () => {
 	const { resetOnAppStart, startLocked } = getSettings();
-	if (is.debug || resetOnAppStart) {
-		resetApp();
-		return;
-	}
+	// if (is.debug || resetOnAppStart) {
+	// 	resetApp();
+	// 	return;
+	// }
 
 	// Reset settings to default on app start
 	const resetSettings: Partial<SettingsType> = {

@@ -94,7 +94,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	showDockIcon: true,
 	showTaskbarIcon: true,
 	showTrayIcon: true,
-	quitOnWindowClose: true,
+	quitOnWindowClose: false,
 
 	theme: 'system',
 

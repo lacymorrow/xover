@@ -30,8 +30,17 @@ export function SettingsApplication() {
 				onChange={() => {
 					handleChangeSetting({ allowAutoUpdate: !settings.allowAutoUpdate });
 				}}
-				label="Auto Update"
+				label="Allow Auto Updates"
 				description="Automatically download and install new updates."
+				card
+			/>
+			<InputSwitch
+				value={settings.startLocked}
+				onChange={() => {
+					handleChangeSetting({ startLocked: !settings.startLocked });
+				}}
+				label="Start Locked"
+				description="Allow the app in a locked state, if it was locked when it was closed."
 				card
 			/>
 			{(app.isMac || app.isDev) && (
@@ -72,15 +81,6 @@ export function SettingsApplication() {
 				}}
 				label="Start on Login"
 				description="Automatically start the app when you log into your computer."
-				card
-			/>
-			<InputSwitch
-				value={settings.startLocked}
-				onChange={() => {
-					handleChangeSetting({ startLocked: !settings.startLocked });
-				}}
-				label="Start Locked"
-				description="Allow the app in a locked state, if it was locked when it was closed."
 				card
 			/>
 			{(app.isMac || app.isDev) && (
