@@ -1,8 +1,8 @@
 import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
 import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
+import windows, { forEachWindow } from './windows';
 import store from './store';
-import windows from './windows';
 
 import { resetApp } from './reset';
 import { toggleAppHide } from './utils/hideApp';
@@ -132,6 +132,10 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 interface ShortcutType extends Electron.GlobalShortcut {
 	registerEscapeKey: () => void;
 	registerKeyboardShortcuts: (options?: { isLocked: boolean }) => void;
+	setKeybind: (
+		keybinds: keyof CustomAcceleratorsType,
+		accelerator: string,
+	) => void;
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
 }
 
@@ -182,6 +186,23 @@ const registerEscapeKey = () => {
 
 const kb: ShortcutType = {
 	registerKeyboardShortcuts,
+
+	setKeybind: (keybind: keyof CustomAcceleratorsType, accelerator: string) => {
+		const keybinds = store.get('keybinds');
+
+		if (!(keybind in keybinds) || !accelerator) {
+			return;
+		}
+
+		keybinds[keybind] = accelerator;
+		store.set('keybinds', keybinds);
+		registerKeyboardShortcuts();
+		// Sync with renderer
+		forEachWindow((win) => {
+			win.webContents.send('app-updated'); // TODO: ipcChannels.APP_UPDATED, we hard-coded this to prevent circular imports
+		});
+	},
+
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => {
 		const currentKeybinds = store.get('keybinds');
 
