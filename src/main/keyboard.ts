@@ -23,6 +23,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Reset App
 	{
 		action: 'reset',
+		allowUnbind: true,
 		fn() {
 			resetApp();
 		},
@@ -42,6 +43,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Hide Window
 	{
 		action: 'hide',
+		allowUnbind: true,
 		fn() {
 			toggleAppHide();
 
@@ -54,6 +56,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'center',
 		ignoreWhenLocked: true,
+		allowUnbind: true,
 		fn() {
 			const win = activeWindow() || windows.mainWindow;
 			if (!win) {
@@ -68,6 +71,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'changeDisplay',
 		ignoreWhenLocked: true,
+		allowUnbind: true,
 		fn() {
 			moveToNextDisplay();
 		},
@@ -77,6 +81,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'nextWindow',
 		ignoreWhenLocked: true,
+		allowUnbind: true,
 		fn() {
 			// windows.nextWindow();
 		},
@@ -86,6 +91,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'duplicate',
 		ignoreWhenLocked: true,
+		allowUnbind: true,
 		fn() {
 			// crossover.initShadowWindow();
 		},
@@ -131,7 +137,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 // eslint-disable-next-line no-undef
 interface ShortcutType extends Electron.GlobalShortcut {
 	registerEscapeKey: () => void;
-	registerKeyboardShortcuts: (options?: { isLocked: boolean }) => void;
+	registerKeyboardShortcuts: () => void;
 	setKeybind: (
 		keybinds: keyof CustomAcceleratorsType,
 		accelerator: string,
@@ -139,7 +145,7 @@ interface ShortcutType extends Electron.GlobalShortcut {
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
 }
 
-const registerKeyboardShortcuts = (options?: { isLocked: boolean }) => {
+const registerKeyboardShortcuts = () => {
 	globalShortcut.unregisterAll();
 
 	const keybinds = store.get('keybinds');
@@ -190,7 +196,16 @@ const kb: ShortcutType = {
 	setKeybind: (keybind: keyof CustomAcceleratorsType, accelerator: string) => {
 		const keybinds = store.get('keybinds');
 
-		if (!(keybind in keybinds) || !accelerator) {
+		// Invalid keybind
+		if (!(keybind in keybinds)) {
+			return;
+		}
+
+		console.log('setKeybind', keybind, accelerator);
+		const shortcut = keyboardShortcuts.find((s) => s.action === keybind);
+
+		// No accelerator, remove keybind if allowed
+		if (!accelerator && !shortcut?.allowUnbind) {
 			return;
 		}
 
@@ -198,9 +213,7 @@ const kb: ShortcutType = {
 		store.set('keybinds', keybinds);
 		registerKeyboardShortcuts();
 		// Sync with renderer
-		forEachWindow((win) => {
-			win.webContents.send('app-updated'); // TODO: ipcChannels.APP_UPDATED, we hard-coded this to prevent circular imports
-		});
+		windows.settingsWindow?.webContents.send('app-updated'); // TODO: ipcChannels.APP_UPDATED, we hard-coded this to prevent circular imports
 	},
 
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => {
@@ -214,6 +227,9 @@ const kb: ShortcutType = {
 		// todo: this doesn't send to renderer...
 
 		registerKeyboardShortcuts();
+
+		// Sync with renderer
+		windows.settingsWindow?.webContents.send('app-updated'); // TODO: ipcChannels.APP_UPDATED, we hard-coded this to prevent circular imports
 	},
 
 	registerEscapeKey,

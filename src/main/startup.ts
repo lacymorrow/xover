@@ -26,6 +26,7 @@ export const startup = () => {
 	// Initialize logger
 	logger.initialize();
 
+	// Initialize analytics
 	analytics.initialize();
 	analytics.track('app_started');
 
@@ -81,10 +82,6 @@ export const ready = async () => {
 };
 
 export const idle = async () => {
-	// ... do something with your app
-
-	sounds.play('STARTUP');
-
 	getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
 		.then((images) => {
 			setCrosshairImages(images);
@@ -96,4 +93,7 @@ export const idle = async () => {
 	await createSettingsWindow();
 
 	Logger.status($messages.idle);
+	sounds.play('STARTUP');
+
+	// ... do something with your app
 };

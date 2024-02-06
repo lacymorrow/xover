@@ -16,7 +16,15 @@ const rendererNotification = (options: NotificationOptions) => {
 	Logger.info(
 		`Sending notification to renderer process: ${options.title} - ${options.body}`,
 	);
-	windows.mainWindow?.webContents.send(ipcChannels.APP_NOTIFICATION, options);
+
+	if (getSetting('isSettingsWindowOpen')) {
+		windows.settingsWindow?.webContents.send(
+			ipcChannels.APP_NOTIFICATION,
+			options,
+		);
+	} else {
+		windows.mainWindow?.webContents.send(ipcChannels.APP_NOTIFICATION, options);
+	}
 };
 
 export const notification = (options: NotificationOptions) => {

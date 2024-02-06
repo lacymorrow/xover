@@ -17,4 +17,5 @@ export interface KeyboardShortcut {
 	action: keyof CustomAcceleratorsType;
 	fn: () => void;
 	ignoreWhenLocked?: boolean;
+	allowUnbind?: boolean;
 }

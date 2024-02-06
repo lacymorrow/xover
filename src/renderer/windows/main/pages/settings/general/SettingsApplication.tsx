@@ -6,9 +6,10 @@ import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKeyboardBind';
 import { InputKeyboardShortcut } from '@/renderer/components/input/InputKeyboardShortcut';
 import { InputColor } from '@/renderer/components/input/InputColor';
+import { THROTTLE_DELAY } from '@/config/config';
 
 export function SettingsApplication() {
-	const { settings } = useGlobalContext();
+	const { app, settings } = useGlobalContext();
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		console.log('setting', setting);
@@ -18,50 +19,23 @@ export function SettingsApplication() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Application</h3>
+				<h3 className="text-lg font-medium">Application Settings</h3>
 				<p className="text-sm text-muted-foreground">
 					Select your application preferences.
 				</p>
 			</div>
 			<Separator />
-			<InputColor
-				value="#000000"
-				label="Accent Color"
-				description="Customize the accent color for the app."
-				onChange={(value) => {
-					console.log('value', value);
-				}}
-			/>
-			<InputKeyboardShortcut
-				value="asd"
-				label="Keyboard Shortcut"
-				description="Set a keyboard shortcut to open the app."
-				onChange={(value) => {
-					console.log('value', value);
-				}}
-			/>
-			<InputMouseKeyboardBind
-				label="Keyboard Shortcut"
-				description="Set a keyboard shortcut to open the app."
-				onChange={(value) => {
-					console.log('value', value);
-				}}
-			/>
 			<InputSlider
+				value={2}
+				onChange={(value) => {
+					console.log('value', value);
+				}}
 				label="Zoom Factor"
-				description="Adjust the zoom factor for the app."
+				description="Adjust the zoom level of the app."
 				min={0.5}
 				max={3}
 				step={0.1}
-				throttleDelay={500}
-			/>
-			<InputSwitch
-				value={settings.allowAnalytics}
-				onChange={() => {
-					handleChangeSetting({ allowAnalytics: !settings.allowAnalytics });
-				}}
-				label="Analytics"
-				description="Help improve the app by sending anonymous usage data."
+				throttleDelay={THROTTLE_DELAY}
 			/>
 			<InputSwitch
 				value={settings.allowAutoUpdate}
@@ -69,34 +43,20 @@ export function SettingsApplication() {
 					handleChangeSetting({ allowAutoUpdate: !settings.allowAutoUpdate });
 				}}
 				label="Auto Update"
-				description="Automatically download and install updates."
+				description="Automatically download and install new updates."
+				card
 			/>
-			<InputSwitch
-				value={settings.allowSounds}
-				onChange={() => {
-					handleChangeSetting({ allowSounds: !settings.allowSounds });
-				}}
-				label="Sounds"
-				description="Play sounds for notifications and alerts."
-			/>
-			<InputSwitch
-				value={settings.allowNotifications}
-				onChange={() => {
-					handleChangeSetting({
-						allowNotifications: !settings.allowNotifications,
-					});
-				}}
-				label="Notifications"
-				description="Show notifications for new messages and alerts."
-			/>
-			<InputSwitch
-				value={settings.showDockIcon}
-				onChange={() => {
-					handleChangeSetting({ showDockIcon: !settings.showDockIcon });
-				}}
-				label="Dock Icon"
-				description="Show the app icon in the dock."
-			/>
+			{app.isMac && (
+				<InputSwitch
+					value={settings.showDockIcon}
+					onChange={() => {
+						handleChangeSetting({ showDockIcon: !settings.showDockIcon });
+					}}
+					label="Dock Icon"
+					description="Show the app icon in the dock."
+					card
+				/>
+			)}
 			<InputSwitch
 				value={settings.showTrayIcon}
 				onChange={() => {
@@ -104,6 +64,7 @@ export function SettingsApplication() {
 				}}
 				label="Tray Icon"
 				description="Show the app icon in the system tray."
+				card
 			/>
 			<InputSwitch
 				value={settings.quitOnWindowClose}
@@ -112,8 +73,18 @@ export function SettingsApplication() {
 						quitOnWindowClose: !settings.quitOnWindowClose,
 					});
 				}}
-				label="Quit on Window Close"
-				description="Close the app when the window is closed."
+				label="Quit when all windows Close"
+				description="Don't keep the app running when all windows are closed."
+				card
+			/>
+			<Separator />
+			<InputSwitch
+				value={settings.allowAnalytics}
+				onChange={() => {
+					handleChangeSetting({ allowAnalytics: !settings.allowAnalytics });
+				}}
+				label="Enable Telemetry"
+				description="Help improve the app by sending anonymous usage data."
 			/>
 		</div>
 	);
