@@ -95,17 +95,19 @@ export function SettingsApplication() {
 				description="Allow the app in a locked state, if it was locked when it was closed."
 				card
 			/>
-			<InputSwitch
-				value={settings.quitOnWindowClose}
-				onChange={() => {
-					handleChangeSetting({
-						quitOnWindowClose: !settings.quitOnWindowClose,
-					});
-				}}
-				label="Quit when all windows Close"
-				description="Don't keep the app running when all windows are closed."
-				card
-			/>
+			{(app.isMac || app.isDev) && (
+				<InputSwitch
+					value={settings.quitOnWindowClose}
+					onChange={() => {
+						handleChangeSetting({
+							quitOnWindowClose: !settings.quitOnWindowClose,
+						});
+					}}
+					label="Quit when all windows Close"
+					description="Don't keep the app running when all windows are closed."
+					card
+				/>
+			)}
 			<Separator />
 			<InputSwitch
 				value={settings.allowAnalytics}
