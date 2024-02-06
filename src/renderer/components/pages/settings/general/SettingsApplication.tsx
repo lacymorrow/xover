@@ -46,7 +46,7 @@ export function SettingsApplication() {
 				description="Automatically download and install new updates."
 				card
 			/>
-			{app.isMac && (
+			{(app.isMac || app.isDev) && (
 				<InputSwitch
 					value={settings.showDockIcon}
 					onChange={() => {
@@ -57,6 +57,17 @@ export function SettingsApplication() {
 					card
 				/>
 			)}
+			{(app.isWindows || app.isDev) && (
+				<InputSwitch
+					value={settings.showTaskbarIcon}
+					onChange={() => {
+						handleChangeSetting({ showTaskbarIcon: !settings.showTaskbarIcon });
+					}}
+					label="Taskbar Icon"
+					description="Show the app icon in the taskbar."
+					card
+				/>
+			)}
 			<InputSwitch
 				value={settings.showTrayIcon}
 				onChange={() => {
@@ -64,6 +75,24 @@ export function SettingsApplication() {
 				}}
 				label="Tray Icon"
 				description="Show the app icon in the system tray."
+				card
+			/>
+			<InputSwitch
+				value={settings.startOnLogin}
+				onChange={() => {
+					handleChangeSetting({ startOnLogin: !settings.startOnLogin });
+				}}
+				label="Start on Login"
+				description="Automatically start the app when you log into your computer."
+				card
+			/>
+			<InputSwitch
+				value={settings.startLocked}
+				onChange={() => {
+					handleChangeSetting({ startLocked: !settings.startLocked });
+				}}
+				label="Start Locked"
+				description="Allow the app in a locked state, if it was locked when it was closed."
 				card
 			/>
 			<InputSwitch
