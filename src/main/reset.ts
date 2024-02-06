@@ -1,3 +1,4 @@
+import { app } from 'electron';
 import { SettingsType } from '../config/settings';
 import sounds from './sounds';
 import { getSettings, resetStore, setSettings } from './store-actions';

@@ -7,7 +7,7 @@ import '@/renderer/styles/crosshair.scss';
 import { useEffect } from 'react';
 
 export default function CrosshairApp() {
-	const { settings, appPaths } = useGlobalContext();
+	const { settings } = useGlobalContext();
 
 	useEffect(() => {
 		// Add/remove class to lock/unlock app
@@ -33,7 +33,11 @@ export default function CrosshairApp() {
 			'--app-bg-color',
 			settings.backgroundColor,
 		);
-	}, [settings, appPaths]);
+		document.documentElement.style.setProperty(
+			'--app-accent-color',
+			settings.accentColor,
+		);
+	}, [settings]);
 
 	return (
 		<div className={cn('w-full h-full relative', !settings.isLocked && 'drag')}>

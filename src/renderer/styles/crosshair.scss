@@ -58,3 +58,8 @@ body {
 	background-color: var(--app-bg-color, var(--app-bg-color-default));
 	opacity: var(--app-opacity, 1);
 }
+
+/* Crosshair Window */
+#controls {
+	color: var(--app-accent-color, var(--app-accent-color-default));
+}

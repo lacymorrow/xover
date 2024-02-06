@@ -7,12 +7,12 @@ import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKe
 import { InputKeyboardShortcut } from '@/renderer/components/input/InputKeyboardShortcut';
 import { InputColor } from '@/renderer/components/input/InputColor';
 import { THROTTLE_DELAY } from '@/config/config';
+import { $settings } from '@/config/strings';
 
 export function SettingsApplication() {
 	const { app, settings } = useGlobalContext();
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
-		console.log('setting', setting);
 		window.electron.setSettings(setting);
 	};
 
@@ -64,7 +64,7 @@ export function SettingsApplication() {
 						handleChangeSetting({ showTaskbarIcon: !settings.showTaskbarIcon });
 					}}
 					label="Taskbar Icon"
-					description="Show the app icon in the taskbar."
+					description={`Show the app icon in the taskbar. ${$settings.reloadToApply}`}
 					card
 				/>
 			)}

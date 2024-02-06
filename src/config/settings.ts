@@ -21,8 +21,11 @@ export interface SettingsType {
 
 	startLocked: boolean;
 	startOnLogin: boolean;
+
 	hardwareAcceleration: boolean;
-	browserGPU: boolean;
+	flagDisableGpu: boolean;
+	flagDisableSoftwareRasterizer: boolean;
+	flagInProcessGpu: boolean;
 
 	backgroundColor: string;
 	accentColor: string;
@@ -97,11 +100,15 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	startLocked: false,
 	startOnLogin: false,
+
 	hardwareAcceleration: true,
-	browserGPU: false,
+
+	flagDisableGpu: false,
+	flagDisableSoftwareRasterizer: false,
+	flagInProcessGpu: false,
 
 	backgroundColor: '#b80f9c',
-	accentColor: '',
+	accentColor: '#A0CA98',
 
 	crosshair: '',
 	crosshairSize: 100,

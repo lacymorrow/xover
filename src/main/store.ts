@@ -90,7 +90,14 @@ const schema: Store.Schema<StoreType> = {
 			hardwareAcceleration: {
 				type: 'boolean',
 			},
-			browserGPU: {
+
+			flagDisableGpu: {
+				type: 'boolean',
+			},
+			flagDisableSoftwareRasterizer: {
+				type: 'boolean',
+			},
+			flagInProcessGpu: {
 				type: 'boolean',
 			},
 
