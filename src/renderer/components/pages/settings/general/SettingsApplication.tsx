@@ -30,7 +30,7 @@ export function SettingsApplication() {
 				onChange={() => {
 					handleChangeSetting({ allowAutoUpdate: !settings.allowAutoUpdate });
 				}}
-				label="Allow Auto Updates"
+				label="Automatic updates"
 				description="Automatically download and install new updates."
 				card
 			/>
@@ -49,7 +49,7 @@ export function SettingsApplication() {
 					onChange={() => {
 						handleChangeSetting({ showDockIcon: !settings.showDockIcon });
 					}}
-					label="Dock Icon"
+					label="Dock icon"
 					description="Show the app icon in the dock."
 					card
 				/>
@@ -70,7 +70,7 @@ export function SettingsApplication() {
 				onChange={() => {
 					handleChangeSetting({ showTrayIcon: !settings.showTrayIcon });
 				}}
-				label="Tray Icon"
+				label="Tray icon"
 				description="Show the app icon in the system tray."
 				card
 			/>
@@ -91,7 +91,7 @@ export function SettingsApplication() {
 							quitOnWindowClose: !settings.quitOnWindowClose,
 						});
 					}}
-					label="Quit when all windows Close"
+					label="Quit when all windows close"
 					description="Don't keep the app running when all windows are closed."
 					card
 				/>
@@ -102,7 +102,7 @@ export function SettingsApplication() {
 				onChange={() => {
 					handleChangeSetting({ allowAnalytics: !settings.allowAnalytics });
 				}}
-				label="Enable Telemetry"
+				label="Enable telemetry"
 				description="Help improve the app by sending anonymous usage data."
 			/>
 		</div>
