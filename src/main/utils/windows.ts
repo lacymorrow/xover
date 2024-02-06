@@ -1,4 +1,6 @@
 import { BrowserWindow, Rectangle, Size, screen } from 'electron';
+import Logger from 'electron-log';
+import { Display } from 'electron/main';
 import { is } from '../util';
 import { WindowInstanceType } from '../windows';
 
@@ -29,6 +31,11 @@ export type GetWindowBoundsCenteredOptions = {
 	@default false
 	*/
 	readonly useFullBounds?: boolean;
+
+	/**
+	Display
+	*/
+	readonly display?: Display;
 };
 
 export type CenterWindowOptions = {
@@ -65,6 +72,11 @@ export type CenterWindowOptions = {
 	@default false
 	*/
 	readonly useFullBounds?: boolean;
+
+	/**
+	Display
+	*/
+	readonly display?: Display;
 };
 
 export const activeWindow = () => BrowserWindow.getFocusedWindow();
@@ -90,9 +102,9 @@ export const getWindowBoundsCentered = (
 
 	const [width, height] = window.getSize();
 	const windowSize = (options?.size ?? { width, height }) as Size;
-	const screenSize = screen.getDisplayNearestPoint(
-		screen.getCursorScreenPoint(),
-	).workArea;
+	const screenSize =
+		options?.display?.workArea ||
+		screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
 	const x = Math.floor(
 		screenSize.x + screenSize.width / 2 - (windowSize.width ?? 0) / 2,
 	);
@@ -111,6 +123,7 @@ export const getWindowBoundsCentered = (
 Center a window on the screen.
 */
 export const centerWindow = (options?: CenterWindowOptions) => {
+	Logger.status('Centering window');
 	const window = options?.window ?? activeWindow();
 	if (!window) {
 		throw new Error('No active window');
@@ -119,6 +132,7 @@ export const centerWindow = (options?: CenterWindowOptions) => {
 	const opts = {
 		window,
 		animated: false,
+		useFullBounds: false,
 		...options,
 	};
 
@@ -131,4 +145,35 @@ export const isWindowCentered = (window: WindowInstanceType) => {
 	const centered = getWindowBoundsCentered({ window, useFullBounds: true });
 	const bounds = window.getBounds();
 	return centered.x === bounds.x && centered.y === bounds.y;
+};
+
+export const moveToNextDisplay = (options?: { window?: BrowserWindow }) => {
+	const opts = {
+		window: activeWindow(), // default to active window
+		...options,
+	};
+
+	if (!opts.window) {
+		return;
+	}
+
+	Logger.status('Moving window to next display');
+
+	// Get list of displays
+	const displays = screen.getAllDisplays();
+
+	// Get current display
+	const currentDisplay = screen.getDisplayNearestPoint(opts.window.getBounds());
+
+	// Get index of current
+	let index = displays.map((element) => element.id).indexOf(currentDisplay.id);
+
+	// Increment and save
+	index = (index + 1) % displays.length;
+
+	// Center
+	centerWindow({
+		display: displays[index],
+		window: opts.window,
+	});
 };

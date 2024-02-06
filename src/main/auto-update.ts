@@ -28,7 +28,8 @@ export class AutoUpdate {
 }
 
 const checkForUpdates = () => {
-	console.log('Checking for updates');
+	Logger.status($messages.auto_update);
+
 	autoUpdater.checkForUpdatesAndNotify();
 };
 

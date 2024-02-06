@@ -1,29 +1,158 @@
-import { CustomAcceleratorsType } from '@/types/keyboard';
-import { globalShortcut } from 'electron';
+import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
+import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
-import { keyboardShortcuts } from './keyboard-shortcuts';
 import store from './store';
-import { setSettings } from './store-actions';
 import windows from './windows';
+
+import { resetApp } from './reset';
+import { toggleAppHide } from './utils/hideApp';
+import { toggleAppLock } from './utils/lockApp';
+import { activeWindow, centerWindow, moveToNextDisplay } from './utils/windows';
+
+export const keyboardShortcuts: KeyboardShortcut[] = [
+	/* Default accelerators */
+
+	// Quit
+	{
+		action: 'quit',
+		fn() {
+			app.quit();
+		},
+	},
+
+	// Reset App
+	{
+		action: 'reset',
+		fn() {
+			resetApp();
+		},
+	},
+
+	// Toggle CrossOver
+	{
+		action: 'lock',
+		fn() {
+			toggleAppLock();
+
+			// eslint-disable-next-line no-use-before-define
+			registerKeyboardShortcuts();
+		},
+	},
+
+	// Hide Window
+	{
+		action: 'hide',
+		fn() {
+			toggleAppHide();
+
+			// eslint-disable-next-line no-use-before-define
+			registerKeyboardShortcuts();
+		},
+	},
+
+	// Center Window
+	{
+		action: 'center',
+		ignoreWhenLocked: true,
+		fn() {
+			const win = activeWindow() || windows.mainWindow;
+			if (!win) {
+				return;
+			}
+
+			centerWindow({ window: win, animated: true });
+		},
+	},
+
+	// Move to next display
+	{
+		action: 'changeDisplay',
+		ignoreWhenLocked: true,
+		fn() {
+			moveToNextDisplay();
+		},
+	},
+
+	// Focus next window
+	{
+		action: 'nextWindow',
+		ignoreWhenLocked: true,
+		fn() {
+			// windows.nextWindow();
+		},
+	},
+
+	// Duplicate main window
+	{
+		action: 'duplicate',
+		ignoreWhenLocked: true,
+		fn() {
+			// crossover.initShadowWindow();
+		},
+	},
+
+	// Move window up
+	{
+		action: 'moveUp',
+		ignoreWhenLocked: true,
+		fn() {
+			// windows.moveWindow({ direction: 'up' });
+		},
+	},
+
+	// Move window down
+	{
+		action: 'moveDown',
+		ignoreWhenLocked: true,
+		fn() {
+			// windows.moveWindow({ direction: 'down' });
+		},
+	},
+
+	// Move window left
+	{
+		action: 'moveLeft',
+		ignoreWhenLocked: true,
+		fn() {
+			// windows.moveWindow({ direction: 'left' });
+		},
+	},
+
+	// Move window right
+	{
+		action: 'moveRight',
+		ignoreWhenLocked: true,
+		fn() {
+			// windows.moveWindow({ direction: 'right' });
+		},
+	},
+];
 
 // eslint-disable-next-line no-undef
 interface ShortcutType extends Electron.GlobalShortcut {
-	initialize: () => void;
-	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
 	registerEscapeKey: () => void;
+	registerKeyboardShortcuts: (options?: { isLocked: boolean }) => void;
+	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
 }
 
-const registerKeyboardShortcuts = () => {
+const registerKeyboardShortcuts = (options?: { isLocked: boolean }) => {
 	globalShortcut.unregisterAll();
 
-	// Register all shortcuts
 	const keybinds = store.get('keybinds');
+	const { isLocked, isHidden } = store.get('settings');
+
+	// Register all shortcuts
 	keyboardShortcuts.forEach((shortcut) => {
-		const { action, fn } = shortcut;
+		const { action, fn, ignoreWhenLocked } = shortcut;
 		const keybind = keybinds[action];
 
 		// Custom shortcuts
-		if (!action || !fn || !keybind) {
+		if (
+			!action ||
+			!fn ||
+			!keybind ||
+			((isLocked || isHidden) && ignoreWhenLocked)
+		) {
 			// Disable shortcut
 			Logger.info(`No keybind for ${action}`);
 			return;
@@ -43,16 +172,16 @@ const registerEscapeKey = () => {
 	globalShortcut.register('Escape', () => {
 		Logger.info('Escape key pressed');
 		windows.settingsWindow?.hide();
-		setSettings({ isSettingsWindowOpen: false });
+		store.set('settings', {
+			...store.get('settings'),
+			isSettingsWindowOpen: false,
+		});
 		globalShortcut.unregister('Escape');
 	});
 };
 
 const kb: ShortcutType = {
-	initialize: () => {
-		registerKeyboardShortcuts();
-	},
-
+	registerKeyboardShortcuts,
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => {
 		const currentKeybinds = store.get('keybinds');
 
@@ -60,6 +189,8 @@ const kb: ShortcutType = {
 			...currentKeybinds,
 			...keybinds,
 		});
+
+		// todo: this doesn't send to renderer...
 
 		registerKeyboardShortcuts();
 	},

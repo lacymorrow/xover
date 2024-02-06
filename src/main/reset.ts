@@ -1,11 +1,11 @@
 import { SettingsType } from '../config/settings';
-import sound from './sounds';
+import sounds from './sounds';
 import { getSettings, resetStore, setSettings } from './store-actions';
 import { is } from './util';
 
 export const resetApp = () => {
 	// Sonic announcement
-	sound.play('RESET');
+	sounds.play('RESET');
 	resetStore();
 };
 
