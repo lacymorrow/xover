@@ -1,8 +1,8 @@
 import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
 import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
-import windows, { forEachWindow } from './windows';
 import store from './store';
+import windows, { forEachWindow } from './windows';
 
 import { resetApp } from './reset';
 import { toggleAppHide } from './utils/hideApp';
