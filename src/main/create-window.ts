@@ -159,10 +159,6 @@ export const createMainWindow = async () => {
 		if (!is.macos || quitOnWindowClose) {
 			app.quit();
 		}
-
-		if (is.debug && !window.isDestroyed()) {
-			window.webContents.openDevTools();
-		}
 	});
 
 	window.on('move', () => {

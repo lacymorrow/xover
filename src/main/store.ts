@@ -49,10 +49,13 @@ const schema: Store.Schema<StoreType> = {
 	settings: {
 		type: 'object',
 		properties: {
-			allowSounds: {
+			allowAnalytics: {
 				type: 'boolean',
 			},
-			autoUpdate: {
+			allowAutoUpdate: {
+				type: 'boolean',
+			},
+			allowSounds: {
 				type: 'boolean',
 			},
 			allowNotifications: {

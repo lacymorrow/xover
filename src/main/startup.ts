@@ -2,6 +2,7 @@ import { app } from 'electron';
 import Logger from 'electron-log/main';
 import { DIRECTORY_SCAN_DEPTH } from '../config/config';
 import { $messages } from '../config/strings';
+import analytics from './analytics';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
 import { createMainWindow, createSettingsWindow } from './create-window';
@@ -18,10 +19,15 @@ import { setCrosshairImages } from './store-actions';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import { getImages } from './utils/getImages';
+import windows from './windows';
+import appFlags from './app-flags';
 
 export const startup = () => {
 	// Initialize logger
 	logger.initialize();
+
+	analytics.initialize();
+	analytics.track('app_started');
 
 	// Initialize the error handler
 	errorHandling.initialize();
@@ -30,6 +36,9 @@ export const startup = () => {
 
 	// Enable electron debug and source map support
 	debugging.initialize();
+
+	// App CLI flags
+	appFlags.initialize();
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();

@@ -6,7 +6,7 @@ import { SettingsType } from '../config/settings';
 const channels = Object.values(ipcChannels);
 
 const electronHandler = {
-	isMac: process.platform === 'darwin',
+	isDev: process.env.NODE_ENV === 'development',
 	setSettings: (settings: Partial<SettingsType>) =>
 		ipcRenderer.send(ipcChannels.SET_SETTINGS, settings),
 	triggerAppMenuItemById: (id: string) =>
