@@ -179,3 +179,9 @@ export const moveToNextDisplay = (options?: { window?: BrowserWindow }) => {
 		window: opts.window,
 	});
 };
+
+export const forEachWindow = (callback: (window: BrowserWindow) => void) => {
+	BrowserWindow.getAllWindows().forEach((win) => {
+		callback(win);
+	});
+};
