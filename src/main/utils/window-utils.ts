@@ -3,7 +3,7 @@ import { BrowserWindow, Rectangle, Size, screen } from 'electron';
 import Logger from 'electron-log';
 import { Display } from 'electron/main';
 import { is } from '../util';
-import w, { WindowInstanceType } from '../windows';
+import windows, { WindowInstanceType } from '../windows';
 
 export type GetWindowBoundsCenteredOptions = {
 	/**
@@ -82,6 +82,11 @@ export type CenterWindowOptions = {
 
 export const activeWindow = () => BrowserWindow.getFocusedWindow();
 
+export const activeNonSettingsWindow = () => {
+	const win = activeWindow();
+	return win?.id === windows.settingsWindow?.id ? windows.mainWindow : win;
+};
+
 /**
 @returns The height of the menu bar on macOS, or `0` if not macOS.
 */
@@ -151,7 +156,7 @@ export const isWindowCentered = (window: WindowInstanceType) => {
 
 export const moveToNextDisplay = (options?: { window?: BrowserWindow }) => {
 	const opts = {
-		window: activeWindow(), // default to active window
+		window: activeNonSettingsWindow(), // default to active window
 		...options,
 	};
 
@@ -253,7 +258,7 @@ export const moveWindow = ({
 	window?: BrowserWindow;
 	direction: 'up' | 'down' | 'left' | 'right';
 }) => {
-	const win = window || activeWindow();
+	const win = window || activeNonSettingsWindow();
 
 	if (!win) {
 		return;
@@ -307,5 +312,32 @@ export const forEachWindow = (callback: (window: BrowserWindow) => void) => {
 
 // -1 to disable
 export const setProgress = (percentage: number) => {
-	w.mainWindow?.setProgressBar(percentage || -1);
+	windows.mainWindow?.setProgressBar(percentage || -1);
+};
+
+export const closeAllWindows = () => {
+	forEachWindow((win) => {
+		win.close();
+	});
+};
+
+export const focusNextWindow = () => {
+	const allWindows = BrowserWindow.getAllWindows();
+	const focusedWindow = BrowserWindow.getFocusedWindow();
+	if (!focusedWindow) {
+		windows.mainWindow?.focus();
+		return;
+	}
+	const focusedIndex = allWindows.indexOf(focusedWindow);
+
+	const nextIndex = (focusedIndex + 1) % allWindows.length;
+	const nextWindow = allWindows[nextIndex];
+
+	// Prevent focusing the settings window
+	// const nextWindow =
+	// 	win.id === windows.settingsWindow?.id ? windows.mainWindow : win;
+
+	if (nextWindow && !nextWindow.isDestroyed()) {
+		nextWindow.focus();
+	}
 };

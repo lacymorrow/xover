@@ -114,14 +114,14 @@ export const createCrosshairWindow = async (
 		hasShadow: false,
 		maximizable: false,
 		minimizable: false,
+		resizable: false,
 
 		closable: true,
 		movable: true,
 
 		show: false,
 		skipTaskbar: !showTaskbarIcon, // Whether to show the window in taskbar. Default is false.
-		resizable: false,
-		titleBarStyle: 'hidden', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+		titleBarStyle: 'customButtonsOnHover', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
 		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
 		// trafficLightPosition: { x: 10, y: 9 },
 
@@ -228,7 +228,7 @@ export const createSettingsWindow = async () => {
 	windows.settingsWindow = window;
 };
 
-export const createDuplicateWindow = async () => {
+export const createNewWindow = async () => {
 	const window = await createCrosshairWindow();
 
 	return window;

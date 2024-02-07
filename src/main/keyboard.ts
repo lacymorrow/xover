@@ -10,10 +10,11 @@ import { toggleAppLock } from './utils/lockApp';
 import {
 	activeWindow,
 	centerWindow,
+	focusNextWindow,
 	moveToNextDisplay,
 	moveWindow,
 } from './utils/window-utils';
-import { createDuplicateWindow } from './create-window';
+import { createNewWindow } from './create-window';
 
 export const keyboardShortcuts: KeyboardShortcut[] = [
 	/* Default accelerators */
@@ -83,23 +84,23 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		},
 	},
 
-	// Duplicate main window
+	// New window
 	{
-		action: 'duplicate',
+		action: 'newWindow',
 		ignoreWhenLocked: true,
 		allowUnbind: true,
 		fn() {
-			createDuplicateWindow();
+			createNewWindow();
 		},
 	},
 
 	// Focus next window
 	{
-		action: 'nextWindow',
+		action: 'focusNextWindow',
 		ignoreWhenLocked: true,
 		allowUnbind: true,
 		fn() {
-			// windows.nextWindow();
+			focusNextWindow();
 		},
 	},
 
@@ -108,7 +109,6 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'moveUp',
 		ignoreWhenLocked: true,
 		fn() {
-			// windows.moveWindow({ direction: 'up' });
 			moveWindow({ direction: 'up' });
 		},
 	},
@@ -127,7 +127,6 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'moveLeft',
 		ignoreWhenLocked: true,
 		fn() {
-			// windows.moveWindow({ direction: 'left' });
 			moveWindow({ direction: 'left' });
 		},
 	},
@@ -137,7 +136,6 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'moveRight',
 		ignoreWhenLocked: true,
 		fn() {
-			// windows.moveWindow({ direction: 'right' });
 			moveWindow({ direction: 'right' });
 		},
 	},

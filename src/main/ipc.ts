@@ -14,7 +14,7 @@ import {
 	getKeybinds,
 } from './store-actions';
 import { openSettingsWindow } from './utils/settingsWindow';
-import { centerWindow } from './utils/window-utils';
+import { activeWindow, centerWindow } from './utils/window-utils';
 
 import { getOS } from '../utils/getOS';
 import { notification } from './notifications';
@@ -103,7 +103,7 @@ export default {
 
 		// Close a window
 		ipcMain.on(ipcChannels.CLOSE_WINDOW, (event) => {
-			const window = BrowserWindow.fromId(event.sender.id);
+			const window = BrowserWindow.fromId(event.sender.id) || activeWindow();
 			if (!window) {
 				return;
 			}

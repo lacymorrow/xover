@@ -5,12 +5,12 @@ export interface CustomAcceleratorsType {
 	moveDown?: string;
 	moveLeft?: string;
 	moveRight?: string;
-	duplicate?: string;
+	newWindow?: string;
 	lock?: string;
 	hide?: string;
 	center?: string;
 	changeDisplay?: string;
-	nextWindow?: string;
+	focusNextWindow?: string;
 }
 
 export interface KeyboardShortcut {

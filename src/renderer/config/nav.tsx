@@ -8,11 +8,13 @@ import {
 	IdCardIcon,
 	ImageIcon,
 	KeyboardIcon,
+	LightningBoltIcon,
 } from '@radix-ui/react-icons';
 
 import { SettingsNotifications } from '@/renderer/components/pages/settings/notifications/SettingsNotifications';
 import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/SettingsKeyboard';
 import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
+import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
 
 export const nav = {
 	home: {
@@ -56,6 +58,12 @@ export const settingsNavItems = [
 		href: 'keyboard',
 		element: <SettingsKeyboard />,
 		icon: KeyboardIcon,
+	},
+	{
+		title: 'Advanced',
+		href: 'advanced',
+		element: <SettingsAdvanced />,
+		icon: LightningBoltIcon,
 	},
 	{
 		title: 'About',

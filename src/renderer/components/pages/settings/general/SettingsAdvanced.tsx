@@ -8,8 +8,10 @@ import { InputKeyboardShortcut } from '@/renderer/components/input/InputKeyboard
 import { InputColor } from '@/renderer/components/input/InputColor';
 import { THROTTLE_DELAY } from '@/config/config';
 import { $settings } from '@/config/strings';
+import { Button } from '@/components/ui/button';
+import { ipcChannels } from '@/config/ipc-channels';
 
-export function SettingsApplication() {
+export function SettingsAdvanced() {
 	const { app, settings } = useGlobalContext();
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
@@ -38,6 +40,15 @@ export function SettingsApplication() {
 				description={`Use hardware acceleration to improve performance. ${$settings.reloadToApply}`}
 				card
 			/>
+			<Button
+				onClick={() => {
+					window.electron.ipcRenderer.send(ipcChannels.RESET_APP);
+					window.electron.playSound('DONE');
+				}}
+				variant="destructive"
+			>
+				Reset all settings to default
+			</Button>
 		</div>
 	);
 }
