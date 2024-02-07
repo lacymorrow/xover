@@ -3,12 +3,7 @@ import { app } from 'electron';
 import { getSettings } from './store-actions';
 
 const initialize = () => {
-	const {
-		hardwareAcceleration,
-		flagDisableGpu,
-		flagDisableSoftwareRasterizer,
-		flagInProcessGpu,
-	} = getSettings();
+	const { hardwareAcceleration } = getSettings();
 
 	if (!app.requestSingleInstanceLock()) {
 		app.quit();
@@ -20,17 +15,21 @@ const initialize = () => {
 
 	// todo
 
-	if (flagDisableGpu) {
-		app.commandLine.appendSwitch('disable-gpu');
-	}
+	// if (flagDisableGpu) {
+	// 	app.commandLine.appendSwitch('disable-gpu');
+	// }
 
-	if (flagDisableSoftwareRasterizer) {
-		app.commandLine.appendSwitch('disable-software-rasterizer');
-	}
+	// if (flagDisableSoftwareRasterizer) {
+	// 	app.commandLine.appendSwitch('disable-software-rasterizer');
+	// }
 
-	if (flagInProcessGpu) {
-		app.commandLine.appendSwitch('in-process-gpu');
-	}
+	// if (flagDisableSoftwareRasterizer) {
+	// 	app.commandLine.appendSwitch('enable-transparent-visuals');
+	// }
+
+	// if (flagInProcessGpu) {
+	// 	app.commandLine.appendSwitch('in-process-gpu');
+	// }
 
 	// 		--force_high_performance_gpu
 	// Force using discrete GPU when there are multiple GPUs available.

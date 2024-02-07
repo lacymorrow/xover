@@ -4,8 +4,9 @@ import sounds from '../sounds';
 import { getSetting, getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
 import { restoreWindowPosition } from './restoreWindowPosition';
+import { startIOHook, stopIOHook } from '../iohook';
 
-export const setAppLock = (isLocked: boolean) => {
+export const setAppLock = async (isLocked: boolean) => {
 	const { followMouse, showDockIcon } = getSettings();
 	// todo
 	// iohook
@@ -29,8 +30,14 @@ export const setAppLock = (isLocked: boolean) => {
 		sounds.play('LOCK');
 
 		app.dock.hide();
+
+		if (followMouse) {
+			startIOHook();
+		}
 	} else {
 		sounds.play('UNLOCK');
+
+		stopIOHook();
 
 		if (followMouse) {
 			restoreWindowPosition(windows.mainWindow);

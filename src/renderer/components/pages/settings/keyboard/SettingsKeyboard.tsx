@@ -47,7 +47,7 @@ export function SettingsKeyboard() {
 			/>
 			<InputKeyboardShortcut
 				value={keybinds.newWindow}
-				label="New Window"
+				label="Duplicate Crosshair"
 				description="Create a new crosshair window."
 				onChange={(value) => {
 					handleChangeKeybind('newWindow', value);
@@ -104,7 +104,7 @@ export function SettingsKeyboard() {
 			<Separator />
 			<InputKeyboardShortcut
 				value={keybinds.hide}
-				label="Hide Application Windows"
+				label="Hide Application"
 				description="Show/Hide all application windows."
 				onChange={(value) => {
 					handleChangeKeybind('hide', value);

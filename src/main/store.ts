@@ -87,17 +87,12 @@ const schema: Store.Schema<StoreType> = {
 				type: 'string',
 				enum: ['system', 'light', 'dark'],
 			},
-			hardwareAcceleration: {
-				type: 'boolean',
-			},
 
-			flagDisableGpu: {
-				type: 'boolean',
+			appFlags: {
+				type: 'array',
+				default: [],
 			},
-			flagDisableSoftwareRasterizer: {
-				type: 'boolean',
-			},
-			flagInProcessGpu: {
+			hardwareAcceleration: {
 				type: 'boolean',
 			},
 

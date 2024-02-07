@@ -23,9 +23,6 @@ export interface SettingsType {
 	startOnLogin: boolean;
 
 	hardwareAcceleration: boolean;
-	flagDisableGpu: boolean;
-	flagDisableSoftwareRasterizer: boolean;
-	flagInProcessGpu: boolean;
 
 	backgroundColor: string;
 	accentColor: string;
@@ -103,10 +100,6 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	hardwareAcceleration: true,
 
-	flagDisableGpu: false,
-	flagDisableSoftwareRasterizer: false,
-	flagInProcessGpu: false,
-
 	backgroundColor: '#b80f9c',
 	accentColor: '#A0CA98',
 
@@ -124,7 +117,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	strokeWidth: 1,
 
 	// iohook
-	followMouse: false,
+	followMouse: true,
 
 	altCrosshair: '',
 	altBehavior: 'hold', // toggle/hold
@@ -165,7 +158,7 @@ export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
 	lock: `${accelerator}+X`,
 	hide: `${accelerator}+H`,
 	center: `${accelerator}+C`,
-	newWindow: `${accelerator}+N`,
+	newWindow: `${accelerator}+D`,
 	changeDisplay: `${accelerator}+M`,
 	focusNextWindow: `${accelerator}+F`,
 	moveUp: `${accelerator}+Up`,

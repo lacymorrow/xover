@@ -19,6 +19,8 @@ export const THROTTLE_DELAY = 100;
 // Double-click delay in ms
 export const DOUBLE_CLICK_DELAY = 250; // ms
 
+export const APP_FLAGS = [];
+
 // // Limit the file types that can be selected using the file input dialog
 // export const VALID_FILETYPES = [
 // 	'avi',

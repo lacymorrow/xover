@@ -11,7 +11,7 @@ import { $settings } from '@/config/strings';
 import { Button } from '@/components/ui/button';
 import { ipcChannels } from '@/config/ipc-channels';
 
-export function SettingsAdvanced() {
+export function SettingsActions() {
 	const { app, settings } = useGlobalContext();
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
@@ -30,33 +30,14 @@ export function SettingsAdvanced() {
 			</div>
 			<Separator />
 			<InputSwitch
-				value={settings.hardwareAcceleration}
+				value={settings.followMouse}
 				onChange={() => {
-					handleChangeSetting({
-						hardwareAcceleration: !settings.hardwareAcceleration,
-					});
+					handleChangeSetting({ followMouse: !settings.followMouse });
 				}}
-				label="Hardware Acceleration"
-				description={`Use hardware acceleration to improve performance. ${$settings.reloadToApply}`}
+				label="Follow Mouse"
+				description="Keep the crosshair centered on the mouse cursor."
 				card
 			/>
-			<Button
-				onClick={() => {
-					window.electron.ipcRenderer.send(ipcChannels.UPDATE_APP);
-					window.electron.playSound('DONE');
-				}}
-			>
-				Check for updates
-			</Button>
-			<Button
-				variant="destructive"
-				onClick={() => {
-					window.electron.ipcRenderer.send(ipcChannels.RESET_APP);
-					window.electron.playSound('DONE');
-				}}
-			>
-				Reset all settings to default
-			</Button>
 		</div>
 	);
 }
