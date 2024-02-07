@@ -60,7 +60,6 @@ export interface SettingsType {
 	tiltAngle: number;
 	tiltBehavior: IOHookBehaviorType; // toggle/hold
 	tiltInput: IOHookInputType; // mouse/keyboard
-	tiltTrigger: number;
 
 	isLocked: boolean;
 
@@ -135,7 +134,6 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	tiltActionEnabled: false,
 	tiltAngle: 15,
 	tiltBehavior: 'hold', // toggle/hold
-	tiltTrigger: 1,
 	tiltInput: 'mouse',
 
 	isLocked: false,
