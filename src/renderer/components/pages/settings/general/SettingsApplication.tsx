@@ -1,13 +1,15 @@
-import { Separator } from '@/components/ui/separator';
-import { SettingsType } from '@/config/settings';
-import { useGlobalContext } from '@/renderer/context/global-context';
-import { InputSwitch } from '@/renderer/components/input/InputSwitch';
-import { InputSlider } from '@/renderer/components/input/InputSlider';
-import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKeyboardBind';
-import { InputKeyboardShortcut } from '@/renderer/components/input/InputKeyboardShortcut';
-import { InputColor } from '@/renderer/components/input/InputColor';
-import { THROTTLE_DELAY } from '@/config/config';
-import { $settings } from '@/config/strings';
+import { Separator } from "@/components/ui/separator";
+import { SettingsType } from "@/config/settings";
+import { InputComboboxForm } from "@/renderer/components/input/InputComboboxForm";
+import { InputSelectForm } from "@/renderer/components/input/InputSelectForm";
+import { InputSwitch } from "@/renderer/components/input/InputSwitch";
+import { InputSlider } from "@/renderer/components/input/InputSlider";
+import { InputMouseKeyboardBind } from "@/renderer/components/input/InputMouseKeyboardBind";
+import { InputKeyboardShortcut } from "@/renderer/components/input/InputKeyboardShortcut";
+import { InputColor } from "@/renderer/components/input/InputColor";
+import { THROTTLE_DELAY } from "@/config/config";
+import { $settings } from "@/config/strings";
+import { useGlobalContext } from "@/renderer/context/global-context";
 
 export function SettingsApplication() {
 	const { app, settings } = useGlobalContext();
