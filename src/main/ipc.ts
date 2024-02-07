@@ -13,8 +13,8 @@ import {
 	setSettings,
 	getKeybinds,
 } from './store-actions';
-import { openSettingsWindow } from './utils/openSettingsWindow';
-import { centerWindow } from './utils/windows';
+import { openSettingsWindow } from './utils/settingsWindow';
+import { centerWindow } from './utils/window-utils';
 
 import { getOS } from '../utils/getOS';
 import { notification } from './notifications';

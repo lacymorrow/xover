@@ -3,7 +3,7 @@ import { BrowserWindow, Rectangle, Size, screen } from 'electron';
 import Logger from 'electron-log';
 import { Display } from 'electron/main';
 import { is } from '../util';
-import { WindowInstanceType } from '../windows';
+import w, { WindowInstanceType } from '../windows';
 
 export type GetWindowBoundsCenteredOptions = {
 	/**
@@ -119,7 +119,6 @@ export const getWindowBoundsCentered = (
 		...windowSize,
 	};
 };
-
 /**
 Center a window on the screen.
 */
@@ -254,11 +253,13 @@ export const moveWindow = ({
 	window?: BrowserWindow;
 	direction: 'up' | 'down' | 'left' | 'right';
 }) => {
-	if (!window) {
+	const win = window || activeWindow();
+
+	if (!win) {
 		return;
 	}
 
-	const bounds = window.getBounds();
+	const bounds = win.getBounds();
 
 	switch (direction) {
 		case 'up':
@@ -277,7 +278,7 @@ export const moveWindow = ({
 			Logger.error('Invalid direction');
 	}
 
-	safeSetBounds(window, bounds);
+	safeSetBounds(win, bounds);
 };
 
 // export const onWillResize = (_event, newBounds) => {
@@ -306,5 +307,5 @@ export const forEachWindow = (callback: (window: BrowserWindow) => void) => {
 
 // -1 to disable
 export const setProgress = (percentage: number) => {
-	windows.mainWindow.setProgressBar(percentage || -1);
+	w.mainWindow?.setProgressBar(percentage || -1);
 };

@@ -166,11 +166,13 @@ export const createCrosshairWindow = async (
 	// Load the window
 	window.loadURL(resolveHtmlPath('crosshair.html'));
 
+	windows.crosshairWindows.push(window);
+
 	return window;
 };
 
 export const createMainWindow = async () => {
-	const { quitOnWindowClose, showTaskbarIcon } = getSettings();
+	const { quitOnWindowClose } = getSettings();
 	const options: BrowserWindowConstructorOptions = {};
 
 	const window = await createCrosshairWindow(options);
@@ -181,9 +183,6 @@ export const createMainWindow = async () => {
 			app.quit();
 		}
 	});
-
-	// Restore saved position
-	restoreWindowPosition(window);
 
 	windows.mainWindow = window;
 };
@@ -227,4 +226,10 @@ export const createSettingsWindow = async () => {
 	window.loadURL(resolveHtmlPath('index.html'));
 
 	windows.settingsWindow = window;
+};
+
+export const createDuplicateWindow = async () => {
+	const window = await createCrosshairWindow();
+
+	return window;
 };

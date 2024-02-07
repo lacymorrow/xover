@@ -12,7 +12,8 @@ import {
 	centerWindow,
 	moveToNextDisplay,
 	moveWindow,
-} from './utils/windows';
+} from './utils/window-utils';
+import { createDuplicateWindow } from './create-window';
 
 export const keyboardShortcuts: KeyboardShortcut[] = [
 	/* Default accelerators */
@@ -82,6 +83,16 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		},
 	},
 
+	// Duplicate main window
+	{
+		action: 'duplicate',
+		ignoreWhenLocked: true,
+		allowUnbind: true,
+		fn() {
+			createDuplicateWindow();
+		},
+	},
+
 	// Focus next window
 	{
 		action: 'nextWindow',
@@ -92,23 +103,13 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		},
 	},
 
-	// Duplicate main window
-	{
-		action: 'duplicate',
-		ignoreWhenLocked: true,
-		allowUnbind: true,
-		fn() {
-			// crossover.initShadowWindow();
-		},
-	},
-
 	// Move window up
 	{
 		action: 'moveUp',
 		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'up' });
-			moveWindow({ window: windows.mainWindow, direction: 'up' });
+			moveWindow({ direction: 'up' });
 		},
 	},
 
@@ -117,7 +118,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'moveDown',
 		ignoreWhenLocked: true,
 		fn() {
-			moveWindow({ window: windows.mainWindow, direction: 'down' });
+			moveWindow({ direction: 'down' });
 		},
 	},
 
@@ -127,7 +128,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'left' });
-			moveWindow({ window: windows.mainWindow, direction: 'left' });
+			moveWindow({ direction: 'left' });
 		},
 	},
 
@@ -137,7 +138,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'right' });
-			moveWindow({ window: windows.mainWindow, direction: 'right' });
+			moveWindow({ direction: 'right' });
 		},
 	},
 ];
@@ -145,6 +146,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 // eslint-disable-next-line no-undef
 interface ShortcutType extends Electron.GlobalShortcut {
 	registerEscapeKey: () => void;
+	unregisterEscapeKey: () => void;
 	registerKeyboardShortcuts: () => void;
 	setKeybind: (
 		keybinds: keyof CustomAcceleratorsType,
@@ -185,6 +187,10 @@ const registerKeyboardShortcuts = () => {
 	});
 };
 
+const unregisterEscapeKey = () => {
+	globalShortcut.unregister('Escape');
+};
+
 const registerEscapeKey = () => {
 	// Register escape key
 	globalShortcut.register('Escape', () => {
@@ -194,7 +200,7 @@ const registerEscapeKey = () => {
 			...store.get('settings'),
 			isSettingsWindowOpen: false,
 		});
-		globalShortcut.unregister('Escape');
+		unregisterEscapeKey();
 	});
 };
 
@@ -241,6 +247,7 @@ const kb: ShortcutType = {
 	},
 
 	registerEscapeKey,
+	unregisterEscapeKey,
 
 	// Inherit all methods from Electron's globalShortcut
 	...globalShortcut,

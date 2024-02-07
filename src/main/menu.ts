@@ -323,7 +323,9 @@ export default class MenuBuilder {
 						label: '&Close',
 						accelerator: 'Ctrl+W',
 						click: () => {
-							this.mainWindow.close();
+							const focusedWindow =
+								BrowserWindow.getFocusedWindow() || this.mainWindow;
+							focusedWindow.close();
 						},
 						id: 'close',
 					},
