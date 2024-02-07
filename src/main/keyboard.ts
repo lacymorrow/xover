@@ -7,7 +7,12 @@ import windows from './windows';
 import { resetApp } from './reset';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
-import { activeWindow, centerWindow, moveToNextDisplay } from './utils/windows';
+import {
+	activeWindow,
+	centerWindow,
+	moveToNextDisplay,
+	moveWindow,
+} from './utils/windows';
 
 export const keyboardShortcuts: KeyboardShortcut[] = [
 	/* Default accelerators */
@@ -103,6 +108,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'up' });
+			moveWindow({ window: windows.mainWindow, direction: 'up' });
 		},
 	},
 
@@ -111,7 +117,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'moveDown',
 		ignoreWhenLocked: true,
 		fn() {
-			// windows.moveWindow({ direction: 'down' });
+			moveWindow({ window: windows.mainWindow, direction: 'down' });
 		},
 	},
 
@@ -121,6 +127,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'left' });
+			moveWindow({ window: windows.mainWindow, direction: 'left' });
 		},
 	},
 
@@ -130,6 +137,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		ignoreWhenLocked: true,
 		fn() {
 			// windows.moveWindow({ direction: 'right' });
+			moveWindow({ window: windows.mainWindow, direction: 'right' });
 		},
 	},
 ];
