@@ -1,3 +1,4 @@
+// https://github.com/sindresorhus/electron-util/blob/main/source/main/window.ts
 import { BrowserWindow, Rectangle, Size, screen } from 'electron';
 import Logger from 'electron-log';
 import { Display } from 'electron/main';
