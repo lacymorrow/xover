@@ -26,11 +26,11 @@ export const openSettingsWindow = () => {
 	// 	return;
 	// }
 
-	// // If the settings window is open and not focused, focus it
-	// if (!windows.settingsWindow?.isFocused()) {
-	// 	windows.settingsWindow?.focus();
-	// 	return;
-	// }
+	// If the settings window is open and not focused, focus it
+	if (!windows.settingsWindow?.isFocused()) {
+		windows.settingsWindow?.focus();
+		return;
+	}
 
 	// If the settings window is open, centered, and focused, hide it
 	windows.settingsWindow.hide();

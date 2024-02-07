@@ -17,7 +17,7 @@ export const VOLUME = 0.15; // System volume in percent
 export const THROTTLE_DELAY = 100;
 
 // Double-click delay in ms
-export const DOUBLE_CLICK_DELAY = 300; // ms
+export const DOUBLE_CLICK_DELAY = 250; // ms
 
 // // Limit the file types that can be selected using the file input dialog
 // export const VALID_FILETYPES = [

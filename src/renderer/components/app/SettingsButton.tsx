@@ -7,10 +7,9 @@ import { IconButton } from '../ui/IconButton';
 
 export function SettingsButton() {
 	const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-		console.log(e.detail);
 		switch (e.detail) {
 			case 1:
-				// Single click
+				// Single click: open or close settings
 				window.electron.ipcRenderer.send(ipcChannels.OPEN_SETTINGS);
 				break;
 			case 2:

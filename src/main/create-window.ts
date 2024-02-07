@@ -103,8 +103,10 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	return browserWindow;
 };
 
-export const createMainWindow = async () => {
-	const { quitOnWindowClose, showTaskbarIcon } = getSettings();
+export const createCrosshairWindow = async (
+	opts?: BrowserWindowConstructorOptions,
+) => {
+	const { showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
 		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
 		alwaysOnTop: true,
@@ -131,6 +133,7 @@ export const createMainWindow = async () => {
 		minWidth: APP_WIDTH,
 		height: APP_HEIGHT,
 		minHeight: APP_HEIGHT,
+		...opts,
 	};
 
 	if (is.windows) {
@@ -140,19 +143,37 @@ export const createMainWindow = async () => {
 	const window = createWindow(options);
 
 	window.setAspectRatio(APP_ASPECT_RATIO);
+	window.setFullScreenable(false);
 
+	// todo: Maybe dont stay on top when unlocked
 	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706
 	window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
-	window.setFullScreenable(false);
 
 	window.on('ready-to-show', () => {
 		window.show();
 	});
 
 	window.on('will-resize', () => {});
+
+	window.on('move', () => {
+		// Save position
+		savePosition(window);
+	});
+
+	// Load the window
+	window.loadURL(resolveHtmlPath('crosshair.html'));
+
+	return window;
+};
+
+export const createMainWindow = async () => {
+	const { quitOnWindowClose, showTaskbarIcon } = getSettings();
+	const options: BrowserWindowConstructorOptions = {};
+
+	const window = await createCrosshairWindow(options);
 
 	window.on('closed', () => {
 		// Quit if main window closes
@@ -161,16 +182,8 @@ export const createMainWindow = async () => {
 		}
 	});
 
-	window.on('move', () => {
-		// Save position
-		savePosition(window);
-	});
-
 	// Restore saved position
 	restoreWindowPosition(window);
-
-	// Load the window
-	window.loadURL(resolveHtmlPath('crosshair.html'));
 
 	windows.mainWindow = window;
 };
