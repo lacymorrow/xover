@@ -123,12 +123,14 @@ export const getWindowBoundsCentered = (
 Center a window on the screen.
 */
 export const centerWindow = (options?: CenterWindowOptions) => {
-	Logger.status('Centering window');
 	const window = options?.window ?? activeWindow();
 	if (!window) {
-		throw new Error('No active window');
+		// throw new Error('No active window');
+		Logger.error('No active window');
+		return;
 	}
 
+	Logger.status('Centering window', window.id);
 	const opts = {
 		window,
 		animated: false,

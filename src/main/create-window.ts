@@ -190,8 +190,13 @@ export const createChildWindow = async () => {
 };
 
 export const createSettingsWindow = async () => {
-	const options = {};
+	const options: BrowserWindowConstructorOptions = {
+		alwaysOnTop: true,
+		titleBarStyle: 'default',
+	};
+
 	const window = createWindow(options);
+	window.setAlwaysOnTop(true, 'screen-saver', 1);
 
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
 	window.on('closed', () => {

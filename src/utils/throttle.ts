@@ -1,7 +1,11 @@
 // https://underscorejs.org/docs/modules/throttle.html
 // Allows for leading and trailing throttling
 
-const now = () => new Date().getTime();
+const now =
+	Date.now ||
+	function () {
+		return new Date().getTime();
+	};
 
 export const throttle = (
 	func: Function,

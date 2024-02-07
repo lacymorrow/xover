@@ -17,10 +17,10 @@ export const resetApp = () => {
 
 export const refreshSettingsOnAppStart = () => {
 	const { resetOnAppStart, startLocked } = getSettings();
-	// if (is.debug || resetOnAppStart) {
-	// 	resetApp();
-	// 	return;
-	// }
+	if (is.debug || resetOnAppStart) {
+		resetApp();
+		return;
+	}
 
 	// Reset settings to default on app start
 	const resetSettings: Partial<SettingsType> = {

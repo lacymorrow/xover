@@ -18,6 +18,8 @@ const initialize = () => {
 		app.disableHardwareAcceleration();
 	}
 
+	// todo
+
 	if (flagDisableGpu) {
 		app.commandLine.appendSwitch('disable-gpu');
 	}

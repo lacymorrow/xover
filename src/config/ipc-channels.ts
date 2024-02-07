@@ -29,7 +29,9 @@ const OPEN_FILE = 'open-file';
 const QUIT_APP = 'quit-app';
 const RESET_APP = 'reset-app';
 const UPDATE_APP = 'update-app';
+const CLOSE_WINDOW = 'close-window';
 const CENTER_WINDOW = 'center-window';
+const CENTER_SETTINGS_WINDOW = 'center-settings-window';
 const SET_CROSSHAIR = 'set-crosshair';
 const OPEN_SETTINGS = 'open-settings';
 
@@ -59,7 +61,9 @@ export const ipcChannels = {
 	QUIT_APP,
 	RESET_APP,
 	UPDATE_APP,
+	CLOSE_WINDOW,
 	CENTER_WINDOW,
+	CENTER_SETTINGS_WINDOW,
 	SET_CROSSHAIR,
 	OPEN_SETTINGS,
 };

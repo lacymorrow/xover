@@ -21,6 +21,7 @@ import { notification } from './notifications';
 import sounds from './sounds';
 import { is } from './util';
 import kb from './keyboard';
+import windows from './windows';
 
 export default {
 	initialize() {
@@ -100,6 +101,17 @@ export default {
 			openSettingsWindow();
 		});
 
+		// Close a window
+		ipcMain.on(ipcChannels.CLOSE_WINDOW, (event) => {
+			const window = BrowserWindow.fromId(event.sender.id);
+			if (!window) {
+				return;
+			}
+
+			window.close();
+		});
+
+		// Quit the app
 		ipcMain.on(ipcChannels.QUIT_APP, () => {
 			app.quit();
 		});
@@ -119,6 +131,12 @@ export default {
 			}
 
 			centerWindow({ window, animated: true });
+		});
+
+		ipcMain.on(ipcChannels.CENTER_SETTINGS_WINDOW, (event) => {
+			if (windows.settingsWindow) {
+				centerWindow({ window: windows.settingsWindow, animated: true });
+			}
 		});
 
 		// OPEN_FILE,
