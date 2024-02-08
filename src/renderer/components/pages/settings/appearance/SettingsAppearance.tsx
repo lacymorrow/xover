@@ -9,7 +9,6 @@ export function SettingsAppearance() {
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		window.electron.setSettings(setting);
 	};
-	console.log(settings.accentColor);
 	return (
 		<div className="space-y-6">
 			<div>

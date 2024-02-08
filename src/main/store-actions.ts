@@ -2,11 +2,12 @@ import { app } from 'electron';
 import Logger from 'electron-log';
 import { APP_MESSAGES_MAX } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
-import { SettingsType } from '../config/settings';
+import { ActionStateType, SettingsType } from '../config/settings';
 import { $messages } from '../config/strings';
 import store, { AppMessageType } from './store';
 import tray from './tray';
 import { forEachWindow } from './utils/window-utils';
+import windows from './windows';
 
 const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	// Sync with main
@@ -92,6 +93,17 @@ export const getCrosshairImages = () => {
 
 export const setCrosshairImages = (images: string[]) => {
 	store.set('images', images);
+};
+
+export const getActionState = () => {
+	return store.get('actionState');
+};
+
+export const setActionStateKey = (key: keyof ActionStateType, state: any) => {
+	// Danger, no type checking - use with caution
+	store.set(`actionState.${key}`, state);
+	console.log('key', key, state);
+	windows?.mainWindow?.webContents.send(ipcChannels.ACTION_STATE, key, state);
 };
 
 export default store;

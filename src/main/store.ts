@@ -1,6 +1,8 @@
 import { CustomAcceleratorsType } from '@/types/keyboard';
 import Store from 'electron-store';
 import {
+	ActionStateType,
+	DEFAULT_ACTION_STATE,
 	DEFAULT_KEYBINDS,
 	DEFAULT_SETTINGS,
 	SettingsType,
@@ -16,9 +18,19 @@ export interface StoreType {
 	keybinds: CustomAcceleratorsType; // Custom keybinds/accelerators/global shortcuts
 	images: string[];
 	windows: any[];
+	actionState: ActionStateType;
 }
 
 const schema: Store.Schema<StoreType> = {
+	actionState: {
+		type: 'object',
+		default: DEFAULT_ACTION_STATE,
+		properties: {
+			currentTilt: {
+				type: 'number',
+			},
+		},
+	},
 	windows: {
 		type: 'array',
 		default: [],

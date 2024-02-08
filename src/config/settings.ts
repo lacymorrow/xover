@@ -66,9 +66,9 @@ export interface SettingsType {
 	isLocked: boolean;
 
 	// temporary
+	currentTilt: number;
 	isHidden: boolean;
 	isSettingsWindowOpen: boolean;
-	currentTilt: number;
 	resetOnAppStart: boolean; // for debugging, reset via cli
 	hadFirstRun: boolean;
 
@@ -143,16 +143,24 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	isLocked: false,
 
 	// temporary
-	isSettingsWindowOpen: false,
-	isHidden: false,
 	currentTilt: 0,
+	isHidden: false,
+	isSettingsWindowOpen: false,
 	resetOnAppStart: false, // for debugging, reset via cli
 	hadFirstRun: false,
 
 	// experimentalFeatures
 };
 
-// see src/main/keyboard-shortcuts.ts
+export type ActionStateType = {
+	tilt: number;
+};
+
+export const DEFAULT_ACTION_STATE: ActionStateType = {
+	tilt: 0,
+};
+
+// see src/main/keyboard.ts
 // a shortcut must have an action, keybind, and fn
 const accelerator = 'Control+Shift+Alt';
 

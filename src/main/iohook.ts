@@ -1,6 +1,10 @@
 import Logger from 'electron-log';
 import { iohookKeycodes } from '../utils/keycode';
-import { getSetting, getSettings } from './store-actions';
+import {
+	getActionState,
+	getSettings,
+	setActionStateKey,
+} from './store-actions';
 import windows from './windows';
 
 let iohook: any | null = null;
@@ -24,10 +28,6 @@ export const registerFollowMouse = () => {
 	});
 };
 
-export const tiltCrosshair = (angle: number) => {
-	console.log('tiltCrosshair', angle);
-};
-
 const registerToggleHoldShortcut = (
 	input: string,
 	tiltAngle: number,
@@ -41,18 +41,18 @@ const registerToggleHoldShortcut = (
 
 	if (tiltBehavior === 'toggle') {
 		iohook.registerShortcut([trigger], () => {
-			const currentTilt = getSetting('currentTilt') as number;
+			const currentTilt = getActionState().tilt;
 			if (currentTilt && currentTilt !== tiltAngle) {
-				tiltCrosshair(0);
+				setActionStateKey('tilt', 0);
 			} else {
-				tiltCrosshair(tiltAngle);
+				setActionStateKey('tilt', tiltAngle);
 			}
 		});
 	} else if (tiltBehavior === 'hold') {
 		iohook.registerShortcut(
 			[trigger],
-			() => tiltCrosshair(tiltAngle), // Press
-			() => tiltCrosshair(0), // Release
+			() => setActionStateKey('tilt', tiltAngle), // Press
+			() => setActionStateKey('tilt', 0), // Release
 		);
 	}
 };
@@ -65,25 +65,25 @@ const registerToggleHoldMouse = (
 	const button = parseInt(input, 10);
 	if (tiltBehavior === 'toggle') {
 		iohook.on('mousedown', (event: MouseEvent) => {
-			const currentTilt = getSetting('currentTilt') as number;
+			const currentTilt = getActionState().tilt;
 			if (event.button === button) {
 				if (currentTilt !== tiltAngle) {
-					tiltCrosshair(tiltAngle);
+					setActionStateKey('tilt', tiltAngle);
 				} else {
-					tiltCrosshair(0);
+					setActionStateKey('tilt', 0);
 				}
 			}
 		});
 	} else if (tiltBehavior === 'hold') {
 		iohook.on('mousedown', (event: MouseEvent) => {
 			if (event.button === button) {
-				tiltCrosshair(tiltAngle);
+				setActionStateKey('tilt', tiltAngle);
 			}
 		});
 
 		iohook.on('mouseup', (event: MouseEvent) => {
 			if (event.button === button) {
-				tiltCrosshair(0);
+				setActionStateKey('tilt', 0);
 			}
 		});
 	}
@@ -150,6 +150,8 @@ export const startIOHook = async () => {
 };
 
 export const stopIOHook = async () => {
+	setActionStateKey('tilt', 0);
+
 	if (!iohook) {
 		return;
 	}

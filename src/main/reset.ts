@@ -1,7 +1,12 @@
 import { app } from 'electron';
 import { SettingsType } from '../config/settings';
 import sounds from './sounds';
-import { getSettings, resetStore, setSettings } from './store-actions';
+import {
+	getSettings,
+	resetStore,
+	setActionStateKey,
+	setSettings,
+} from './store-actions';
 
 export const restartApp = () => {
 	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
@@ -27,6 +32,7 @@ export const refreshSettingsOnAppStart = () => {
 		isSettingsWindowOpen: false,
 		currentTilt: 0,
 		resetOnAppStart: false,
+		hadFirstRun: true,
 	};
 
 	// Unlock app if it was locked (unless it's set to start locked)
@@ -35,4 +41,5 @@ export const refreshSettingsOnAppStart = () => {
 	}
 
 	setSettings(resetSettings);
+	setActionStateKey('tilt', 0);
 };

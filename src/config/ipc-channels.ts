@@ -8,6 +8,8 @@ const APP_NOTIFICATION = 'app-notification'; // to display a notification using 
 const PRELOAD_SOUNDS = 'preload-sounds';
 const PLAY_SOUND = 'play-sound';
 
+const ACTION_STATE = 'action-state';
+
 // Renderer -> Main
 const GET_APP_INFO = 'get-app-info';
 const GET_APP_MENU = 'get-app-menu';
@@ -44,6 +46,7 @@ export const ipcChannels = {
 	APP_UPDATED,
 	PRELOAD_SOUNDS,
 	PLAY_SOUND,
+	ACTION_STATE,
 
 	// renderer -> main
 	RENDERER_READY,

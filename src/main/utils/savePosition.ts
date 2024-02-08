@@ -7,8 +7,8 @@ export const savePosition = (window: BrowserWindow) => {
 	const position = window.getPosition();
 	const size = window.getSize();
 
-	// const isMaximized = window.isMaximized();
-	// const isFullScreen = window.isFullScreen();
+	const isMaximized = window.isMaximized();
+	const isFullScreen = window.isFullScreen();
 
 	// windows.mainWindow?.webContents.send('save-position', {
 	// 	position,

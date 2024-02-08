@@ -6,15 +6,17 @@
 // translations
 // protocol
 // analytics
+// Scroll reset when changing settings page
+// settings open when locked
+// crosshair chooser
+// improve keybind input
 
 import { app } from 'electron';
 import Logger from 'electron-log/main';
-import { register } from 'module';
 import { $errors, $messages } from '../config/strings';
 
 import ipc from './ipc';
 import { ready, startup } from './startup';
-import analytics from './analytics';
 
 // Initialize the timer
 console.time(app.name);

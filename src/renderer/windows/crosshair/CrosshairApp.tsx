@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Controls } from '@/renderer/components/app/Controls';
 import { Crosshair } from '@/renderer/components/app/Crosshair';
+import { useActionStateContext } from '@/renderer/context/action-state-context';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
 
@@ -8,6 +9,7 @@ import { useEffect } from 'react';
 
 export default function CrosshairApp() {
 	const { settings } = useGlobalContext();
+	const { tilt } = useActionStateContext();
 
 	useEffect(() => {
 		// Add/remove class to lock/unlock app
