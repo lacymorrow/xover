@@ -1,20 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { simpleUUID } from '@/utils/getUUID';
-import keycodeToChar from '@/utils/keycodeToChar';
+import keycodeToChar, {
+	iohoookMouseButtons,
+	mouseButtons,
+} from '@/utils/keycode';
 import { stopEvent } from '@/utils/stopEvent';
 import { CrossCircledIcon } from '@radix-ui/react-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
-const mouseButtons = [
-	'Left',
-	'Middle',
-	'Right',
-	'Back',
-	'Forward',
-	'Extra 1',
-	'Extra 2',
-];
 
 export const prettyPrintBind = (bind: string | undefined) => {
 	if (!bind?.includes(':')) {
@@ -25,9 +18,7 @@ export const prettyPrintBind = (bind: string | undefined) => {
 	const button = parseInt(value, 10);
 
 	if (type === 'keyboard') {
-		return `⌨️ Keyboard ${
-			button in keycodeToChar ? keycodeToChar[button] : value
-		}`;
+		return `⌨️ Keyboard ${value}`;
 	}
 
 	if (type === 'mouse') {
@@ -77,10 +68,15 @@ export function InputMouseKeyboardBind({
 				return;
 			}
 
-			if (e instanceof KeyboardEvent) {
-				handleChange(`keyboard:${e.which}`);
-			} else if (e instanceof PointerEvent || e instanceof MouseEvent) {
-				handleChange(`mouse:${e.button}`);
+			if (e instanceof KeyboardEvent && e.which in keycodeToChar) {
+				handleChange(`keyboard:${keycodeToChar[e.which]}`);
+			} else if (
+				(e instanceof PointerEvent || e instanceof MouseEvent) &&
+				e.button in iohoookMouseButtons
+			) {
+				handleChange(
+					`mouse:${iohoookMouseButtons[e.button as keyof typeof iohoookMouseButtons]}`,
+				);
 			}
 
 			setListening(false);

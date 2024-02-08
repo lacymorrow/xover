@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { app } from 'electron';
+import { app, shell } from 'electron';
 import Logger from 'electron-log/main';
 import EXIT_CODES from '../config/exit-codes';
 import { $errors } from '../config/strings';
@@ -44,14 +44,13 @@ const register = () => {
 
 	// Security measures
 	app.on('web-contents-created', (_event, webContents) => {
-		if (!is.debug) {
-			// Security #13: Prevent navigation
-			// https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
-			webContents.on('will-navigate', (event, _navigationUrl) => {
-				Logger.warn($errors.blockedNavigation, _navigationUrl);
-				event.preventDefault();
-			});
-		}
+		// Security #13: Prevent navigation
+		// https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
+		webContents.on('will-navigate', (event, navigationUrl) => {
+			event.preventDefault();
+			shell.openExternal(navigationUrl);
+			Logger.warn($errors.blockedNavigation, navigationUrl);
+		});
 	});
 };
 

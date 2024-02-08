@@ -4,6 +4,7 @@ import {
 	BrowserWindowConstructorOptions,
 	IpcMainEvent,
 	app,
+	shell,
 } from 'electron';
 import Logger from 'electron-log/main';
 import path from 'path';
@@ -18,7 +19,6 @@ import MenuBuilder from './menu';
 import { __resources } from './paths';
 import { getSettings, setSettings } from './store-actions';
 import { is, resolveHtmlPath } from './util';
-import { restoreWindowPosition } from './utils/restoreWindowPosition';
 import { savePosition } from './utils/savePosition';
 import windows from './windows';
 
@@ -85,10 +85,14 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		Logger.status('Window closed');
 	});
 
+	browserWindow.on('moved', () => {
+		savePosition(browserWindow);
+	});
+
 	// Open urls in the user's browser
 	if (browserWindow.webContents.setWindowOpenHandler) {
 		browserWindow.webContents.setWindowOpenHandler((data) => {
-			// shell.openExternal(data.url);
+			shell.openExternal(data.url);
 			return { action: 'deny' };
 		});
 	}
@@ -157,11 +161,6 @@ export const createCrosshairWindow = async (
 	});
 
 	window.on('will-resize', () => {});
-
-	window.on('move', () => {
-		// Save position
-		savePosition(window);
-	});
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('crosshair.html'));

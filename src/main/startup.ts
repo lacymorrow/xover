@@ -20,7 +20,7 @@ import tray from './tray';
 import { debugInfo, is } from './util';
 import { getImages } from './utils/getImages';
 import windows from './windows';
-import appFlags from './app-flags';
+import commandLineFlags from './command-line-flags';
 
 export const startup = () => {
 	// Initialize logger
@@ -39,7 +39,7 @@ export const startup = () => {
 	debugging.initialize();
 
 	// App CLI flags
-	appFlags.initialize();
+	commandLineFlags.initialize();
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();

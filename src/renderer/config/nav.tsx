@@ -15,6 +15,7 @@ import { SettingsNotifications } from '@/renderer/components/pages/settings/noti
 import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/SettingsKeyboard';
 import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
 import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
+import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
 
 export const nav = {
 	home: {
@@ -33,6 +34,12 @@ export const settingsNavItems = [
 		href: 'general',
 		element: <SettingsApplication />,
 		icon: GearIcon,
+	},
+	{
+		title: 'Actions',
+		href: 'actions',
+		element: <SettingsActions />,
+		icon: LightningBoltIcon,
 	},
 	{
 		title: 'Appearance',

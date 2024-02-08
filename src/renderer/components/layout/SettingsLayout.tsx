@@ -13,14 +13,7 @@ interface SettingsLayoutProps {
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
 	return (
 		<>
-			<div className="space-y-6 p-10 pb-16">
-				<div className="space-y-0.5">
-					<h2 className="text-2xl font-bold tracking-tight">
-						{$settings.title}
-					</h2>
-					<p className="text-muted-foreground">{$settings.description}</p>
-				</div>
-				<Separator className="my-6" />
+			<div className="space-y-6 p-10 py-8">
 				<div className="flex flex-col space-y-8 md:flex-row md:space-x-12 md:space-y-0">
 					<aside className="-mx-4 md:w-1/5">
 						<SidebarNav

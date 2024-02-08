@@ -1,8 +1,8 @@
-import React from 'react';
-import { GearIcon } from '@radix-ui/react-icons';
+import { DOUBLE_CLICK_DELAY } from '@/config/config';
 import { ipcChannels } from '@/config/ipc-channels';
 import { debounce } from '@/utils/debounce';
-import { DOUBLE_CLICK_DELAY } from '@/config/config';
+import { GearIcon } from '@radix-ui/react-icons';
+import React from 'react';
 import { IconButton } from '../ui/IconButton';
 
 export function SettingsButton() {
@@ -15,7 +15,7 @@ export function SettingsButton() {
 			case 2:
 				// Double click
 				// Center app on screen
-				window.electron.ipcRenderer.send(ipcChannels.CENTER_SETTINGS_WINDOW);
+				window.electron.ipcRenderer.send(ipcChannels.CENTER_WINDOW_SETTINGS);
 				break;
 
 			default:

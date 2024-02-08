@@ -22,6 +22,7 @@ export interface SettingsType {
 	startLocked: boolean;
 	startOnLogin: boolean;
 
+	commandLineFlags: string[];
 	hardwareAcceleration: boolean;
 
 	backgroundColor: string;
@@ -59,7 +60,8 @@ export interface SettingsType {
 	tiltActionEnabled: boolean;
 	tiltAngle: number;
 	tiltBehavior: IOHookBehaviorType; // toggle/hold
-	tiltInput: IOHookInputType; // mouse/keyboard
+	tiltLeftBind: string;
+	tiltRightBind: string;
 
 	isLocked: boolean;
 
@@ -97,6 +99,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	startLocked: false,
 	startOnLogin: false,
 
+	commandLineFlags: [],
 	hardwareAcceleration: true,
 
 	backgroundColor: '#b80f9c',
@@ -134,7 +137,8 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	tiltActionEnabled: false,
 	tiltAngle: 15,
 	tiltBehavior: 'hold', // toggle/hold
-	tiltInput: 'mouse',
+	tiltLeftBind: '',
+	tiltRightBind: '',
 
 	isLocked: false,
 
@@ -144,6 +148,8 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	currentTilt: 0,
 	resetOnAppStart: false, // for debugging, reset via cli
 	hadFirstRun: false,
+
+	// experimentalFeatures
 };
 
 // see src/main/keyboard-shortcuts.ts

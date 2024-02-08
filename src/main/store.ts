@@ -88,7 +88,7 @@ const schema: Store.Schema<StoreType> = {
 				enum: ['system', 'light', 'dark'],
 			},
 
-			appFlags: {
+			commandLineFlags: {
 				type: 'array',
 				default: [],
 			},

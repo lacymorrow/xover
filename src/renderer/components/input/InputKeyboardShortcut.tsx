@@ -9,7 +9,7 @@ import { simpleUUID } from '@/utils/getUUID';
 import keycodeToChar, {
 	modifierKeyCodes,
 	specialKeyCodes,
-} from '@/utils/keycodeToChar';
+} from '@/utils/keycode';
 import { useMemo, useState } from 'react';
 
 export function InputKeyboardShortcut({

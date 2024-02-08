@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron';
 import Logger from 'electron-log';
+import { forEachWindow } from './window-utils';
 
 export const savePosition = (window: BrowserWindow) => {
 	Logger.info('Saving window position', window.getTitle());
@@ -15,4 +16,14 @@ export const savePosition = (window: BrowserWindow) => {
 	// 	isMaximized,
 	// 	isFullScreen,
 	// });
+};
+
+export const onWindowMoved = (window: BrowserWindow) => {
+	savePosition(window);
+};
+
+export const addWindowMovedListeners = () => {
+	forEachWindow((window) => {
+		window.on('moved', () => onWindowMoved(window));
+	});
 };

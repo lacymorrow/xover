@@ -2,7 +2,6 @@ import { app } from 'electron';
 import { SettingsType } from '../config/settings';
 import sounds from './sounds';
 import { getSettings, resetStore, setSettings } from './store-actions';
-import { is } from './util';
 
 export const restartApp = () => {
 	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
@@ -17,7 +16,7 @@ export const resetApp = () => {
 
 export const refreshSettingsOnAppStart = () => {
 	const { resetOnAppStart, startLocked } = getSettings();
-	if (is.debug || resetOnAppStart) {
+	if (resetOnAppStart) {
 		resetApp();
 		return;
 	}

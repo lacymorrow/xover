@@ -1,7 +1,7 @@
 import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron';
-import { CustomAcceleratorsType } from '../types/keyboard';
 import { ipcChannels } from '../config/ipc-channels';
 import { SettingsType } from '../config/settings';
+import { CustomAcceleratorsType } from '../types/keyboard';
 import autoUpdate from './auto-update';
 import { serializeMenu, triggerMenuItemById } from './menu';
 import { rendererPaths } from './paths';
@@ -9,18 +9,22 @@ import { resetApp } from './reset';
 import { idle } from './startup';
 import {
 	getAppMessages,
+	getKeybinds,
 	getSettings,
 	setSettings,
-	getKeybinds,
 } from './store-actions';
 import { openSettingsWindow } from './utils/settingsWindow';
-import { activeWindow, centerWindow } from './utils/window-utils';
+import {
+	activeWindow,
+	centerWindow,
+	focusNextWindow,
+} from './utils/window-utils';
 
 import { getOS } from '../utils/getOS';
+import kb from './keyboard';
 import { notification } from './notifications';
 import sounds from './sounds';
 import { is } from './util';
-import kb from './keyboard';
 import windows from './windows';
 
 export default {
@@ -92,7 +96,6 @@ export default {
 			shell.openExternal(url);
 		});
 
-		// Open a URL in the default browser
 		ipcMain.on(ipcChannels.OPEN_FILE, (_event: any, file: string) => {
 			// todo
 		});
@@ -131,16 +134,27 @@ export default {
 			}
 
 			centerWindow({ window, animated: true });
+			sounds.play('DONE');
 		});
 
-		ipcMain.on(ipcChannels.CENTER_SETTINGS_WINDOW, (event) => {
+		ipcMain.on(ipcChannels.CENTER_WINDOW_MAIN, () => {
+			if (windows.mainWindow) {
+				centerWindow({ window: windows.mainWindow, animated: true });
+				sounds.play('DONE');
+			}
+		});
+
+		ipcMain.on(ipcChannels.CENTER_WINDOW_SETTINGS, () => {
 			if (windows.settingsWindow) {
 				centerWindow({ window: windows.settingsWindow, animated: true });
 			}
 		});
 
+		ipcMain.on(ipcChannels.FOCUS_WINDOW_MAIN, () => {
+			focusNextWindow();
+		});
+
 		// OPEN_FILE,
-		// UPDATE_APP,
 		// SET_CROSSHAIR,
 	},
 };

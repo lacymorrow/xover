@@ -31,7 +31,10 @@ const RESET_APP = 'reset-app';
 const UPDATE_APP = 'update-app';
 const CLOSE_WINDOW = 'close-window';
 const CENTER_WINDOW = 'center-window';
-const CENTER_SETTINGS_WINDOW = 'center-settings-window';
+const CENTER_WINDOW_MAIN = 'center-main-window';
+const CENTER_WINDOW_SETTINGS = 'center-settings-window';
+const FOCUS_WINDOW = 'focus-window';
+const FOCUS_WINDOW_MAIN = 'focus-main-window';
 const SET_CROSSHAIR = 'set-crosshair';
 const OPEN_SETTINGS = 'open-settings';
 
@@ -63,7 +66,10 @@ export const ipcChannels = {
 	UPDATE_APP,
 	CLOSE_WINDOW,
 	CENTER_WINDOW,
-	CENTER_SETTINGS_WINDOW,
+	CENTER_WINDOW_MAIN,
+	CENTER_WINDOW_SETTINGS,
+	FOCUS_WINDOW,
+	FOCUS_WINDOW_MAIN,
 	SET_CROSSHAIR,
 	OPEN_SETTINGS,
 };
