@@ -21,18 +21,19 @@ export const setAppLock = async (isLocked: boolean) => {
 	}
 	Logger.status(`App is ${isLocked ? 'locked' : 'unlocked'}`);
 
-	windows.mainWindow.closable = !isLocked;
-	// windows.mainWindow.minimizable = !isLocked;
-	windows.mainWindow.movable = !isLocked;
-	windows.mainWindow.setFocusable(!isLocked);
-	windows.mainWindow.setIgnoreMouseEvents(isLocked);
+	forEachWindow((window) => {
+		window.closable = !isLocked;
+		// window.minimizable = !isLocked;
+		window.movable = !isLocked;
+		window.setFocusable(!isLocked);
+		window.setIgnoreMouseEvents(isLocked);
+	});
 
 	if (isLocked) {
 		sounds.play('LOCK');
 		windows.settingsWindow?.hide(); // hide settings window
 
 		forEachWindow((window) => {
-			window.setIgnoreMouseEvents(true);
 			window.removeAllListeners('moved');
 		});
 
@@ -55,7 +56,6 @@ export const setAppLock = async (isLocked: boolean) => {
 		}
 
 		forEachWindow((window) => {
-			window.setIgnoreMouseEvents(false);
 			window.on('moved', () => onWindowMoved(window));
 		});
 	}

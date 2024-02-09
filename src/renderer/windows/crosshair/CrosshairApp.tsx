@@ -23,6 +23,7 @@ export default function CrosshairApp() {
 			'--app-foreground-color': settings.foregroundColor,
 			'--crosshair-opacity': settings.crosshairOpacity / 100,
 			'--crosshair-scale': settings.crosshairSize / 100,
+			'--transition-duration': `${settings.transitionDuration}ms`,
 			// '--reticle-opacity': settings.reticleOpacity / 100,
 			// '--reticle-size': settings.reticleSize,
 			// '--reticle-fill-color': settings.reticleColor,
@@ -33,7 +34,7 @@ export default function CrosshairApp() {
 
 		// Apply properties to root
 		Object.entries(properties).forEach(([key, value]) => {
-			document.documentElement.style.setProperty(key, value);
+			document.documentElement.style.setProperty(key, String(value));
 		});
 	}, [settings]);
 

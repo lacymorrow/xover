@@ -102,7 +102,6 @@ export const getActionState = () => {
 export const setActionStateKey = (key: keyof ActionStateType, state: any) => {
 	// Danger, no type checking - use with caution
 	store.set(`actionState.${key}`, state);
-	console.log('key', key, state);
 	windows?.mainWindow?.webContents.send(ipcChannels.ACTION_STATE, key, state);
 };
 

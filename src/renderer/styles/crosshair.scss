@@ -1,8 +1,10 @@
 :root {
 	/* Colors */
-	--app-bg-color: var(--backgound);
-	--app-foreground-color: var(--foreground);
-	--app-border-color: var(--foreground);
+	--app-bg-color: hsl(var(--background));
+	--app-foreground-color: hsl(var(--foreground));
+	--app-border-color: hsl(var(--foreground));
+
+	--transition-duration: 100ms;
 
 	--crosshair-scale: 1;
 	--crosshair-width: 100px;
@@ -11,9 +13,10 @@
 	--crosshair-width: 100px;
 	--crosshair-height: 100px;
 	--crosshair-opacity: 1;
+
 	--reticle-scale: 100;
 	--reticle-opacity: 1;
-	--reticle-color: var(--foreground);
+	--reticle-color: hsl(var(--foreground));
 	--svg-fill-color: inherit;
 	--svg-stroke-color: inherit;
 	--svg-stroke-width: inherit;
@@ -48,17 +51,17 @@ body {
 
 .is-locked {
 	#background,
-	#controls {
+	.controls {
 		display: none;
 	}
 }
 
 /* Application background */
 #background {
-	opacity: var(--app-opacity, 1);
-	background-color: var(--app-bg-color, var(--backgound));
-	color: var(--app-foreground-color, var(--foreground));
-	border: 1px solid var(--app-foreground-color, var(--foreground));
+	background-color: var(--app-bg-color, hsl(var(--background)));
+	opacity: 1;
+	color: var(--app-foreground-color, hsl(var(--foreground)));
+	border: 1px solid var(--app-foreground-color, hsl(var(--foreground)));
 	border-radius: 12px;
 
 	position: absolute;
@@ -69,24 +72,8 @@ body {
 	z-index: -1;
 }
 
-#controls {
-	color: var(--app-foreground-color, var(--foreground));
-
-	position: absolute;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-
-	display: grid;
-	grid-template-columns: auto auto;
-	justify-content: space-between;
-	align-content: space-between;
-	height: 100%;
-}
-
 .controls {
-	color: var(--app-foreground-color, var(--foreground));
+	color: var(--app-foreground-color, hsl(var(--foreground)));
 
 	display: flex;
 	flex-direction: column;
@@ -104,14 +91,15 @@ body {
 
 #sight {
 	opacity: var(--crosshair-opacity, 1);
-	transform: scale(var(--crosshair-scale, 1));
+	transform: scale(var(--crosshair-scale, 1)) rotate(var(--tilt-angle, 0deg));
 	width: var(--crosshair-width, 100px);
 	height: var(--crosshair-height, 100px);
+	transition: transform var(--transition-duration, 100ms) ease-in-out;
 }
 
 #reticle {
 	opacity: var(--reticle-opacity, 1);
 	width: var(--reticle-scale, 100px);
 	height: var(--reticle-scale, 100px);
-	color: var(--reticle-color, var(--foreground));
+	color: var(--reticle-color, hsl(var(--foreground)));
 }

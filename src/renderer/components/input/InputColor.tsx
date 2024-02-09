@@ -14,6 +14,7 @@ import { CrossButton } from './CrossButton';
 
 export function InputColor({
 	value,
+	defaultValue,
 	onChange,
 	label,
 	description,
@@ -24,6 +25,7 @@ export function InputColor({
 	...props
 }: {
 	value?: string;
+	defaultValue?: string;
 	onChange?: (value: string) => void;
 	label?: string;
 	description?: string;
@@ -88,6 +90,7 @@ export function InputColor({
 								backgroundColor,
 								color: foregroundColor,
 							}}
+							{...props}
 						>
 							{buttonText || 'Select Color'}
 							{color && (
@@ -100,7 +103,7 @@ export function InputColor({
 					</PopoverTrigger>
 					<PopoverContent className="flex items-center justify-center">
 						<Chrome
-							color={color}
+							color={color || defaultValue || '#000000'}
 							// @ts-ignore
 							placement={false}
 							onChange={(result) => {

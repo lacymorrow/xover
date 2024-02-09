@@ -63,6 +63,8 @@ export interface SettingsType {
 	tiltLeftBind: string;
 	tiltRightBind: string;
 
+	transitionDuration: number; // ms
+
 	isLocked: boolean;
 
 	// temporary
@@ -139,6 +141,8 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	tiltBehavior: 'hold', // toggle/hold
 	tiltLeftBind: '',
 	tiltRightBind: '',
+
+	transitionDuration: 100, // ms
 
 	isLocked: false,
 

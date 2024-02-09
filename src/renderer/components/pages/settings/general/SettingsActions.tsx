@@ -82,6 +82,17 @@ export function SettingsActions() {
 				}}
 				label="Right tilt bind"
 			/>
+
+			<InputSlider
+				value={settings.transitionDuration}
+				onChange={(value) => {
+					handleChangeSetting({ transitionDuration: value });
+				}}
+				label="Transition duration"
+				details="The duration of the transition when the crosshair moves."
+				min={0}
+				max={1000}
+			/>
 			<Separator />
 		</div>
 	);

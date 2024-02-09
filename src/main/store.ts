@@ -210,6 +210,9 @@ const schema: Store.Schema<StoreType> = {
 				type: 'string',
 				enum: ['toggle', 'hold'],
 			},
+			transitionDuration: {
+				type: 'number',
+			},
 		},
 		default: DEFAULT_SETTINGS,
 	},
