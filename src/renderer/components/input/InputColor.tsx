@@ -10,7 +10,7 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover';
 import { invertColor } from '@/utils/invertColor';
-import { CrossButton } from './CrossButton';
+import { ClearButton } from './ClearButton';
 
 export function InputColor({
 	value,
@@ -94,7 +94,7 @@ export function InputColor({
 						>
 							{buttonText || 'Select Color'}
 							{color && (
-								<CrossButton
+								<ClearButton
 									onClick={handleClear}
 									style={{ color: foregroundColor }}
 								/>
