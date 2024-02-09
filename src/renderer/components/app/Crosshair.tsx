@@ -6,6 +6,9 @@ import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
 import crosshair from '@/static/crosshairs/Actual/leupold-dot.png';
 import React from 'react';
+import { QuitButton } from './QuitButton';
+import { ResetButton } from './ResetButton';
+import { SettingsButton } from './SettingsButton';
 
 export function Crosshair() {
 	const { settings } = useGlobalContext();
@@ -25,17 +28,30 @@ export function Crosshair() {
 
 	return (
 		<div
-			id="crosshair"
-			className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 block"
+			className="w-full h-full grid grid-cols-[1fr_auto_1fr]"
 			onClick={handleClick}
 		>
-			<div id="sight">
-				<img
-					src={settings.crosshair ? `file://${settings.crosshair}` : crosshair}
-					alt=""
-				/>
+			<div className="controls">
+				<QuitButton />
+				<SettingsButton />
 			</div>
-			<div id="reticle" />
+
+			<div id="crosshair">
+				<div id="sight">
+					<img
+						src={
+							settings.crosshair ? `file://${settings.crosshair}` : crosshair
+						}
+						alt=""
+					/>
+				</div>
+				<div id="reticle" />
+			</div>
+
+			<div className="controls">
+				<ResetButton />
+				<SettingsButton />
+			</div>
 		</div>
 	);
 }

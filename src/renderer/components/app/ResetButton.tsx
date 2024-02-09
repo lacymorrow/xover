@@ -1,5 +1,5 @@
 import { ipcChannels } from '@/config/ipc-channels';
-import { RefreshCwIcon } from 'lucide-react';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { IconButton } from '../ui/IconButton';
 
 export function ResetButton() {
@@ -8,7 +8,7 @@ export function ResetButton() {
 	};
 	return (
 		<IconButton onClick={handleClick}>
-			<RefreshCwIcon />
+			<ReloadIcon />
 		</IconButton>
 	);
 }

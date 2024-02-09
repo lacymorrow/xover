@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { Controls } from '@/renderer/components/app/Controls';
 import { Crosshair } from '@/renderer/components/app/Crosshair';
 import { useActionStateContext } from '@/renderer/context/action-state-context';
 import { useGlobalContext } from '@/renderer/context/global-context';
@@ -54,14 +53,9 @@ export default function CrosshairApp() {
 
 	return (
 		<div className={cn('w-full h-full relative', !settings.isLocked && 'drag')}>
-			<div
-				id="background"
-				className="absolute -z-10 top-0 left-0 bottom-0 right-0"
-			/>
+			<div id="background" />
 
 			<Crosshair />
-
-			<Controls />
 		</div>
 	);
 }

@@ -2,6 +2,7 @@
 	/* Colors */
 	--app-bg-color: var(--backgound);
 	--app-foreground-color: var(--foreground);
+	--app-border-color: var(--foreground);
 
 	--crosshair-scale: 1;
 	--crosshair-width: 100px;
@@ -54,20 +55,63 @@ body {
 
 /* Application background */
 #background {
-	color: var(--app-foreground-color, var(--foreground));
-	background-color: var(--app-bg-color, var(--backgound));
 	opacity: var(--app-opacity, 1);
+	background-color: var(--app-bg-color, var(--backgound));
+	color: var(--app-foreground-color, var(--foreground));
+	border: 1px solid var(--app-foreground-color, var(--foreground));
+	border-radius: 12px;
+
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: -1;
 }
 
 #controls {
 	color: var(--app-foreground-color, var(--foreground));
+
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+
+	display: grid;
+	grid-template-columns: auto auto;
+	justify-content: space-between;
+	align-content: space-between;
+	height: 100%;
+}
+
+.controls {
+	color: var(--app-foreground-color, var(--foreground));
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
 }
 
 /* Crosshair Window */
 #crosshair {
+	height: 100%;
+	width: 100%;
+	display: grid;
+	place-content: center;
+}
+
+#sight {
 	opacity: var(--crosshair-opacity, 1);
+	transform: scale(var(--crosshair-scale, 1));
 	width: var(--crosshair-width, 100px);
 	height: var(--crosshair-height, 100px);
-	transform: scale(50%);
-	scale: 50%;
+}
+
+#reticle {
+	opacity: var(--reticle-opacity, 1);
+	width: var(--reticle-scale, 100px);
+	height: var(--reticle-scale, 100px);
+	color: var(--reticle-color, var(--foreground));
 }
