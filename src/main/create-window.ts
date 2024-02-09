@@ -219,12 +219,13 @@ export const createChildWindow = async () => {
 export const createSettingsWindow = async () => {
 	const options: BrowserWindowConstructorOptions = {
 		alwaysOnTop: true,
-		// frame: true,
 		trafficLightPosition: { x: 12, y: 20 },
 		titleBarStyle: 'hidden',
 	};
 
 	const window = createWindow(options);
+
+	// Set window position the same as the main window, so they can overlap
 	// window.setAlwaysOnTop(true, 'screen-saver', 1);
 
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()

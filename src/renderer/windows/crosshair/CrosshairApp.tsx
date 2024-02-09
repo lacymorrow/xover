@@ -11,7 +11,6 @@ export default function CrosshairApp() {
 	const { tilt } = useActionStateContext();
 
 	useEffect(() => {
-		console.log('RENDER');
 		// Add/remove class to lock/unlock app
 		document.documentElement.classList[settings.isLocked ? 'add' : 'remove'](
 			'is-locked',
@@ -23,13 +22,15 @@ export default function CrosshairApp() {
 			'--app-foreground-color': settings.foregroundColor,
 			'--crosshair-opacity': settings.crosshairOpacity / 100,
 			'--crosshair-scale': settings.crosshairSize / 100,
-			'--transition-duration': `${settings.transitionDuration}ms`,
-			// '--reticle-opacity': settings.reticleOpacity / 100,
-			// '--reticle-size': settings.reticleSize,
-			// '--reticle-fill-color': settings.reticleColor,
+			'--crosshair-rotation': `${settings.crosshairRotation}deg`,
+			'--reticle-scale': settings.reticleSize / 100,
+			'--reticle-color': settings.reticleColor,
+			'--reticle-rotation': `${settings.reticleRotation}deg`,
+
 			// '--svg-fill-color': settings.fillColor,
 			// '--svg-stroke-color': settings.strokeColor,
 			// '--svg-stroke-width': settings.strokeWidth,
+			'--transition-duration': `${settings.transitionDuration}ms`,
 		};
 
 		// Apply properties to root

@@ -142,10 +142,16 @@ const schema: Store.Schema<StoreType> = {
 			crosshairOpacity: {
 				type: 'number',
 			},
+			crosshairRotation: {
+				type: 'number',
+			},
+			reticle: {
+				type: 'string',
+			},
 			reticleSize: {
 				type: 'number',
 			},
-			reticleOpacity: {
+			reticleRotation: {
 				type: 'number',
 			},
 			reticleColor: {

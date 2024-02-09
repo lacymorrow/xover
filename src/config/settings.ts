@@ -29,11 +29,13 @@ export interface SettingsType {
 	foregroundColor: string;
 
 	crosshair: string;
+	crosshairRotation: number;
 	crosshairSize: number;
 	crosshairOpacity: number;
 
+	reticle: string;
+	reticleRotation: number;
 	reticleSize: number;
-	reticleOpacity: number;
 	reticleColor: string;
 
 	// svg
@@ -108,11 +110,13 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	foregroundColor: '#ffffff',
 
 	crosshair: '',
-	crosshairSize: 100,
 	crosshairOpacity: 100,
+	crosshairSize: 100,
+	crosshairRotation: 0,
 
+	reticle: 'cross',
 	reticleSize: 100,
-	reticleOpacity: 100,
+	reticleRotation: 0,
 	reticleColor: '#ffffff',
 
 	// svg

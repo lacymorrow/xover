@@ -13,7 +13,6 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import React from 'react';
 
@@ -21,17 +20,17 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
-import {
 	Command,
 	CommandEmpty,
 	CommandGroup,
 	CommandInput,
 	CommandItem,
 } from '@/components/ui/command';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@/components/ui/popover';
 
 const FormSchema = z.object({
 	itemValue: z.string({
@@ -49,17 +48,19 @@ export function InputComboboxForm({
 	noValueMessage,
 	details,
 	content,
+	className,
 }: {
-	items: { value: string; label: string }[];
+	items: { value: string; label: React.ReactNode }[];
 	value?: string;
 	onChange?: (value: string) => void;
-	label?: string;
-	description?: string;
-	placeholder?: string;
+	label?: React.ReactNode;
+	description?: React.ReactNode;
+	placeholder?: React.ReactNode;
 	searchMessage?: string;
-	noValueMessage?: string;
-	details?: string;
+	noValueMessage?: React.ReactNode;
+	details?: React.ReactNode;
 	content?: React.ReactNode;
+	className?: string;
 }) {
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
@@ -102,17 +103,18 @@ export function InputComboboxForm({
 											</Button>
 										</FormControl>
 									</PopoverTrigger>
-									<PopoverContent className="w-[200px] p-0">
-										<Command>
+									<PopoverContent className={cn('p-0 w-[200px]', className)}>
+										<Command className="overflow-auto">
 											<CommandInput
 												placeholder={searchMessage || 'Search...'}
 											/>
 											<CommandEmpty>
 												{noValueMessage || 'No language found.'}
 											</CommandEmpty>
-											<CommandGroup>
+											<CommandGroup className="overflow-auto">
 												{items.map((item) => (
 													<CommandItem
+														// @ts-ignore
 														value={item.label}
 														key={item.value}
 														onSelect={() => {
