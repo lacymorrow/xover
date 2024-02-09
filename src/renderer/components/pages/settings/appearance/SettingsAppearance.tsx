@@ -28,11 +28,11 @@ export function SettingsAppearance() {
 				}}
 			/>
 			<InputColor
-				value={settings.accentColor}
+				value={settings.foregroundColor}
 				label="Accent Color"
 				details="Highlight color used for buttons, links, and other interactive elements."
 				onChange={(value) => {
-					handleChangeSetting({ accentColor: value });
+					handleChangeSetting({ foregroundColor: value });
 				}}
 			/>
 			<ThemeForm />

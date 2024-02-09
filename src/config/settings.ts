@@ -26,7 +26,7 @@ export interface SettingsType {
 	hardwareAcceleration: boolean;
 
 	backgroundColor: string;
-	accentColor: string;
+	foregroundColor: string;
 
 	crosshair: string;
 	crosshairSize: number;
@@ -102,8 +102,8 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	commandLineFlags: [],
 	hardwareAcceleration: true,
 
-	backgroundColor: '#b80f9c',
-	accentColor: '#A0CA98',
+	backgroundColor: '#b80f9cB0',
+	foregroundColor: '#ffffff',
 
 	crosshair: '',
 	crosshairSize: 100,

@@ -130,7 +130,7 @@ const schema: Store.Schema<StoreType> = {
 			backgroundColor: {
 				type: 'string',
 			},
-			accentColor: {
+			foregroundColor: {
 				type: 'string',
 			},
 			crosshair: {

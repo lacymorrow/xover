@@ -1,25 +1,24 @@
 :root {
-	--app-opacity: 0.5;
-
 	/* Colors */
-	--app-bg-color-default: #000000;
-	--app-bg-color: var(--app-bg-color-default);
-
-	--app-accent-color-default: #392a84;
-	--app-accent-color: var(--app-accent-color-default);
+	--app-bg-color: var(--backgound);
+	--app-foreground-color: var(--foreground);
 
 	--crosshair-scale: 1;
+	--crosshair-width: 100px;
+	--crosshair-height: 100px;
+	--crosshair-opacity: 0.8;
 	--crosshair-width: 100px;
 	--crosshair-height: 100px;
 	--crosshair-opacity: 1;
 	--reticle-scale: 100;
 	--reticle-opacity: 1;
-	--reticle-color: #ccc;
-	--tilt-angle: 0deg;
+	--reticle-color: var(--foreground);
 	--svg-fill-color: inherit;
 	--svg-stroke-color: inherit;
 	--svg-stroke-width: inherit;
 
+	/* Actions */
+	--tilt-angle: 0deg;
 	--alt-size: 100px;
 	--alt-opacity: 1;
 }
@@ -55,11 +54,20 @@ body {
 
 /* Application background */
 #background {
-	background-color: var(--app-bg-color, var(--app-bg-color-default));
+	color: var(--app-foreground-color, var(--foreground));
+	background-color: var(--app-bg-color, var(--backgound));
 	opacity: var(--app-opacity, 1);
 }
 
-/* Crosshair Window */
 #controls {
-	color: var(--app-accent-color, var(--app-accent-color-default));
+	color: var(--app-foreground-color, var(--foreground));
+}
+
+/* Crosshair Window */
+#crosshair {
+	opacity: var(--crosshair-opacity, 1);
+	width: var(--crosshair-width, 100px);
+	height: var(--crosshair-height, 100px);
+	transform: scale(50%);
+	scale: 50%;
 }

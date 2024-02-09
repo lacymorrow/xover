@@ -12,34 +12,45 @@ export default function CrosshairApp() {
 	const { tilt } = useActionStateContext();
 
 	useEffect(() => {
+		console.log('RENDER');
 		// Add/remove class to lock/unlock app
 		document.documentElement.classList[settings.isLocked ? 'add' : 'remove'](
 			'is-locked',
 		);
+
 		// Properties to apply to renderer every sync
-		// const properties = {
+		const properties = {
+			'--app-bg-color': settings.backgroundColor,
+			'--app-foreground-color': settings.foregroundColor,
+			'--crosshair-opacity': settings.crosshairOpacity / 100,
+			'--crosshair-scale': settings.crosshairSize / 100,
+			// '--reticle-opacity': settings.reticleOpacity / 100,
+			// '--reticle-size': settings.reticleSize,
+			// '--reticle-fill-color': settings.reticleColor,
+			// '--svg-fill-color': settings.fillColor,
+			// '--svg-stroke-color': settings.strokeColor,
+			// '--svg-stroke-width': settings.strokeWidth,
+		};
+
+		// Apply properties to root
+		Object.entries(properties).forEach(([key, value]) => {
+			document.documentElement.style.setProperty(key, value);
+		});
+	}, [settings]);
+
+	useEffect(() => {
+		// Tilt
+		document.documentElement.style.setProperty('--tilt-angle', `${tilt}deg`);
+
 		// 	'--crosshair-width': `${options.crosshair.size}px`,
 		// 	'--crosshair-height': `${options.crosshair.size}px`,
 		// 	'--crosshair-opacity': (options.crosshair.opacity || 100) / 100,
 		// 	'--reticle-fill-color': options.crosshair.color,
 		// 	'--reticle-scale': options.crosshair.reticleScale,
-		// 	'--tilt-angle': options.actions.tiltAngle,
-		// 	'--app-bg-color': 'unset',
-		// 	'--app-highlight-color': 'unset',
 		// 	'--svg-fill-color': 'unset',
 		// 	'--svg-stroke-color': 'unset',
 		// 	'--svg-stroke-width': 'unset',
-		// };
-
-		document.documentElement.style.setProperty(
-			'--app-bg-color',
-			settings.backgroundColor,
-		);
-		document.documentElement.style.setProperty(
-			'--app-accent-color',
-			settings.accentColor,
-		);
-	}, [settings]);
+	}, [tilt]);
 
 	return (
 		<div className={cn('w-full h-full relative', !settings.isLocked && 'drag')}>

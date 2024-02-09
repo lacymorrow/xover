@@ -1,15 +1,14 @@
 import { simpleUUID } from '@/utils/getUUID';
 import { throttle } from '@/utils/throttle';
-import { useCallback, useMemo, useState } from 'react';
 import Chrome from '@uiw/react-color-chrome';
-import { GithubPlacement } from '@uiw/react-color-github';
+import { useCallback, useMemo, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
 import { invertColor } from '@/utils/invertColor';
 
 export function InputColor({
@@ -35,7 +34,14 @@ export function InputColor({
 	const [color, setColor] = useState(value || '#000000');
 
 	const uuid = useMemo(simpleUUID, []);
-	const invertedColor = useMemo(() => invertColor(color, true), [color]);
+
+	const colorDisplayStyle = useMemo(() => {
+		const colorWithoutAlpha = color.slice(0, 7);
+		return {
+			backgroundColor: colorWithoutAlpha,
+			color: invertColor(colorWithoutAlpha, true),
+		};
+	}, [color]);
 
 	const throttledOnChange = useMemo(() => {
 		if (throttleDelay && onChange) {
@@ -71,21 +77,17 @@ export function InputColor({
 						</div>
 					</div>
 					<PopoverTrigger asChild>
-						<Button
-							style={{
-								backgroundColor: color,
-								color: invertedColor,
-							}}
-						>
+						<Button style={colorDisplayStyle}>
 							{buttonText || 'Select Color'}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="flex items-center justify-center">
 						<Chrome
 							color={color}
-							placement={GithubPlacement.Top}
+							// @ts-ignore
+							placement={false}
 							onChange={(result) => {
-								handleChange(result.hex);
+								handleChange(result.hexa);
 							}}
 						/>
 					</PopoverContent>

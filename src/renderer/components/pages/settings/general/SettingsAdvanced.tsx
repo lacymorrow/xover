@@ -112,6 +112,7 @@ export function SettingsAdvanced() {
 					onChange={(value) => {
 						handleChangeSetting({ commandLineFlags: value });
 					}}
+					card
 				/>
 
 				<Button

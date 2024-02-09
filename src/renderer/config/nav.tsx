@@ -4,6 +4,7 @@ import { SettingsAppearance } from '@/renderer/components/pages/settings/appeara
 import {
 	BellIcon,
 	BlendingModeIcon,
+	Crosshair1Icon,
 	GearIcon,
 	IdCardIcon,
 	ImageIcon,
@@ -11,11 +12,12 @@ import {
 	LightningBoltIcon,
 } from '@radix-ui/react-icons';
 
-import { SettingsNotifications } from '@/renderer/components/pages/settings/notifications/SettingsNotifications';
-import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/SettingsKeyboard';
 import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
-import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
+import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/SettingsKeyboard';
+import { SettingsNotifications } from '@/renderer/components/pages/settings/notifications/SettingsNotifications';
+import { SettingsCrosshair } from '../components/pages/settings/appearance/SettingsCrosshair';
 import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
+import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
 
 export const nav = {
 	home: {
@@ -34,6 +36,12 @@ export const settingsNavItems = [
 		href: 'general',
 		element: <SettingsApplication />,
 		icon: GearIcon,
+	},
+	{
+		title: 'Crosshair',
+		href: 'crosshair',
+		element: <SettingsCrosshair />,
+		icon: Crosshair1Icon,
 	},
 	{
 		title: 'Actions',

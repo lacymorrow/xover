@@ -101,9 +101,6 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	const menuBuilder = new MenuBuilder(browserWindow);
 	menuBuilder.buildMenu();
 
-	// Context menu
-	setupContextMenu(browserWindow);
-
 	return browserWindow;
 };
 
@@ -125,8 +122,15 @@ export const createCrosshairWindow = async (
 
 		show: false,
 		skipTaskbar: !showTaskbarIcon, // Whether to show the window in taskbar. Default is false.
-		titleBarStyle: 'customButtonsOnHover', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
-		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
+		titleBarStyle: 'default', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+		// https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
+		// https://www.electronjs.org/docs/latest/tutorial/window-customization
+		// titleBarOverlay: true,
+		// 	 titleBarOverlay: {
+		//   color: '#2f3241',
+		//   symbolColor: '#74b1be',
+		//   height: 60
+		// }
 		// trafficLightPosition: { x: 10, y: 9 },
 
 		transparent: true, // Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.
@@ -162,6 +166,12 @@ export const createCrosshairWindow = async (
 
 	window.on('will-resize', () => {});
 
+	// Context menu disabled in production
+	// See: https://www.electronjs.org/docs/latest/tutorial/window-customization
+	if (is.debug) {
+		setupContextMenu(window);
+	}
+
 	// Load the window
 	window.loadURL(resolveHtmlPath('crosshair.html'));
 
@@ -186,6 +196,12 @@ export const createMainWindow = async () => {
 	windows.mainWindow = window;
 };
 
+export const createNewWindow = async () => {
+	const window = await createCrosshairWindow();
+
+	return window;
+};
+
 export const createChildWindow = async () => {
 	const window = createWindow({ frame: true });
 
@@ -203,11 +219,13 @@ export const createChildWindow = async () => {
 export const createSettingsWindow = async () => {
 	const options: BrowserWindowConstructorOptions = {
 		alwaysOnTop: true,
-		titleBarStyle: 'default',
+		// frame: true,
+		trafficLightPosition: { x: 12, y: 20 },
+		titleBarStyle: 'hidden',
 	};
 
 	const window = createWindow(options);
-	window.setAlwaysOnTop(true, 'screen-saver', 1);
+	// window.setAlwaysOnTop(true, 'screen-saver', 1);
 
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
 	window.on('closed', () => {
@@ -224,11 +242,8 @@ export const createSettingsWindow = async () => {
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));
 
+	// Context menu
+	setupContextMenu(window);
+
 	windows.settingsWindow = window;
-};
-
-export const createNewWindow = async () => {
-	const window = await createCrosshairWindow();
-
-	return window;
 };
