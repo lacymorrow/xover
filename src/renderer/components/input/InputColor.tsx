@@ -10,6 +10,7 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover';
 import { invertColor } from '@/utils/invertColor';
+import { CrossButton } from './CrossButton';
 
 export function InputColor({
 	value,
@@ -35,13 +36,15 @@ export function InputColor({
 
 	const uuid = useMemo(simpleUUID, []);
 
-	const colorDisplayStyle = useMemo(() => {
-		const colorWithoutAlpha = color.slice(0, 7);
-		return {
-			backgroundColor: colorWithoutAlpha,
-			color: invertColor(colorWithoutAlpha, true),
-		};
-	}, [color]);
+	const backgroundColor = useMemo(() => color.slice(0, 7), [color]);
+
+	const foregroundColor = useMemo(() => {
+		try {
+			return invertColor(backgroundColor, true);
+		} catch (error) {
+			return '';
+		}
+	}, [backgroundColor]);
 
 	const throttledOnChange = useMemo(() => {
 		if (throttleDelay && onChange) {
@@ -60,6 +63,9 @@ export function InputColor({
 		[throttledOnChange],
 	);
 
+	const handleClear = useCallback(() => {
+		handleChange('');
+	}, [handleChange]);
 	return (
 		<>
 			<Popover>
@@ -76,9 +82,20 @@ export function InputColor({
 							)}
 						</div>
 					</div>
-					<PopoverTrigger asChild>
-						<Button style={colorDisplayStyle}>
+					<PopoverTrigger className="relative" asChild>
+						<Button
+							style={{
+								backgroundColor,
+								color: foregroundColor,
+							}}
+						>
 							{buttonText || 'Select Color'}
+							{color && (
+								<CrossButton
+									onClick={handleClear}
+									style={{ color: foregroundColor }}
+								/>
+							)}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="flex items-center justify-center">
