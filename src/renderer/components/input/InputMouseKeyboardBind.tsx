@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
+import { keycodeToKey } from '@/config/keys';
 import { cn } from '@/lib/utils';
 import { simpleUUID } from '@/utils/getUUID';
-import keycodeToChar from '@/utils/keycodeToChar';
 import { stopEvent } from '@/utils/stopEvent';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClearButton } from './ClearButton';
@@ -26,7 +26,7 @@ export const prettyPrintBind = (bind: string | undefined) => {
 
 	if (type === 'keyboard') {
 		return `⌨️ Keyboard ${
-			button in keycodeToChar ? keycodeToChar[button] : value
+			button in keycodeToKey ? keycodeToKey[button] : value
 		}`;
 	}
 
