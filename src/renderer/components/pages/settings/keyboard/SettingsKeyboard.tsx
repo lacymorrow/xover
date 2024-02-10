@@ -118,6 +118,7 @@ export function SettingsKeyboard() {
 				value={keybinds.reset}
 				label="Reset Application"
 				description="Clear all settings and restore the app to its default state."
+				details='WARNING: This will delete your settings'
 				onChange={(value) => {
 					handleChangeKeybind('reset', value);
 				}}

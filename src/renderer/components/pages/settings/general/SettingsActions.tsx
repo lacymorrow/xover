@@ -42,7 +42,7 @@ export function SettingsActions() {
 						tiltActionEnabled: !settings.tiltActionEnabled,
 					});
 				}}
-				label="Enable Tilt Action"
+				label="Enable Tilt"
 				description="Enable tilting the crosshair when the bind is pressed/held."
 			/>
 			<InputSelectForm
