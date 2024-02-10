@@ -21,6 +21,7 @@ export const VOLUME = 0.15; // System volume in percent
 
 // Throttle delay in ms
 export const THROTTLE_DELAY = 100;
+export const DEBOUNCE_DELAY = 1000;
 
 // Double-click delay in ms
 export const DOUBLE_CLICK_DELAY = 250; // ms

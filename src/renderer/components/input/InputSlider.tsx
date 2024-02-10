@@ -1,9 +1,11 @@
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { DEBOUNCE_DELAY } from '@/config/config';
 import { cn } from '@/lib/utils';
+import { debounce } from '@/utils/debounce';
 import { simpleUUID } from '@/utils/getUUID';
 import { throttle } from '@/utils/throttle';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClearButton } from './ClearButton';
 
 export function InputSlider({
@@ -37,10 +39,18 @@ export function InputSlider({
 	step?: number;
 	props?: any;
 }) {
+	console.log('InputSlider', value);
 	const [currentValue, setCurrentValue] = useState(
 		typeof value === 'number' ? [value] : [0],
 	);
 	const uuid = useMemo(simpleUUID, []);
+
+	// When the value changes externally, update the state
+	const debouncedSetCurrentValue = useMemo(() => {
+		return debounce((val: number) => {
+			setCurrentValue([val]);
+		}, DEBOUNCE_DELAY);
+	}, []);
 
 	const throttledOnChange = useMemo(() => {
 		if (throttleDelay && onChange) {
@@ -48,6 +58,12 @@ export function InputSlider({
 		}
 		return onChange;
 	}, [throttleDelay, onChange]);
+
+	useEffect(() => {
+		if (typeof value === 'number') {
+			debouncedSetCurrentValue([value]);
+		}
+	}, [debouncedSetCurrentValue, value]);
 
 	const handleInputChange = useCallback(
 		(v: number) => {
