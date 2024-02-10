@@ -18,7 +18,11 @@
 // Tray/Dock menus
 // Reset app button in settings should restart app
 // Restart app doesn't work - Unable to parse /Users/lacy/repo/xover/package.json process.send is not a function
-// Debounce Slider
+
+/*
+Done:
+- Disable all keyboard shortcuts - 299
+*/
 
 import { app } from 'electron';
 import Logger from 'electron-log/main';
