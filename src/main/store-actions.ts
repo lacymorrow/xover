@@ -40,8 +40,7 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 };
 
 export const resetStoreSettings = () => {
-	Logger.status($messages.reset_store);
-	store.delete('actionState');
+	Logger.status($messages.resetStore);
 	store.delete('settings');
 	store.delete('keybinds');
 	store.delete('windows');
@@ -50,7 +49,7 @@ export const resetStoreSettings = () => {
 };
 
 export const resetStore = () => {
-	Logger.status($messages.reset_store);
+	Logger.status($messages.resetStore);
 	store.clear();
 
 	synchronizeApp();

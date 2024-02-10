@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import Logger from 'electron-log/main';
 import { DIRECTORY_SCAN_DEPTH } from '../config/config';
-import { $messages } from '../config/strings';
+import { $init } from '../config/strings';
 import analytics from './analytics';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
@@ -22,6 +22,9 @@ import { debugInfo, is } from './util';
 import { getImages } from './utils/getImages';
 
 export const startup = () => {
+	Logger.status($init.startup);
+	console.timeLog(app.name, $init.startup);
+
 	// Initialize logger
 	logger.initialize();
 
@@ -42,10 +45,14 @@ export const startup = () => {
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();
+
+	Logger.status($init.started);
+	console.timeLog(app.name, $init.started);
 };
 
 export const ready = async () => {
-	console.timeLog(app.name, $messages.ready);
+	Logger.status($init.started);
+	console.timeLog(app.name, $init.ready);
 
 	// Log Node/Electron versions
 	Logger.info(debugInfo());
@@ -77,7 +84,8 @@ export const ready = async () => {
 	new AutoUpdate();
 
 	// Idle
-	Logger.status($messages.mainIdle);
+	Logger.status($init.mainIdle);
+	console.timeLog(app.name, $init.mainIdle);
 };
 
 export const idle = async () => {
@@ -92,8 +100,10 @@ export const idle = async () => {
 
 	await createSettingsWindow();
 
-	Logger.status($messages.idle);
 	sounds.play('STARTUP');
 
 	// ... do something with your app
+
+	Logger.status($init.idle);
+	console.timeLog(app.name, $init.idle);
 };
