@@ -50,7 +50,7 @@ export const $messages = {
 
 	// App messages
 
-	resetSettings: 'Reset Settings',
+	resetSettings: 'Reset App',
 	reset_store: 'Reset App',
 	synchronize: 'Synchronizing state...',
 	auto_update: 'Checking for updates...',
@@ -60,15 +60,15 @@ export const $messages = {
 	// Network messages
 	online: 'Connected',
 	offline: 'Disconnected - Cannot fetch metadata',
+};
 
-	init: {
-		app: 'Initializing...',
-		logger: 'Initializing logger...',
-		analytics: 'Initializing analytics...',
-		errorHandling: 'Initializing error handling...',
-		refreshSettings: 'Refreshing settings...',
-		debugging: 'Initializing debugging...',
-		commandLineFlags: 'Initializing command line flags...',
-		appListeners: 'Registering app listeners...',
-	},
+export const $init = {
+	app: 'Initializing...',
+	logger: 'Initializing logger...',
+	analytics: 'Initializing analytics...',
+	errorHandling: 'Initializing error handling...',
+	refreshSettings: 'Refreshing settings...',
+	debugging: 'Initializing debugging...',
+	commandLineFlags: 'Initializing command line flags...',
+	appListeners: 'Registering app listeners...',
 };

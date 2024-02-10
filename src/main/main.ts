@@ -21,6 +21,7 @@
 // First Run
 // Migrations
 // Notify of new version
+// Ask for accessiblity permissions MAC
 
 /*
 Done:

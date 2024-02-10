@@ -1,16 +1,16 @@
 {
-	"name": "hotplate",
+	"name": "crossover",
 	"version": "3.0.0",
 	"description": "A batteries-included Electron boilerplate.",
 	"license": "CC-BY-NC-SA-4.0",
-	"homepage": "https://lacymorrow.github.io/hotplate",
+	"homepage": "https://lacymorrow.github.io/crossover",
 	"author": {
 		"name": "Lacy Morrow",
 		"email": "me@lacymorrow.com",
-		"url": "https://github.com/lacymorrow/electron-hotplate"
+		"url": "https://github.com/lacymorrow/crossover"
 	},
 	"bugs": {
-		"url": "https://github.com/lacymorrow/electron-hotplate/issues",
+		"url": "https://github.com/lacymorrow/crossover/issues",
 		"email": "me@lacymorrow.com"
 	},
 	"main": "./dist/main/main.js",

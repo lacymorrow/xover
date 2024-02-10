@@ -1,6 +1,5 @@
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { Slider } from '@/components/ui/slider';
 import { SettingsType } from '@/config/settings';
 import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
@@ -52,13 +51,6 @@ export function SettingsCrosshair() {
 				details="Adjust the opacity of the crosshair."
 				min={0}
 				max={100}
-			/>
-			<Slider
-				onValueChange={(value) => {
-					console.log(value);
-					// handleChangeSetting({ crosshairOpacity: value });
-				}}
-				value={[settings.crosshairOpacity]}
 			/>
 			<InputSlider
 				value={settings.crosshairRotation}

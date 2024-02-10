@@ -1,7 +1,7 @@
 // package.json fields
 export const packageJsonFields = {
-	bugs: 'https://github.com/lacymorrow/electron-hotplate/issues',
-	homepage: 'https://lacymorrow.github.io/electron-hotplate',
+	bugs: 'https://github.com/lacymorrow/crossover/issues',
+	homepage: 'https://lacymorrow.github.io/crossover',
 };
 
 // Constants
@@ -15,7 +15,7 @@ export const APP_BACKGROUND_OPACITY = 0.6;
 // App messages are user-facing messages that are displayed in the app; i.e. a public console log()
 export const APP_MESSAGES_MAX = 100;
 
-export const PROTOCOL = 'electron-hotplate'; // Custom app protocol handler for Electron, e.g. `app://`
+export const PROTOCOL = 'crossover'; // Custom app protocol handler for Electron, e.g. `app://`
 
 export const VOLUME = 0.15; // System volume in percent
 

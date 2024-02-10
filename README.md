@@ -30,10 +30,10 @@ Based on the [Electron React Boilerplate](https://github.com/electron-react-boil
 ```bash
 
 # Clone this repository
-git clone https://github.com/lacymorrow/electron-hotplate.git
+git clone https://github.com/lacymorrow/crossover.git
 
 # Go into the repository
-cd electron-hotplate
+cd crossover
 
 # Install dependencies
 yarn

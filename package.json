@@ -1,13 +1,13 @@
 {
-	"name": "hotplate",
-	"productName": "Hotplate",
-	"appId": "com.lacymorrow.hotplate",
-	"version": "3.0.0",
+	"name": "crossover",
+	"productName": "CrossOver",
+	"appId": "com.lacymorrow.crossover",
+	"version": "4.0.0-alpha.1",
 	"description": "A batteries-included Electron boilerplate.",
 	"license": "CC-BY-NC-SA-4.0",
 	"copyright": "Copyright © Lacy Morrow",
-	"repository": "lacymorrow/electron-hotplate",
-	"homepage": "https://lacymorrow.github.io/electron-hotplate",
+	"repository": "lacymorrow/crossover",
+	"homepage": "https://lacymorrow.github.io/crossover",
 	"keywords": [
 		"electron",
 		"boilerplate",
@@ -20,7 +20,7 @@
 		"reload"
 	],
 	"bugs": {
-		"url": "https://github.com/lacymorrow/electron-hotplate/issues",
+		"url": "https://github.com/lacymorrow/crossover/issues",
 		"email": "me@lacymorrow.com"
 	},
 	"author": {
@@ -236,7 +236,7 @@
 		"webpack-merge": "^5.10.0"
 	},
 	"build": {
-		"appId": "com.lacymorrow.hotplate",
+		"appId": "com.lacymorrow.crossover",
 		"asar": true,
 		"asarUnpack": "**\\*.{node,dll}",
 		"files": [
@@ -294,11 +294,11 @@
 			"artifactName": "${productName}-${version}.${ext}"
 		},
 		"appx": {
-			"applicationId": "HotplateElectron",
+			"applicationId": "CrossOverElectron",
 			"artifactName": "${productName}.${ext}",
 			"backgroundColor": "#5500ff",
-			"displayName": "Hotplate",
-			"identityName": "2886Fly5.HotplateElectron",
+			"displayName": "CrossOver",
+			"identityName": "2886Fly5.CrossOverElectron",
 			"publisher": "CN=C53C0091-1EEB-40B4-8537-082E06A4D328",
 			"publisherDisplayName": "Fly5",
 			"showNameOnTiles": true
@@ -337,7 +337,7 @@
 		"publish": {
 			"provider": "github",
 			"owner": "lacymorrow",
-			"repo": "hotplate"
+			"repo": "crossover"
 		}
 	},
 	"devEngines": {

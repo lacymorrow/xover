@@ -4,7 +4,7 @@ import {
 	DEFAULT_ACTION_STATE,
 	DEFAULT_KEYBINDS,
 	DEFAULT_SETTINGS,
-	SettingsType
+	SettingsType,
 } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 

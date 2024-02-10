@@ -10,11 +10,11 @@ import {
 } from '@/components/ui/card';
 import { useCallback } from 'react';
 
-import { $settings } from '@/config/strings';
+import { packageJsonFields } from '@/config/config';
 
 export function CardGithub() {
 	const handleClickStar = useCallback(() => {
-		window?.electron?.openUrl($settings.app.githubUrl);
+		window?.electron?.openUrl(packageJsonFields.homepage);
 	}, []);
 
 	return (

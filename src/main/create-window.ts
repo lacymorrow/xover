@@ -218,7 +218,7 @@ export const createChildWindow = async () => {
 
 export const createSettingsWindow = async () => {
 	const options: BrowserWindowConstructorOptions = {
-		alwaysOnTop: true,
+		// alwaysOnTop: true,
 		trafficLightPosition: { x: 12, y: 20 },
 		titleBarStyle: 'hidden',
 	};

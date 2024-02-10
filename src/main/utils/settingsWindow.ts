@@ -38,6 +38,7 @@ export const openSettingsWindow = () => {
 	// If the settings window is open and not focused, focus it
 	if (!windows.settingsWindow?.isFocused()) {
 		windows.settingsWindow?.focus();
+		return;
 	}
 
 	closeSettingsWindow();

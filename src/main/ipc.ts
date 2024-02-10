@@ -136,8 +136,14 @@ export default {
 		});
 
 		ipcMain.on(ipcChannels.CENTER_WINDOW, (event) => {
-			const window = BrowserWindow.fromId(event.sender.id);
-			if (!window) {
+			let window = BrowserWindow.fromId(event.sender.id);
+
+			// Don't center the settings window
+			if (window === windows.settingsWindow) {
+				window = windows.mainWindow;
+			}
+
+			if (!window || window.isDestroyed()) {
 				return;
 			}
 
