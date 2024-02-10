@@ -43,12 +43,6 @@ export const $errors = {
 
 export const $messages = {
 	resetStore: 'Reset App',
-<<<<<<< HEAD
-	autoUpdate: 'Checking for updates...',
-	updateAvailable: 'Update Available',
-	updateAvailableBody: 'Click to download',
-=======
->>>>>>> upstream/main
 
 	// Network messages
 	online: 'Connected',
