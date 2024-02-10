@@ -44,6 +44,7 @@ export const setAppLock = async (isLocked: boolean) => {
 		}
 	} else {
 		sounds.play('UNLOCK');
+		windows.settingsWindow?.show(); // hide settings window
 
 		stopIOHook();
 

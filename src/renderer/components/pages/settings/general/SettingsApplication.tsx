@@ -34,7 +34,7 @@ export function SettingsApplication() {
 				onChange={() => {
 					handleChangeSetting({ startLocked: !settings.startLocked });
 				}}
-				label="Lock on start"
+				label="Allow start locked"
 				description="Allow the app in a locked state, if it was locked when it was closed."
 				card
 			/>

@@ -4,6 +4,7 @@ import Logger from 'electron-log';
 import store from './store';
 import windows from './windows';
 
+import { createNewWindow } from './create-window';
 import { resetApp } from './reset';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
@@ -14,14 +15,25 @@ import {
 	moveToNextDisplay,
 	moveWindow,
 } from './utils/window-utils';
-import { createNewWindow } from './create-window';
 
 export const keyboardShortcuts: KeyboardShortcut[] = [
 	/* Default accelerators */
 
+	// Toggle CrossOver
+	{
+		action: 'lock',
+		fn() {
+			toggleAppLock();
+
+			// eslint-disable-next-line no-use-before-define
+			registerKeyboardShortcuts();
+		},
+	},
+
 	// Quit
 	{
 		action: 'quit',
+		allowUnbind: true,
 		fn() {
 			app.quit();
 		},
@@ -33,17 +45,6 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		allowUnbind: true,
 		fn() {
 			resetApp();
-		},
-	},
-
-	// Toggle CrossOver
-	{
-		action: 'lock',
-		fn() {
-			toggleAppLock();
-
-			// eslint-disable-next-line no-use-before-define
-			registerKeyboardShortcuts();
 		},
 	},
 
@@ -157,19 +158,26 @@ const registerKeyboardShortcuts = () => {
 	globalShortcut.unregisterAll();
 
 	const keybinds = store.get('keybinds');
-	const { isLocked, isHidden } = store.get('settings');
+	const { allowDisableKeyboardShortcuts, isLocked, isHidden } =
+		store.get('settings');
 
 	// Register all shortcuts
 	keyboardShortcuts.forEach((shortcut) => {
 		const { action, fn, ignoreWhenLocked } = shortcut;
 		const keybind = keybinds[action];
 
+		if (isLocked && allowDisableKeyboardShortcuts && action !== 'lock') {
+			// Disable shortcuts except for lock
+			return;
+		}
+
 		// Custom shortcuts
 		if (
 			!action ||
 			!fn ||
 			!keybind ||
-			((isLocked || isHidden) && ignoreWhenLocked)
+			((isLocked || isHidden) && ignoreWhenLocked) ||
+			(isLocked && allowDisableKeyboardShortcuts && action !== 'lock')
 		) {
 			// Disable shortcut
 			Logger.info(`No keybind for ${action}`);

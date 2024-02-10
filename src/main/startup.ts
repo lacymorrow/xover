@@ -5,6 +5,7 @@ import { $messages } from '../config/strings';
 import analytics from './analytics';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
+import commandLineFlags from './command-line-flags';
 import { createMainWindow, createSettingsWindow } from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
@@ -15,12 +16,10 @@ import { __crosshairs } from './paths';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
-import { setCrosshairImages } from './store-actions';
+import { getCrosshairImages, setCrosshairImages } from './store-actions';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import { getImages } from './utils/getImages';
-import windows from './windows';
-import commandLineFlags from './command-line-flags';
 
 export const startup = () => {
 	// Initialize logger
@@ -82,6 +81,7 @@ export const ready = async () => {
 };
 
 export const idle = async () => {
+	console.log('idle', getCrosshairImages().length);
 	getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
 		.then((images) => {
 			setCrosshairImages(images);

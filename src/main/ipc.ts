@@ -9,6 +9,7 @@ import { resetApp } from './reset';
 import { idle } from './startup';
 import {
 	getAppMessages,
+	getCrosshairImages,
 	getKeybinds,
 	getSettings,
 	setSettings,
@@ -56,6 +57,7 @@ export default {
 		ipcMain.handle(ipcChannels.GET_MESSAGES, getAppMessages);
 		ipcMain.handle(ipcChannels.GET_KEYBINDS, getKeybinds);
 		ipcMain.handle(ipcChannels.GET_SETTINGS, getSettings);
+		ipcMain.handle(ipcChannels.GET_CROSSHAIR_IMAGES, getCrosshairImages);
 
 		// These do not send data back to the renderer process
 		ipcMain.on(
@@ -108,6 +110,12 @@ export default {
 		ipcMain.on(ipcChannels.CLOSE_WINDOW, (event) => {
 			const window = BrowserWindow.fromId(event.sender.id) || activeWindow();
 			if (!window) {
+				return;
+			}
+
+			// Don't close the mainwindow
+			if (window === windows.mainWindow) {
+				windows.mainWindow.hide();
 				return;
 			}
 

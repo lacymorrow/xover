@@ -1,4 +1,6 @@
 import {
+	BookmarkFilledIcon,
+	BookmarkIcon,
 	CaretUpIcon,
 	CircleIcon,
 	CommitIcon,
@@ -10,7 +12,6 @@ import {
 	DotFilledIcon,
 	DotIcon,
 	DotsHorizontalIcon,
-	DotsVerticalIcon,
 	EnterFullScreenIcon,
 	ExitFullScreenIcon,
 	EyeClosedIcon,
@@ -25,13 +26,14 @@ import {
 	PlusCircledIcon,
 	PlusIcon,
 	RadiobuttonIcon,
+	SewingPinFilledIcon,
+	SewingPinIcon,
 	SquareIcon,
 	StarFilledIcon,
 	StarIcon,
 	SunIcon,
 	TargetIcon,
 	ViewHorizontalIcon,
-	ViewVerticalIcon,
 } from '@radix-ui/react-icons';
 
 export const reticles = [
@@ -56,14 +58,9 @@ export const reticles = [
 		Icon: RadiobuttonIcon,
 	},
 	{
-		label: 'Dots Horizontal',
-		value: 'dotsHorizontal',
+		label: 'Dots',
+		value: 'dots',
 		Icon: DotsHorizontalIcon,
-	},
-	{
-		label: 'Dots Vertical',
-		value: 'dotsVertical',
-		Icon: DotsVerticalIcon,
 	},
 	{
 		label: 'Disc',
@@ -132,6 +129,16 @@ export const reticles = [
 		Icon: Half1Icon,
 	},
 	{
+		label: 'Square',
+		value: 'square',
+		Icon: SquareIcon,
+	},
+	{
+		label: 'Square Split ',
+		value: 'squareSplit',
+		Icon: ViewHorizontalIcon,
+	},
+	{
 		label: 'Stressed Out',
 		value: 'stressedOut',
 		Icon: EnterFullScreenIcon,
@@ -140,21 +147,6 @@ export const reticles = [
 		label: 'Stressed In',
 		value: 'stressedIn',
 		Icon: ExitFullScreenIcon,
-	},
-	{
-		label: 'Square',
-		value: 'square',
-		Icon: SquareIcon,
-	},
-	{
-		label: 'Square Split Horizontal',
-		value: 'squareSplitHorizontal',
-		Icon: ViewHorizontalIcon,
-	},
-	{
-		label: 'Square Split Vertical',
-		value: 'squareSplitVertical',
-		Icon: ViewVerticalIcon,
 	},
 	{
 		label: 'Chevron',
@@ -200,6 +192,26 @@ export const reticles = [
 		label: 'Star Filled',
 		value: 'starFilled',
 		Icon: StarFilledIcon,
+	},
+	{
+		label: 'Pin',
+		value: 'pin',
+		Icon: SewingPinIcon,
+	},
+	{
+		label: 'Pin Filled',
+		value: 'pinFilled',
+		Icon: SewingPinFilledIcon,
+	},
+	{
+		label: 'Bookmark',
+		value: 'bookmark',
+		Icon: BookmarkIcon,
+	},
+	{
+		label: 'Bookmark Filled',
+		value: 'bookmarkFilled',
+		Icon: BookmarkFilledIcon,
 	},
 ];
 

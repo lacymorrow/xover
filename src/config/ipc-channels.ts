@@ -17,6 +17,7 @@ const GET_APP_PATHS = 'get-app-paths';
 const GET_MESSAGES = 'get-messages';
 const GET_KEYBINDS = 'get-keybinds';
 const GET_SETTINGS = 'get-settings';
+const GET_CROSSHAIR_IMAGES = 'get-crosshair-images';
 
 const SET_KEYBIND = 'set-keybind';
 const SET_SETTINGS = 'set-settings';
@@ -56,6 +57,7 @@ export const ipcChannels = {
 	GET_MESSAGES,
 	GET_KEYBINDS,
 	GET_SETTINGS,
+	GET_CROSSHAIR_IMAGES,
 
 	SET_KEYBIND,
 	SET_SETTINGS,

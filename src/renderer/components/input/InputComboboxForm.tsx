@@ -103,7 +103,7 @@ export function InputComboboxForm({
 											</Button>
 										</FormControl>
 									</PopoverTrigger>
-									<PopoverContent className={cn('p-0 w-[200px]', className)}>
+									<PopoverContent className={cn('p-0 w-[350px]', className)}>
 										<Command className="overflow-auto">
 											<CommandInput
 												placeholder={searchMessage || 'Search...'}

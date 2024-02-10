@@ -27,7 +27,7 @@ export const refreshSettingsOnAppStart = () => {
 	}
 
 	// Reset settings to default on app start
-	const resetSettings: Partial<SettingsType> = {
+	const freshSettings: Partial<SettingsType> = {
 		isHidden: false,
 		isSettingsWindowOpen: false,
 		currentTilt: 0,
@@ -37,9 +37,9 @@ export const refreshSettingsOnAppStart = () => {
 
 	// Unlock app if it was locked (unless it's set to start locked)
 	if (!startLocked) {
-		resetSettings.isLocked = false;
+		freshSettings.isLocked = false;
 	}
 
-	setSettings(resetSettings);
+	setSettings(freshSettings);
 	setActionStateKey('tilt', 0);
 };

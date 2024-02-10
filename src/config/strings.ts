@@ -36,18 +36,21 @@ export const $dialog = {
 };
 
 export const $errors = {
-	main: 'Main> ',
+	prefix: 'Main> ',
 	blockedNavigation: 'Blocked navigation to: ',
 	invalidChannel: 'Invalid IPC channel',
 };
 
 export const $messages = {
 	// Timing messages
-	init: 'Initializing...',
 	ready: 'App Ready',
 	started: 'Started',
 	idle: 'Idle',
 	mainIdle: 'Main process is now idle',
+
+	// App messages
+
+	resetSettings: 'Reset Settings',
 	reset_store: 'Reset App',
 	synchronize: 'Synchronizing state...',
 	auto_update: 'Checking for updates...',
@@ -57,4 +60,15 @@ export const $messages = {
 	// Network messages
 	online: 'Connected',
 	offline: 'Disconnected - Cannot fetch metadata',
+
+	init: {
+		app: 'Initializing...',
+		logger: 'Initializing logger...',
+		analytics: 'Initializing analytics...',
+		errorHandling: 'Initializing error handling...',
+		refreshSettings: 'Refreshing settings...',
+		debugging: 'Initializing debugging...',
+		commandLineFlags: 'Initializing command line flags...',
+		appListeners: 'Registering app listeners...',
+	},
 };

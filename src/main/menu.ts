@@ -5,7 +5,7 @@ import {
 	app,
 	shell,
 } from 'electron';
-import { bugs, homepage } from '../../package.json';
+import { packageJsonFields } from '../config/config';
 
 import dock from './dock';
 import {
@@ -17,6 +17,9 @@ import {
 } from './menu-items';
 import { getSetting, setSettings } from './store-actions';
 import { is } from './util';
+
+// import { bugs, homepage } from '../../package.json';
+const { bugs, homepage } = packageJsonFields;
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
 	selector?: string;
@@ -152,7 +155,7 @@ export default class MenuBuilder {
 			{
 				label: 'Report an Issue...',
 				click() {
-					shell.openExternal(bugs.url);
+					shell.openExternal(bugs);
 				},
 				id: 'documentation',
 			},

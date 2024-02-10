@@ -13,11 +13,16 @@ import {
 	SettingsType,
 } from '@/config/settings';
 import { $messages } from '@/config/strings';
+import { play, preload } from '@/renderer/lib/sounds';
+import { AppInfoType } from '@/types/app';
+import { CustomAcceleratorsType } from '@/types/keyboard';
 import { MenuItemConstructorOptions } from 'electron/renderer';
 import { toast } from 'sonner';
-import { CustomAcceleratorsType } from '@/types/keyboard';
-import { AppInfoType } from '@/types/app';
-import { play, preload } from '@/renderer/lib/sounds';
+
+interface ItemType {
+	label: string;
+	value: string;
+}
 
 interface GlobalContextType {
 	app: Partial<AppInfoType>;
@@ -27,6 +32,7 @@ interface GlobalContextType {
 	messages: string[];
 	settings: SettingsType;
 	setSettings: (newSettings: Partial<SettingsType>) => void;
+	crosshairImages: { label: string; value: string }[];
 }
 
 export const GlobalContext = React.createContext<GlobalContextType>({
@@ -37,6 +43,7 @@ export const GlobalContext = React.createContext<GlobalContextType>({
 	messages: [],
 	settings: DEFAULT_SETTINGS,
 	setSettings: () => {},
+	crosshairImages: [],
 });
 
 export function GlobalContextProvider({
@@ -55,6 +62,8 @@ export function GlobalContextProvider({
 
 	const [keybinds, setCurrentKeybinds] =
 		React.useState<CustomAcceleratorsType>(DEFAULT_KEYBINDS);
+
+	const [crosshairImages, setCrosshairImages] = React.useState<ItemType[]>([]);
 
 	useEffect(() => {
 		// Create handler for receiving asynchronous messages from the main process
@@ -83,6 +92,27 @@ export function GlobalContextProvider({
 			window.electron.ipcRenderer
 				.invoke(ipcChannels.GET_MESSAGES)
 				.then(setMessages)
+				.catch(console.error);
+
+			// Get crosshair images
+			window.electron.ipcRenderer
+				.invoke(ipcChannels.GET_CROSSHAIR_IMAGES)
+				.then((res) => {
+					const images = res.map((img: any) => {
+						return {
+							label: (
+								<div className="flex gap-2 justify-between items-center">
+									<div className="w-6 h-6">
+										<img src={`file://${img}`} alt="" />
+									</div>
+									{img.split('/').pop()}
+								</div>
+							),
+							value: img,
+						};
+					});
+					setCrosshairImages(images);
+				})
 				.catch(console.error);
 		};
 
@@ -161,8 +191,17 @@ export function GlobalContextProvider({
 			setSettings,
 			messages,
 			message: messages[messages.length - 1] ?? '',
+			crosshairImages,
 		};
-	}, [appInfo, appMenu, keybinds, settings, setSettings, messages]);
+	}, [
+		appInfo,
+		appMenu,
+		crosshairImages,
+		keybinds,
+		settings,
+		setSettings,
+		messages,
+	]);
 
 	return (
 		<GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>

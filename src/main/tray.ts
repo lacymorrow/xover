@@ -26,6 +26,13 @@ const initialize = () => {
 	windows.tray = new ElectronTray(getIconPath());
 
 	const contextMenu = Menu.buildFromTemplate([
+		{
+			label: 'Settings...',
+			accelerator: 'Command+R',
+			click: () => {
+				windows.mainWindow?.show();
+			},
+		},
 		{ role: 'about' },
 		{ role: 'quit' },
 	]);

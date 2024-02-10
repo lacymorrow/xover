@@ -7,9 +7,17 @@
 // protocol
 // analytics
 // Scroll reset when changing settings page
-// settings open when locked
-// crosshair chooser
 // improve keybind input
+// Large crosshair chooser
+// Add a way to reset settings like slider values to default
+// Secondary crosshair - 61
+// Multiple crosshair windows - save window state
+// SVG support
+// Bigger crosshair, Resizable
+// Image overlay - 112
+// Tray/Dock menus
+// Reset App doesn't reflect in settings immediately
+// Restart app doesn't work - Unable to parse /Users/lacy/repo/xover/package.json process.send is not a function
 
 import { app } from 'electron';
 import Logger from 'electron-log/main';
@@ -20,7 +28,7 @@ import { ready, startup } from './startup';
 
 // Initialize the timer
 console.time(app.name);
-console.timeLog(app.name, $messages.init);
+console.timeLog(app.name, $messages.init.app);
 
 // Register ipcMain listeners
 ipc.initialize();
@@ -30,7 +38,7 @@ app
 	.whenReady()
 	.then(ready) // <-- this is where the app is initialized
 	.catch((error: Error) => {
-		Logger.error($errors.main, error);
+		Logger.error($errors.prefix, error);
 	});
 
 // LAUNCH THE APP

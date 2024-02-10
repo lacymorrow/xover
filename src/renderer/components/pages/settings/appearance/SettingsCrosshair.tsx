@@ -1,13 +1,15 @@
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { SettingsType } from '@/config/settings';
-import { InputColor } from '@/renderer/components/input/InputColor';
 import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
-import { reticleItems } from '@/renderer/config/reticles';
+import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
+import { SettingsReticle } from './SettingsReticle';
+import { SettingsSVG } from './SettingsSVG';
 
 export function SettingsCrosshair() {
-	const { settings } = useGlobalContext();
+	const { crosshairImages, settings } = useGlobalContext();
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		window.electron.setSettings(setting);
 	};
@@ -20,7 +22,16 @@ export function SettingsCrosshair() {
 				</p>
 			</div>
 			<Separator />
-
+			<InputComboboxForm
+				value={settings.crosshair}
+				onChange={(value) => {
+					handleChangeSetting({ crosshair: value });
+				}}
+				label="Crosshair"
+				details="Select the crosshair style."
+				items={crosshairImages}
+				className="w-[350px] h-60"
+			/>
 			<InputSlider
 				value={settings.crosshairSize}
 				onChange={(value) => {
@@ -51,53 +62,18 @@ export function SettingsCrosshair() {
 				min={-180}
 				max={180}
 			/>
-
-			<InputComboboxForm
-				value={settings.reticle}
-				onChange={(value) => {
-					handleChangeSetting({ reticle: value });
-				}}
-				label="Crosshair"
-				details="Select the crosshair style."
-				items={reticleItems}
-				className="w-[250px] h-60 h"
+			<SettingsReticle />
+			<SettingsSVG />
+			WINDOW Size
+			<InputSwitch
+				label="Resizable"
+				description="Allow the app window to be resized."
+				card
 			/>
-			<InputSlider
-				value={settings.reticleSize}
-				onChange={(value) => {
-					handleChangeSetting({ reticleSize: value });
-				}}
-				label="Reticle Size"
-				details="Adjust the size of the reticle in the center of the crosshair."
-				min={0}
-				max={100}
-			/>
-			<InputSlider
-				value={settings.reticleRotation}
-				onChange={(value) => {
-					handleChangeSetting({ reticleRotation: value });
-				}}
-				label="Reticle Rotation"
-				details="Adjust the rotation of the reticle in the center of the crosshair."
-				min={-180}
-				max={180}
-			/>
-			<InputColor
-				value={settings.reticleColor}
-				label="Reticle Color"
-				details="The color of the reticle in the center of the crosshair."
-				onChange={(value) => {
-					handleChangeSetting({ reticleColor: value });
-				}}
-			/>
-			<InputColor
-				value={settings.strokeColor}
-				label="Stroke Color"
-				details="The color of the stroke around the crosshair."
-				onChange={(value) => {
-					handleChangeSetting({ strokeColor: value });
-				}}
-			/>
+			Position X
+			<Input value={400} type="number" />
+			Position Y
+			<Input value={400} type="number" />
 		</div>
 	);
 }

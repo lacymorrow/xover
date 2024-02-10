@@ -10,6 +10,7 @@ export const getImages = (
 	return new Promise((resolve, reject) => {
 		try {
 			const images: string[] = [];
+			const img: any = {};
 			const files = fs.readdirSync(directory);
 			files.forEach((file) => {
 				const filePath = path.join(directory, file);
@@ -28,6 +29,7 @@ export const getImages = (
 				} else if (stat.isFile()) {
 					if (IMAGE_EXTENSIONS.indexOf(path.extname(filePath)) !== -1) {
 						images.push(filePath);
+						img[filePath] = true;
 					}
 					if (file === files[files.length - 1]) {
 						resolve(images);

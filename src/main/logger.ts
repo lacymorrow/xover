@@ -1,11 +1,12 @@
 import { app, dialog } from 'electron';
 import Logger from 'electron-log/main';
 import path from 'path';
-import { $dialog } from '../config/strings';
+import { packageJsonFields } from '../config/config';
+import { $dialog, $messages } from '../config/strings';
 import { addAppMessage } from './store-actions';
 
-const { bugs } = require('../../package.json');
-
+// const { bugs } = require('../../package.json');
+const { bugs } = packageJsonFields;
 // Catch errors in the main process
 const catchErrors = () => {
 	// Catch uncaught errors
@@ -33,7 +34,7 @@ const catchErrors = () => {
 				.then((result) => {
 					if (result.response === 1) {
 						// Use the package.json bugs url to create the "New Issue" url
-						const issueUrl = new URL(bugs.url);
+						const issueUrl = new URL(bugs);
 						const createIssueUrl = new URL(
 							path.join(issueUrl.pathname, '/new'),
 							issueUrl.origin,
@@ -75,6 +76,8 @@ const initialize = () => {
 		}
 		return message;
 	});
+
+	Logger.status($messages.mainIdle);
 };
 
 export default { initialize, catchErrors };

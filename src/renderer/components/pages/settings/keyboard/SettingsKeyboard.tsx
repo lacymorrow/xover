@@ -1,10 +1,11 @@
 import { Separator } from '@/components/ui/separator';
-import { useGlobalContext } from '@/renderer/context/global-context';
+import { InputCheckbox } from '@/renderer/components/input/InputCheckbox';
 import { InputKeyboardShortcut } from '@/renderer/components/input/InputKeyboardShortcut';
+import { useGlobalContext } from '@/renderer/context/global-context';
 import { CustomAcceleratorsType } from '@/types/keyboard';
 
 export function SettingsKeyboard() {
-	const { keybinds } = useGlobalContext();
+	const { keybinds, settings } = useGlobalContext();
 
 	const handleChangeKeybind = (
 		key: keyof CustomAcceleratorsType,
@@ -115,10 +116,21 @@ export function SettingsKeyboard() {
 			/>
 			<InputKeyboardShortcut
 				value={keybinds.reset}
-				label="Reset Application Settings"
+				label="Reset Application"
 				description="Clear all settings and restore the app to its default state."
 				onChange={(value) => {
 					handleChangeKeybind('reset', value);
+				}}
+			/>
+
+			<InputCheckbox
+				label="Disable all keyboard shortcuts"
+				description="Disable all keyboard shortcuts."
+				value={settings.allowDisableKeyboardShortcuts}
+				onChange={(value) => {
+					window.electron.setSettings({
+						allowDisableKeyboardShortcuts: value,
+					});
 				}}
 			/>
 		</div>

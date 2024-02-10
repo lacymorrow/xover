@@ -67,6 +67,9 @@ const schema: Store.Schema<StoreType> = {
 			allowAutoUpdate: {
 				type: 'boolean',
 			},
+			allowDisableKeyboardShortcuts: {
+				type: 'boolean',
+			},
 			allowSounds: {
 				type: 'boolean',
 			},

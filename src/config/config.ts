@@ -1,3 +1,9 @@
+// package.json fields
+export const packageJsonFields = {
+	bugs: 'https://github.com/lacymorrow/electron-hotplate/issues',
+	homepage: 'https://lacymorrow.github.io/electron-hotplate',
+};
+
 // Constants
 export const APP_WIDTH = 208;
 export const APP_HEIGHT = 130;
