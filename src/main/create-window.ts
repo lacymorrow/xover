@@ -231,7 +231,9 @@ export const createSettingsWindow = async () => {
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
 	window.on('closed', () => {
 		setSettings({ isSettingsWindowOpen: false });
-		createSettingsWindow()
+		windows.settingsWindow = createWindow(options);
+		windows.settingsWindow.loadURL(resolveHtmlPath('index.html'));
+		setupContextMenu(windows.settingsWindow);
 	});
 
 	// // Hide window when clicked away

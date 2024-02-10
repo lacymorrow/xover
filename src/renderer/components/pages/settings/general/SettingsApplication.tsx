@@ -45,7 +45,7 @@ export function SettingsApplication() {
 						handleChangeSetting({ showDockIcon: !settings.showDockIcon });
 					}}
 					label="Dock icon"
-					description="Show the app icon in the dock."
+					description="Show the app icon in the dock. (macOS only)"
 					card
 				/>
 			)}
@@ -56,7 +56,7 @@ export function SettingsApplication() {
 						handleChangeSetting({ showTaskbarIcon: !settings.showTaskbarIcon });
 					}}
 					label="Taskbar Icon"
-					description={`Show the app icon in the taskbar. ${$settings.reloadToApply}`}
+					description={`Show the app icon in the taskbar. ${$settings.reloadToApply} (Windows only)`}
 					card
 				/>
 			)}
@@ -87,7 +87,7 @@ export function SettingsApplication() {
 						});
 					}}
 					label="Quit when all windows close"
-					description="Don't keep the app running when all windows are closed."
+					description="Don't keep the app running when all windows are closed. (macOS only)"
 					card
 				/>
 			)}

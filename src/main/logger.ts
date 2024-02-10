@@ -2,7 +2,7 @@ import { app, dialog } from 'electron';
 import Logger from 'electron-log/main';
 import path from 'path';
 import { packageJsonFields } from '../config/config';
-import { $dialog, $messages } from '../config/strings';
+import { $dialog, $init } from '../config/strings';
 import { addAppMessage } from './store-actions';
 
 // const { bugs } = require('../../package.json');
@@ -77,7 +77,7 @@ const initialize = () => {
 		return message;
 	});
 
-	Logger.status($messages.mainIdle);
+	Logger.status($init.logger);
 };
 
 export default { initialize, catchErrors };

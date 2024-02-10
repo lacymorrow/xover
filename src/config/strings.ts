@@ -42,33 +42,38 @@ export const $errors = {
 };
 
 export const $messages = {
-	// Timing messages
-	ready: 'App Ready',
-	started: 'Started',
-	idle: 'Idle',
-	mainIdle: 'Main process is now idle',
-
-	// App messages
-
-	resetSettings: 'Reset App',
-	reset_store: 'Reset App',
-	synchronize: 'Synchronizing state...',
-	auto_update: 'Checking for updates...',
-	update_available: 'Update Available',
-	update_available_body: 'Click to download',
+	resetStore: 'Reset App',
 
 	// Network messages
 	online: 'Connected',
 	offline: 'Disconnected - Cannot fetch metadata',
 };
 
+export const $autoUpdate = {
+	autoUpdate: 'Checking for updates...',
+	updateAvailable: 'Update Available',
+	updateAvailableBody: 'Click to download',
+};
+
 export const $init = {
+	// Timing messages
 	app: 'Initializing...',
+	startup: 'Starting...',
+	started: 'Started',
+	ready: 'App Ready',
 	logger: 'Initializing logger...',
 	analytics: 'Initializing analytics...',
 	errorHandling: 'Initializing error handling...',
-	refreshSettings: 'Refreshing settings...',
 	debugging: 'Initializing debugging...',
 	commandLineFlags: 'Initializing command line flags...',
+	refreshSettings: 'Refreshing settings...',
+	appFlags: 'Registering app flags...',
 	appListeners: 'Registering app listeners...',
+	mainIdle: 'Main process is now idle',
+	idle: 'Idle',
+};
+
+export const $iohook = {
+	enabled: 'iohook enabled',
+	disabled: 'iohook disabled',
 };

@@ -35,14 +35,14 @@ Todo:
 
 import { app } from 'electron';
 import Logger from 'electron-log/main';
-import { $errors, $messages } from '../config/strings';
+import { $errors, $init } from '../config/strings';
 
 import ipc from './ipc';
 import { ready, startup } from './startup';
 
 // Initialize the timer
 console.time(app.name);
-console.timeLog(app.name, $messages.init.app);
+console.timeLog(app.name, $init.app);
 
 // Register ipcMain listeners
 ipc.initialize();

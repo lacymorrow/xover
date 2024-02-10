@@ -4,6 +4,7 @@ import { ipcChannels } from '../config/ipc-channels';
 import windows from './windows';
 
 const play = (sound: string) => {
+	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) return;
 	windows.mainWindow?.webContents.send(ipcChannels.PLAY_SOUND, sound);
 };
 

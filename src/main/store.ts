@@ -17,7 +17,7 @@ export interface StoreType {
 	appMessageLog: AppMessageLogType; // Public-facing console.log()
 	keybinds: CustomAcceleratorsType; // Custom keybinds/accelerators/global shortcuts
 	images: string[];
-	// windows: any;
+	windows: any;
 	actionState: ActionStateType;
 }
 
@@ -31,10 +31,10 @@ const schema: Store.Schema<StoreType> = {
 			},
 		},
 	},
-	// windows: {
-	// 	type: 'object',
-	// 	default: DEFAULT_WINDOW_STATE,
-	// },
+	windows: {
+		type: 'object',
+		default: {},
+	},
 	images: {
 		type: 'array',
 		default: [],
