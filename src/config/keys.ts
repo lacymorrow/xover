@@ -49,6 +49,27 @@ export const KEYS = {
 		like control, shift, etc. as well as a handful of oddball codes.
 		We only save if we receive one of these non-modifier keys.
 	*/
+
+export const mouseButtons = [
+	'Left',
+	'Left',
+	'Right',
+	'Middle',
+	'Back',
+	'Forward',
+	'Extra 1',
+	'Extra 2',
+];
+
+export const iohoookMouseButtons = {
+	0: '1',
+	1: '3',
+	2: '2',
+	3: '4',
+	4: '5',
+	5: '6',
+	6: '7',
+};
 export const modifierKeyCodes = new Set([16, 17, 18, 91, 92, 93]);
 export const specialKeyCodes = new Set([
 	0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 16, 17, 18, 21, 22, 23, 24, 25, 26, 27, 28,
