@@ -36,6 +36,10 @@ const sounds: Record<string, { url: string; volume: number }> = {
 		url: 'ui-sounds/secondary-system/alert_error-03.wav',
 		volume: VOLUME,
 	},
+	RESET: {
+		url: 'ui-sounds/secondary-system/alert_error-03.wav',
+		volume: VOLUME,
+	},
 };
 
 export const preload = (basepath = '') => {

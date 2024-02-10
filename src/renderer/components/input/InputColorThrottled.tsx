@@ -1,7 +1,8 @@
 // todo: clear button cannot be inside button
 import { simpleUUID } from '@/utils/getUUID';
+import { throttle } from '@/utils/throttle';
 import Chrome from '@uiw/react-color-chrome';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,27 +13,27 @@ import {
 import { invertColor } from '@/utils/invertColor';
 import { ClearButton } from './ClearButton';
 
-export function InputColor({
+export function InputColorThrottled({
 	value,
-	defaultValue,
 	onChange,
 	label,
 	description,
 	details,
 	buttonText,
 
+	throttleDelay,
 	...props
 }: {
 	value?: string;
-	defaultValue?: string;
 	onChange?: (value: string) => void;
 	label?: string;
 	description?: string;
 	details?: string;
 	buttonText?: string;
+	throttleDelay?: number;
 	props?: any;
 }) {
-	const color = useMemo(() => value || '', [value]);
+	const [color, setColor] = useState(value || '#000000');
 
 	const uuid = useMemo(simpleUUID, []);
 
@@ -46,19 +47,26 @@ export function InputColor({
 		}
 	}, [backgroundColor]);
 
+	const throttledOnChange = useMemo(() => {
+		if (throttleDelay && onChange) {
+			return throttle(onChange, throttleDelay);
+		}
+		return onChange;
+	}, [throttleDelay, onChange]);
+
 	const handleChange = useCallback(
 		(result: string) => {
-			if (onChange) {
-				onChange(result);
+			setColor(result);
+			if (throttledOnChange) {
+				throttledOnChange(result);
 			}
 		},
-		[onChange],
+		[throttledOnChange],
 	);
 
 	const handleClear = useCallback(() => {
 		handleChange('');
 	}, [handleChange]);
-
 	return (
 		<>
 			<Popover>
@@ -94,7 +102,7 @@ export function InputColor({
 					</PopoverTrigger>
 					<PopoverContent className="flex items-center justify-center">
 						<Chrome
-							color={color || defaultValue || '#000000'}
+							color={color || undefined}
 							// @ts-ignore
 							placement={false}
 							onChange={(result) => {

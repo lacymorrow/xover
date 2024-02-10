@@ -4,14 +4,10 @@ import sounds from './sounds';
 import {
 	getSettings,
 	resetStore,
+	resetStoreSettings,
 	setActionStateKey,
 	setSettings,
 } from './store-actions';
-
-export const restartApp = () => {
-	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
-	app.quit(); // Must be called after app.relaunch() to actually quit the app
-};
 
 export const resetApp = () => {
 	// Sonic announcement
@@ -42,4 +38,16 @@ export const refreshSettingsOnAppStart = () => {
 
 	setSettings(freshSettings);
 	setActionStateKey('tilt', 0);
+};
+
+export const restartApp = () => {
+	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
+	app.quit(); // Must be called after app.relaunch() to actually quit the app
+};
+
+export const resetSettings = () => {
+	// Sonic announcement
+	sounds.play('RESET');
+	resetStoreSettings();
+	refreshSettingsOnAppStart();
 };

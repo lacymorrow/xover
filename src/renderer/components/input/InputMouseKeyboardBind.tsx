@@ -1,13 +1,20 @@
 import { Button } from '@/components/ui/button';
+import { iohoookMouseButtons, keycodeToKey } from '@/config/keys';
 import { cn } from '@/lib/utils';
 import { simpleUUID } from '@/utils/getUUID';
-import keycodeToChar, {
-	iohoookMouseButtons,
-	mouseButtons,
-} from '@/utils/keycode';
 import { stopEvent } from '@/utils/stopEvent';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClearButton } from './ClearButton';
+
+const mouseButtons = [
+	'Left',
+	'Middle',
+	'Right',
+	'Back',
+	'Forward',
+	'Extra 1',
+	'Extra 2',
+];
 
 export const prettyPrintBind = (bind: string | undefined) => {
 	if (!bind?.includes(':')) {
@@ -18,7 +25,9 @@ export const prettyPrintBind = (bind: string | undefined) => {
 	const button = parseInt(value, 10);
 
 	if (type === 'keyboard') {
-		return `⌨️ Keyboard ${value}`;
+		return `⌨️ Keyboard ${
+			button in keycodeToKey ? keycodeToKey[button] : value
+		}`;
 	}
 
 	if (type === 'mouse') {
@@ -48,13 +57,11 @@ export function InputMouseKeyboardBind({
 	className?: string;
 	props?: any;
 }) {
-	const [currentValue, setCurrentValue] = useState(value);
 	const [listening, setListening] = useState(false);
 
 	const handleChange = useCallback(
 		(result: string) => {
 			onChange?.(result);
-			setCurrentValue(result);
 		},
 		[onChange],
 	);
@@ -68,14 +75,13 @@ export function InputMouseKeyboardBind({
 				return;
 			}
 
-			if (e instanceof KeyboardEvent && e.which in keycodeToChar) {
-				handleChange(`keyboard:${keycodeToChar[e.which]}`);
-			} else if (
-				(e instanceof PointerEvent || e instanceof MouseEvent) &&
-				e.button in iohoookMouseButtons
-			) {
+			if (e instanceof KeyboardEvent && e.which in keycodeToKey) {
 				handleChange(
-					`mouse:${iohoookMouseButtons[e.button as keyof typeof iohoookMouseButtons]}`,
+					`keyboard:${e.which in keycodeToKey ? keycodeToKey[e.which] : e.which}`,
+				);
+			} else if (e instanceof PointerEvent || e instanceof MouseEvent) {
+				handleChange(
+					`mouse:${e.button in iohoookMouseButtons ? iohoookMouseButtons[e.button as keyof typeof iohoookMouseButtons] : e.button}`,
 				);
 			}
 
@@ -104,8 +110,8 @@ export function InputMouseKeyboardBind({
 	}, []);
 
 	const handleClear = useCallback(() => {
-		setCurrentValue('');
-	}, []);
+		handleChange('');
+	}, [handleChange]);
 	return (
 		<div className="flex flex-col justify-between gap-2">
 			<div className="flex flex-row items-center justify-between">
@@ -131,11 +137,9 @@ export function InputMouseKeyboardBind({
 				>
 					{listening
 						? buttonText || 'Waiting, press any button or key...'
-						: prettyPrintBind(currentValue) ||
-							placeholder ||
-							'Click to set bind...'}
+						: prettyPrintBind(value) || placeholder || 'Click to set bind...'}
 				</Button>
-				{currentValue && <ClearButton onClick={handleClear} />}
+				{value && <ClearButton onClick={handleClear} />}
 			</div>
 			{details && <p className="text-sm text-muted-foreground">{details}</p>}
 		</div>

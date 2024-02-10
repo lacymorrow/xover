@@ -26,7 +26,7 @@ export function SettingsReticle() {
 				onChange={(value) => {
 					handleChangeSetting({ reticle: value });
 				}}
-				label="Crosshair"
+				label="Reticle Style"
 				details="Select the crosshair style."
 				items={reticleItems}
 				className="w-[250px] h-60 h"
