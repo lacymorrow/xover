@@ -1,5 +1,6 @@
 import Logger from 'electron-log';
-import { iohookKeycodes } from '../utils/keycode';
+
+import { iohookKeycodes } from '@/config/keys';
 import {
 	getActionState,
 	getSettings,

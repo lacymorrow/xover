@@ -22,6 +22,11 @@
 /*
 Done:
 - Disable all keyboard shortcuts - 299
+/*
+
+Todo:
+- Inputs should reset to default value when the settings are reset
+- Debounce Slider
 */
 
 import { app } from 'electron';

@@ -1,20 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { iohoookMouseButtons, keycodeToKey } from '@/config/keys';
+import { iohoookMouseButtons, keycodeToKey, mouseButtons } from '@/config/keys';
 import { cn } from '@/lib/utils';
 import { simpleUUID } from '@/utils/getUUID';
 import { stopEvent } from '@/utils/stopEvent';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClearButton } from './ClearButton';
-
-const mouseButtons = [
-	'Left',
-	'Middle',
-	'Right',
-	'Back',
-	'Forward',
-	'Extra 1',
-	'Extra 2',
-];
 
 export const prettyPrintBind = (bind: string | undefined) => {
 	if (!bind?.includes(':')) {
@@ -75,6 +65,7 @@ export function InputMouseKeyboardBind({
 				return;
 			}
 
+			// Attempt to lookup key/button name using map
 			if (e instanceof KeyboardEvent && e.which in keycodeToKey) {
 				handleChange(
 					`keyboard:${e.which in keycodeToKey ? keycodeToKey[e.which] : e.which}`,
