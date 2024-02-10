@@ -1,6 +1,6 @@
-import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
 import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
+import { CustomAcceleratorsType, KeyboardShortcut } from '../types/keyboard';
 import store from './store';
 import windows from './windows';
 

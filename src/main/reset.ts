@@ -16,19 +16,33 @@ export const resetApp = () => {
 };
 
 export const refreshSettingsOnAppStart = () => {
-	const { resetOnAppStart, startLocked } = getSettings();
+	const { appVersion, hadFirstRun, resetOnAppStart, startLocked } =
+		getSettings();
+
 	if (resetOnAppStart) {
 		resetApp();
-		return;
+	}
+
+	if (!hadFirstRun) {
+		// This is the first run of the app!
+		// ... do something special
+	}
+
+	const currentAppVersion = app.getVersion();
+	if (appVersion !== currentAppVersion) {
+		// The app has been updated!
+		// ... do something special like migrations
 	}
 
 	// Reset settings to default on app start
 	const freshSettings: Partial<SettingsType> = {
+		appVersion: currentAppVersion,
+		hadFirstRun: true,
+
 		isHidden: false,
 		isSettingsWindowOpen: false,
 		currentTilt: 0,
 		resetOnAppStart: false,
-		hadFirstRun: true,
 	};
 
 	// Unlock app if it was locked (unless it's set to start locked)

@@ -1,4 +1,5 @@
 import { CustomAcceleratorsType } from '@/types/keyboard';
+import { APP_HEIGHT, APP_WIDTH } from './config';
 
 export type ThemeType = 'system' | 'light' | 'dark';
 export type IOHookBehaviorType = 'toggle' | 'hold';
@@ -7,6 +8,7 @@ export type IOHookInputType = 'mouse' | 'keyboard';
 export type NotificationType = 'system' | 'app' | 'all';
 
 export interface SettingsType {
+	appVersion?: string;
 	allowAnalytics: boolean;
 	allowSounds: boolean;
 	allowAutoUpdate: boolean;
@@ -30,36 +32,8 @@ export interface SettingsType {
 	backgroundColor: string;
 	foregroundColor: string;
 
-	crosshair: string;
-	crosshairRotation: number;
-	crosshairSize: number;
-	crosshairOpacity: number;
-
-	reticle: string;
-	reticleRotation: number;
-	reticleSize: number;
-	reticleColor: string;
-
-	// svg
-	fillColor: string;
-	strokeColor: string;
-	strokeWidth: number;
-
 	// iohook
 	followMouse: boolean;
-
-	altActionEnabled: boolean;
-	altCrosshair: string;
-	altBehavior: IOHookBehaviorType; // toggle/hold
-	altSize: number;
-	altOpacity: number;
-	altInput: IOHookInputType; // mouse/keyboard
-	altTrigger: number;
-
-	hideActionEnabled: boolean;
-	hideBehavior: IOHookBehaviorType; // toggle/hold
-	hideInput: IOHookInputType; // mouse/keyboard
-	hideTrigger: number;
 
 	tiltActionEnabled: boolean;
 	tiltAngle: number;
@@ -79,17 +53,21 @@ export interface SettingsType {
 	hadFirstRun: boolean;
 
 	// vibrancy: 'none' | 'sidebar' | 'full';
-	// lastWindowState: {
-	// 	x: number;
-	// 	y: number;
-	// 	width: number;
-	// 	height: number;
-	// 	isMaximized: boolean;
-	// };
+
+	crosshair: string;
+	crosshairRotation: number;
+	crosshairSize: number;
+	crosshairOpacity: number;
+
+	reticle: string;
+	reticleRotation: number;
+	reticleSize: number;
+	reticleColor: string;
 }
 
 // These are the default settings, imported by the store
 export const DEFAULT_SETTINGS: SettingsType = {
+	appVersion: '',
 	allowAnalytics: true,
 	allowAutoUpdate: true,
 	allowDisableKeyboardShortcuts: false,
@@ -122,26 +100,8 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	reticleRotation: 0,
 	reticleColor: '#ffffff',
 
-	// svg
-	fillColor: '#ffffff',
-	strokeColor: '#000000',
-	strokeWidth: 1,
-
 	// iohook
 	followMouse: true,
-
-	altCrosshair: '',
-	altBehavior: 'hold', // toggle/hold
-	altSize: 100,
-	altOpacity: 100,
-	altActionEnabled: false,
-	altTrigger: 1,
-	altInput: 'mouse',
-
-	hideActionEnabled: false,
-	hideBehavior: 'hold', // toggle/hold
-	hideTrigger: 1,
-	hideInput: 'mouse',
 
 	tiltActionEnabled: false,
 	tiltAngle: 15,
@@ -161,6 +121,77 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	hadFirstRun: false,
 
 	// experimentalFeatures
+};
+
+export interface WindowStateType {
+	x?: number;
+	y?: number;
+	width?: number;
+	height?: number;
+}
+
+export interface CrosshairWindowStateType extends WindowStateType {
+	// isMaximized: boolean;
+
+	backgroundColor: string;
+	foregroundColor: string;
+
+	crosshair: string;
+	crosshairRotation: number;
+	crosshairSize: number;
+	crosshairOpacity: number;
+
+	reticle: string;
+	reticleRotation: number;
+	reticleSize: number;
+	reticleColor: string;
+
+	// svg
+	fillColor: string;
+	strokeColor: string;
+	strokeWidth: number;
+
+	altActionEnabled: boolean;
+	altCrosshair: string;
+	altBehavior: IOHookBehaviorType; // toggle/hold
+	altSize: number;
+	altOpacity: number;
+	altInput: IOHookInputType; // mouse/keyboard
+	altTrigger: number;
+}
+
+export const DEFAULT_WINDOW_STATE = {
+	settings: {},
+	main: {
+		width: APP_WIDTH,
+		height: APP_HEIGHT,
+
+		backgroundColor: '#b80f9cB0',
+		foregroundColor: '#ffffff',
+
+		crosshair: '',
+		crosshairRotation: 0,
+		crosshairSize: 80,
+		crosshairOpacity: 80,
+
+		reticle: 'dot',
+		reticleRotation: 0,
+		reticleSize: 50,
+		reticleColor: '#ffffff',
+
+		// svg
+		fillColor: '#ffffff',
+		strokeColor: '#000000',
+		strokeWidth: 1,
+
+		altActionEnabled: false,
+		altCrosshair: '',
+		altBehavior: 'hold', // toggle/hold
+		altSize: 100,
+		altOpacity: 100,
+		altInput: 'mouse', // mouse/keyboard
+		altTrigger: 0,
+	},
 };
 
 export type ActionStateType = {

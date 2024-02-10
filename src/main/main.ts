@@ -18,6 +18,9 @@
 // Tray/Dock menus
 // Reset app button in settings should restart app
 // Restart app doesn't work - Unable to parse /Users/lacy/repo/xover/package.json process.send is not a function
+// First Run
+// Migrations
+// Notify of new version
 
 /*
 Done:

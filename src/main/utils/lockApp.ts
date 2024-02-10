@@ -37,7 +37,9 @@ export const setAppLock = async (isLocked: boolean) => {
 			window.removeAllListeners('moved');
 		});
 
-		app.dock.hide();
+		if (!showDockIcon) {
+			app.dock.hide();
+		}
 
 		if (followMouse) {
 			startIOHook();

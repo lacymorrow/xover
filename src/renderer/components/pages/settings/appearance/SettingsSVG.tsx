@@ -1,7 +1,5 @@
 import { Separator } from '@/components/ui/separator';
 import { SettingsType } from '@/config/settings';
-import { InputColor } from '@/renderer/components/input/InputColor';
-import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { useGlobalContext } from '@/renderer/context/global-context';
 
 export function SettingsSVG() {
@@ -19,7 +17,7 @@ export function SettingsSVG() {
 				</p>
 			</div>
 			<Separator />
-			<InputColor
+			{/* <InputColor
 				value={settings.fillColor}
 				label="Fill Color"
 				details="The background color of the Crosshair application window."
@@ -46,7 +44,7 @@ export function SettingsSVG() {
 				min={0}
 				max={10}
 				step={0.1}
-			/>
+			/> */}
 		</div>
 	);
 }

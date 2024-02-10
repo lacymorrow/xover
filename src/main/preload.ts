@@ -1,9 +1,9 @@
-import { $errors } from '@/config/strings';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { getOS } from '@/utils/getOS';
-import { NotificationOptions } from '@/types/notification';
 import { ipcChannels } from '../config/ipc-channels';
 import { SettingsType } from '../config/settings';
+import { $errors } from '../config/strings';
+import { NotificationOptions } from '../types/notification';
+import { getOS } from '../utils/getOS';
 
 const channels = Object.values(ipcChannels);
 

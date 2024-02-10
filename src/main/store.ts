@@ -1,12 +1,13 @@
-import { CustomAcceleratorsType } from '@/types/keyboard';
 import Store from 'electron-store';
 import {
 	ActionStateType,
 	DEFAULT_ACTION_STATE,
 	DEFAULT_KEYBINDS,
 	DEFAULT_SETTINGS,
+	DEFAULT_WINDOW_STATE,
 	SettingsType,
 } from '../config/settings';
+import { CustomAcceleratorsType } from '../types/keyboard';
 
 export type AppMessageType = string;
 
@@ -32,11 +33,8 @@ const schema: Store.Schema<StoreType> = {
 		},
 	},
 	windows: {
-		type: 'array',
-		default: [],
-		items: {
-			type: 'object',
-		},
+		type: 'object',
+		default: DEFAULT_WINDOW_STATE,
 	},
 	images: {
 		type: 'array',
@@ -171,43 +169,6 @@ const schema: Store.Schema<StoreType> = {
 			},
 			followMouse: {
 				type: 'boolean',
-			},
-			altActionEnabled: {
-				type: 'boolean',
-			},
-			altCrosshair: {
-				type: 'string',
-			},
-			altBehavior: {
-				type: 'string',
-				enum: ['toggle', 'hold'],
-			},
-			altSize: {
-				type: 'number',
-			},
-			altOpacity: {
-				type: 'number',
-			},
-			altInput: {
-				type: 'string',
-				enum: ['mouse', 'keyboard'],
-			},
-			altTrigger: {
-				type: 'number',
-			},
-			hideActionEnabled: {
-				type: 'boolean',
-			},
-			hideBehavior: {
-				type: 'string',
-				enum: ['toggle', 'hold'],
-			},
-			hideInput: {
-				type: 'string',
-				enum: ['mouse', 'keyboard'],
-			},
-			hideTrigger: {
-				type: 'number',
 			},
 			tiltActionEnabled: {
 				type: 'boolean',

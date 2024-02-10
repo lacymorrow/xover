@@ -1,6 +1,6 @@
 import Logger from 'electron-log';
 
-import { iohookKeycodes } from '@/config/keys';
+import { iohookKeycodes } from '../config/keys';
 import {
 	getActionState,
 	getSettings,
@@ -21,6 +21,7 @@ export const registerFollowMouse = () => {
 		if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
 			return;
 		}
+		// todo: fix this
 		// Can't set fractional values
 		windows.mainWindow.setBounds({
 			x: event.x - Math.round(width / 2),
