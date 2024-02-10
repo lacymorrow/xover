@@ -16,8 +16,9 @@
 // Bigger crosshair, Resizable
 // Image overlay - 112
 // Tray/Dock menus
-// Reset App doesn't reflect in settings immediately
+// Reset app button in settings should restart app
 // Restart app doesn't work - Unable to parse /Users/lacy/repo/xover/package.json process.send is not a function
+// Debounce Slider
 
 import { app } from 'electron';
 import Logger from 'electron-log/main';

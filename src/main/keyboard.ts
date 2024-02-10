@@ -5,7 +5,7 @@ import store from './store';
 import windows from './windows';
 
 import { createNewWindow } from './create-window';
-import { resetApp } from './reset';
+import { resetSettings } from './reset';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
 import {
@@ -44,7 +44,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'reset',
 		allowUnbind: true,
 		fn() {
-			resetApp();
+			resetSettings();
 		},
 	},
 
