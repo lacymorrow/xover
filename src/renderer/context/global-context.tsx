@@ -12,7 +12,6 @@ import {
 	DEFAULT_SETTINGS,
 	SettingsType,
 } from '@/config/settings';
-import { $messages } from '@/config/strings';
 import { play, preload } from '@/renderer/lib/sounds';
 import { AppInfoType } from '@/types/app';
 import { CustomAcceleratorsType } from '@/types/keyboard';
@@ -68,7 +67,7 @@ export function GlobalContextProvider({
 	useEffect(() => {
 		// Create handler for receiving asynchronous messages from the main process
 		const synchronizeAppState = async () => {
-			console.log($messages.synchronize);
+			console.log(ipcChannels.APP_UPDATED);
 
 			// Get app menu
 			window.electron.ipcRenderer
@@ -146,7 +145,6 @@ export function GlobalContextProvider({
 			.invoke(ipcChannels.GET_APP_INFO)
 			.then((info) => {
 				setAppInfo(info);
-				console.dir(info);
 				return info;
 			})
 			.then(({ paths }) => {

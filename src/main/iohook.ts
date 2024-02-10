@@ -1,6 +1,7 @@
 import Logger from 'electron-log';
 
 import { iohookKeycodes } from '../config/keys';
+import { $iohook } from '../config/strings';
 import {
 	getActionState,
 	getSettings,
@@ -11,14 +12,14 @@ import windows from './windows';
 let iohook: any | null = null;
 
 export const registerFollowMouse = () => {
-	if (!windows.mainWindow) {
+	if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 		return;
 	}
 
 	const { width, height } = windows.mainWindow.getBounds();
 
 	iohook.on('mousemove', (event: any) => {
-		if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+		if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 			return;
 		}
 		// todo: fix this
@@ -92,7 +93,7 @@ const registerToggleHoldMouse = (
 };
 
 export const startIOHook = async () => {
-	if (!windows.mainWindow) {
+	if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 		return;
 	}
 
@@ -114,6 +115,8 @@ export const startIOHook = async () => {
 	if (!followMouse && !tiltEnabled) {
 		return;
 	}
+
+	Logger.status($iohook.enabled);
 
 	// eslint-disable-next-line global-require
 	iohook = iohook || require('iohook');
@@ -145,13 +148,14 @@ export const startIOHook = async () => {
 		}
 	}
 
-	Logger.status('Starting iohook');
 	// iohook.useRawcode(true);
 	// iohook.start(true);
 	iohook.start();
 };
 
 export const stopIOHook = async () => {
+	Logger.status($iohook.enabled);
+
 	setActionStateKey('tilt', 0);
 
 	if (!iohook) {

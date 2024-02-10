@@ -324,7 +324,7 @@ export const closeAllWindows = () => {
 export const focusNextWindow = () => {
 	const allWindows = BrowserWindow.getAllWindows();
 	const focusedWindow = BrowserWindow.getFocusedWindow();
-	if (!focusedWindow) {
+	if (!focusedWindow || focusedWindow.isDestroyed()) {
 		windows.mainWindow?.focus();
 		return;
 	}
@@ -337,7 +337,9 @@ export const focusNextWindow = () => {
 	// const nextWindow =
 	// 	win.id === windows.settingsWindow?.id ? windows.mainWindow : win;
 
-	if (nextWindow && !nextWindow.isDestroyed()) {
-		nextWindow.focus();
+	if (!nextWindow || nextWindow.isDestroyed()) {
+		return;
 	}
+
+	nextWindow.focus();
 };

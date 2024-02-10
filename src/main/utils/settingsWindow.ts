@@ -17,7 +17,11 @@ export const openSettingsWindow = () => {
 	const { isSettingsWindowOpen, isLocked } = getSettings();
 
 	// Prevent opening the settings window when the app is locked
-	if (isLocked || !windows.settingsWindow) {
+	if (
+		isLocked ||
+		!windows.settingsWindow ||
+		windows.settingsWindow.isDestroyed()
+	) {
 		return;
 	}
 

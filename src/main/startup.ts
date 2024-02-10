@@ -22,7 +22,6 @@ import { debugInfo, is } from './util';
 import { getImages } from './utils/getImages';
 
 export const startup = () => {
-	Logger.status($init.startup);
 	console.timeLog(app.name, $init.startup);
 
 	// Initialize logger

@@ -25,6 +25,9 @@ export function ActionStateContextProvider({
 		window.electron.ipcRenderer.on(
 			ipcChannels.ACTION_STATE,
 			async (key, value) => {
+				console.log(ipcChannels.ACTION_STATE, key, value);
+
+				// Update the state based on the key and value received
 				if (key === 'tilt') {
 					setTilt(value as number);
 				}

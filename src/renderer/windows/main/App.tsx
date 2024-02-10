@@ -9,9 +9,9 @@ import {
 } from 'react-router-dom';
 
 import SettingsLayout from '@/renderer/components/layout/SettingsLayout';
+import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
 import { settingsNavItems } from '@/renderer/config/nav';
 import '@/renderer/styles/globals.scss';
-import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
 
 export default function App() {
 	const routes = (
@@ -35,7 +35,30 @@ export default function App() {
 		</Route>
 	);
 
-	const router = createMemoryRouter(createRoutesFromElements(routes));
+	const crosshairRoutes = (
+		<Route
+			path="/"
+			element={
+				<MainLayout>
+					<SettingsLayout />
+				</MainLayout>
+			}
+		>
+			<Route index element={<SettingsApplication />} />
+			{settingsNavItems.map((item) => {
+				/* Dynamically add routes for settings */
+				return (
+					<Route
+						key={item.title}
+						path={item.href}
+						element={<>{item.element}</>}
+					/>
+				);
+			})}
+		</Route>
+	);
+
+	const router = createMemoryRouter(createRoutesFromElements(crosshairRoutes));
 
 	return (
 		<>
