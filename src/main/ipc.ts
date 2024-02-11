@@ -1,33 +1,23 @@
-<<<<<<< HEAD
 import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
 import { SettingsType } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
-import autoUpdate from './auto-update';
-=======
-import { Menu, app, ipcMain, shell } from 'electron';
-import { ipcChannels } from '../config/ipc-channels';
-import { SettingsType } from '../config/settings';
-import { CustomAcceleratorsType } from '../types/keyboard';
 import { getOS } from '../utils/getOS';
+import autoUpdate from './auto-update';
 import kb from './keyboard';
->>>>>>> upstream/main
 import { serializeMenu, triggerMenuItemById } from './menu';
 import { notification } from './notifications';
 import { rendererPaths } from './paths';
-<<<<<<< HEAD
 import { resetApp } from './reset';
-=======
 import sounds from './sounds';
->>>>>>> upstream/main
 import { idle } from './startup';
 import {
 	getAppMessages,
+	getCrosshairImages,
 	getKeybinds,
 	getSettings,
-	setSettings
+	setSettings,
 } from './store-actions';
-<<<<<<< HEAD
 import { openSettingsWindow } from './utils/settingsWindow';
 import {
 	activeWindow,
@@ -35,11 +25,6 @@ import {
 	focusNextWindow,
 } from './utils/window-utils';
 
-import { getOS } from '../utils/getOS';
-import kb from './keyboard';
-import sounds from './sounds';
-=======
->>>>>>> upstream/main
 import { is } from './util';
 import windows from './windows';
 
@@ -66,7 +51,6 @@ export default {
 		});
 
 		// These send data back to the renderer process
-		// ipcMain.handle(ipcChannels.GET_CROSSHAIR_IMAGES, getCrosshairImages);
 		ipcMain.handle(ipcChannels.GET_RENDERER_SYNC, () => {
 			return {
 				settings: getSettings(),
@@ -75,6 +59,7 @@ export default {
 				appMenu: serializeMenu(Menu.getApplicationMenu()),
 			};
 		});
+		ipcMain.handle(ipcChannels.GET_CROSSHAIR_IMAGES, getCrosshairImages);
 
 		// These do not send data back to the renderer process
 		ipcMain.on(
