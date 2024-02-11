@@ -36,6 +36,7 @@ const CENTER_WINDOW_SETTINGS = 'center-settings-window';
 const FOCUS_WINDOW = 'focus-window';
 const FOCUS_WINDOW_MAIN = 'focus-main-window';
 const SET_CROSSHAIR = 'set-crosshair';
+const SET_WINDOW_STATE = 'set-window-state';
 const OPEN_SETTINGS = 'open-settings';
 
 export const ipcChannels = {
@@ -70,5 +71,6 @@ export const ipcChannels = {
 	FOCUS_WINDOW,
 	FOCUS_WINDOW_MAIN,
 	SET_CROSSHAIR,
+	SET_WINDOW_STATE,
 	OPEN_SETTINGS,
 };

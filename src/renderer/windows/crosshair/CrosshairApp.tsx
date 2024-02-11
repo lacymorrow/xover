@@ -7,7 +7,7 @@ import '@/renderer/styles/crosshair.scss';
 import { useEffect } from 'react';
 
 export default function CrosshairApp() {
-	const { settings } = useGlobalContext();
+	const { settings, windowState } = useGlobalContext();
 	const { tilt } = useActionStateContext();
 
 	useEffect(() => {
@@ -18,7 +18,7 @@ export default function CrosshairApp() {
 
 		// Properties to apply to renderer every sync
 		const properties = {
-			'--app-bg-color': settings.backgroundColor,
+			'--app-bg-color': windowState.backgroundColor,
 			'--app-foreground-color': settings.foregroundColor,
 			'--crosshair-opacity': settings.crosshairOpacity / 100,
 			'--crosshair-scale': settings.crosshairSize / 100,
@@ -37,7 +37,7 @@ export default function CrosshairApp() {
 		Object.entries(properties).forEach(([key, value]) => {
 			document.documentElement.style.setProperty(key, String(value));
 		});
-	}, [settings]);
+	}, [settings, windowState]);
 
 	useEffect(() => {
 		// Tilt

@@ -39,6 +39,7 @@ export const $errors = {
 	prefix: 'Main> ',
 	blockedNavigation: 'Blocked navigation to: ',
 	invalidChannel: 'Invalid IPC channel',
+	secondInstance: 'Second instance detected',
 };
 
 export const $messages = {

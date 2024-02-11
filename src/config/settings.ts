@@ -165,7 +165,7 @@ export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	width: APP_WIDTH,
 	height: APP_HEIGHT,
 
-	backgroundColor: '',
+	backgroundColor: '#0f0',
 	foregroundColor: '',
 
 	crosshair: '',

@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { SettingsType } from '@/config/settings';
+import { CrosshairWindowStateType } from '@/config/settings';
+import { InputColor } from '@/renderer/components/input/InputColor';
 import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
@@ -9,9 +10,9 @@ import { SettingsReticle } from './SettingsReticle';
 import { SettingsSVG } from './SettingsSVG';
 
 export function SettingsCrosshair() {
-	const { crosshairImages, settings } = useGlobalContext();
-	const handleChangeSetting = (setting: Partial<SettingsType>) => {
-		window.electron.setSettings(setting);
+	const { crosshairImages, settings, windowState } = useGlobalContext();
+	const handleChangeSetting = (setting: Partial<CrosshairWindowStateType>) => {
+		window.electron.setWindowState(setting);
 	};
 	return (
 		<div className="space-y-6">
@@ -22,6 +23,22 @@ export function SettingsCrosshair() {
 				</p>
 			</div>
 			<Separator />
+			<InputColor
+				value={windowState.backgroundColor}
+				label="Background Color"
+				details="The background color of the Crosshair application window."
+				onChange={(value) => {
+					handleChangeSetting({ backgroundColor: value });
+				}}
+			/>
+			<InputColor
+				value={settings.foregroundColor}
+				label="Accent Color"
+				details="Highlight color used for buttons, links, and other interactive elements."
+				onChange={(value) => {
+					handleChangeSetting({ foregroundColor: value });
+				}}
+			/>
 			<InputComboboxForm
 				value={settings.crosshair}
 				onChange={(value) => {

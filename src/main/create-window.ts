@@ -141,6 +141,13 @@ export const createCrosshairWindow = async (
 ) => {
 	Logger.status('Creating crosshair window', id);
 	const state = id ? getWindowState(id) : null;
+
+	// Resume previous window state
+	if (!state) {
+		// New window state
+		setWindowState(id, { ...DEFAULT_CROSSHAIR_WINDOW_STATE });
+	}
+
 	const { showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
 		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
@@ -171,28 +178,19 @@ export const createCrosshairWindow = async (
 		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
 		// vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
 
-		width: APP_WIDTH,
+		width: state?.width ? state?.width : APP_WIDTH,
 		minWidth: APP_WIDTH,
-		height: APP_HEIGHT,
+		height: state?.height ? state?.height : APP_HEIGHT,
 		minHeight: APP_HEIGHT,
+		...(state?.x ? { x: state.x } : {}),
+		...(state?.y ? { y: state.y } : {}),
+
+		// Conditionally enable features based on the platform
+		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
+		...(is.windows ? { type: 'toolbar' } : {}),
+
 		...opts,
 	};
-
-	if (is.windows) {
-		options.type = 'toolbar';
-	}
-
-	// Resume previous window state
-	if (state) {
-		console.dir(state);
-		options.x = state.x;
-		options.y = state.y;
-		options.width = state.width;
-		options.height = state.height;
-	} else {
-		// New window state
-		setWindowState(id, { ...DEFAULT_CROSSHAIR_WINDOW_STATE });
-	}
 
 	const window = createWindow(id, options);
 
@@ -268,7 +266,7 @@ export const createSettingsWindow = async () => {
 
 		// Recreate the window
 		windows.settingsWindow = createWindow('settings', options);
-		windows.settingsWindow.loadURL(resolveHtmlPath('index.html'));
+		windows.settingsWindow.loadURL(`${resolveHtmlPath(`index.html`)}`);
 		setupContextMenu(windows.settingsWindow);
 	});
 

@@ -23,6 +23,7 @@
 // Ask for accessiblity permissions MAC
 // Reset settings should reload windows
 // Less Renderer sync
+// use same dock icon
 
 /*
 Done:

@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
-import { SettingsType } from '../config/settings';
+import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { $errors } from '../config/strings';
 import { NotificationOptions } from '../types/notification';
 import { getOS } from '../utils/getOS';
@@ -11,6 +11,8 @@ const electronHandler = {
 	os: getOS(),
 	setSettings: (settings: Partial<SettingsType>) =>
 		ipcRenderer.send(ipcChannels.SET_SETTINGS, settings),
+	setWindowState: (state: Partial<CrosshairWindowStateType>) =>
+		ipcRenderer.send(ipcChannels.SET_WINDOW_STATE, state),
 	setKeybind: (keybind: string, accelerator: string) =>
 		ipcRenderer.send(ipcChannels.SET_KEYBIND, keybind, accelerator),
 	triggerAppMenuItemById: (id: string) =>

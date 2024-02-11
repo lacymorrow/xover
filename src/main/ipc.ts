@@ -1,6 +1,6 @@
 import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
-import { SettingsType } from '../config/settings';
+import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 import { getOS } from '../utils/getOS';
 import autoUpdate from './auto-update';
@@ -12,12 +12,13 @@ import { resetApp } from './reset';
 import sounds from './sounds';
 import { idle } from './startup';
 import {
-	getActiveWindow,
+	getActiveWindowState,
 	getAppMessages,
 	getCrosshairImages,
 	getKeybinds,
 	getSettings,
 	getWindowState,
+	setActiveWindowState,
 	setSettings,
 } from './store-actions';
 import { openSettingsWindow } from './utils/settingsWindow';
@@ -54,15 +55,11 @@ export default {
 
 		// These send data back to the renderer process
 		ipcMain.handle(ipcChannels.GET_RENDERER_SYNC, (_event, id) => {
-			let windowState = {};
-			if (id === 'settings') {
-				const w = getActiveWindow();
-				windowState = getWindowState(w);
-			} else {
-				windowState = getWindowState(id);
-			}
+			const windowState =
+				!id || id === 'settings' ? getActiveWindowState() : getWindowState(id);
 			return {
-				settings: { ...getSettings(), ...getWindowState(id) },
+				windowState,
+				settings: getSettings(),
 				keybinds: getKeybinds(),
 				messages: getAppMessages(),
 				appMenu: serializeMenu(Menu.getApplicationMenu()),
@@ -82,6 +79,13 @@ export default {
 			ipcChannels.SET_SETTINGS,
 			(_event, settings: Partial<SettingsType>) => {
 				setSettings(settings);
+			},
+		);
+
+		ipcMain.on(
+			ipcChannels.SET_WINDOW_STATE,
+			(_event, settings: Partial<CrosshairWindowStateType>) => {
+				setActiveWindowState(settings);
 			},
 		);
 

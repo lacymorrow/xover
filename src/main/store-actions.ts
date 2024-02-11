@@ -4,6 +4,7 @@ import { APP_MESSAGES_MAX } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
 import {
 	ActionStateType,
+	CrosshairWindowStateType,
 	SettingsType,
 	WindowStateType,
 } from '../config/settings';
@@ -39,7 +40,7 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 
 	// Sync with renderer
 	forEachWindow((win) => {
-		win.webContents.send(ipcChannels.APP_UPDATED, 'asd');
+		win.webContents.send(ipcChannels.APP_UPDATED);
 	});
 };
 
@@ -119,12 +120,9 @@ export const getWindowState = (w: string) => {
 	return {};
 };
 
-export const getWindowStates = () => {
-	return store.get('windows');
-};
-
 export const setWindowState = (w: string, state: Partial<WindowStateType>) => {
 	store.set(`windows.${w}`, { ...getWindowState(w), ...state });
+	synchronizeApp();
 };
 
 export const deleteWindowState = (w: string) => {
@@ -133,12 +131,26 @@ export const deleteWindowState = (w: string) => {
 	store.set(`windows`, state);
 };
 
+export const getWindowStates = () => {
+	return store.get('windows');
+};
+
 export const getActiveWindow = () => {
 	return store.get('activeWindow');
 };
 
 export const setActiveWindow = (w: string) => {
 	store.set('activeWindow', w);
+};
+
+export const getActiveWindowState = () => {
+	return getWindowState(getActiveWindow());
+};
+
+export const setActiveWindowState = (
+	state: Partial<CrosshairWindowStateType>,
+) => {
+	setWindowState(getActiveWindow(), state);
 };
 
 export const getActionState = () => {

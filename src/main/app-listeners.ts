@@ -77,6 +77,7 @@ const ready = () => {
 	});
 
 	app.on('second-instance', () => {
+		Logger.warn($errors.secondInstance);
 		// Someone tried to run a second instance, we should focus our window.
 		if (windows.mainWindow) {
 			// If the window is minimized, we should restore it and focus it.

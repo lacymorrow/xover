@@ -2,16 +2,13 @@ import { app } from 'electron';
 import Logger from 'electron-log/main';
 import { DIRECTORY_SCAN_DEPTH } from '../config/config';
 import { $init } from '../config/strings';
-import analytics from './analytics';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
-import commandLineFlags from './command-line-flags';
 import {
 	createOrReloadCrosshairWindows,
 	createSettingsWindow,
 } from './create-window';
 import debugging from './debugging';
-import errorHandling from './error-handling';
 import kb from './keyboard';
 import logger from './logger';
 import { setupDockMenu } from './menu';
@@ -31,19 +28,19 @@ export const startup = () => {
 	logger.initialize();
 
 	// Initialize analytics
-	analytics.initialize();
-	analytics.track('app_started');
+	// analytics.initialize();
+	// analytics.track('app_started');
 
 	// Initialize the error handler
-	errorHandling.initialize();
+	// errorHandling.initialize();
 
 	refreshSettingsOnAppStart();
 
 	// Enable electron debug and source map support
-	debugging.initialize();
+	// debugging.initialize();
 
 	// App CLI flags
-	commandLineFlags.initialize();
+	// commandLineFlags.initialize();
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();

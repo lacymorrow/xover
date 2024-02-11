@@ -8,6 +8,8 @@ import { ipcChannels } from '@/config/ipc-channels';
 import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 
 import {
+	CrosshairWindowStateType,
+	DEFAULT_CROSSHAIR_WINDOW_STATE,
 	DEFAULT_KEYBINDS,
 	DEFAULT_SETTINGS,
 	SettingsType,
@@ -31,12 +33,16 @@ interface GlobalContextType {
 	messages: string[];
 	settings: SettingsType;
 	setSettings: (newSettings: Partial<SettingsType>) => void;
+	windowState: CrosshairWindowStateType;
 	crosshairImages: { label: string; value: string }[];
 }
 
 const params = new Proxy(new URLSearchParams(window.location.search), {
 	get: (searchParams, prop: string) => searchParams.get(prop),
 });
+
+// @ts-ignore
+const id = params?.id ?? '';
 
 export const GlobalContext = React.createContext<GlobalContextType>({
 	app: {},
@@ -46,6 +52,7 @@ export const GlobalContext = React.createContext<GlobalContextType>({
 	messages: [],
 	settings: DEFAULT_SETTINGS,
 	setSettings: () => {},
+	windowState: DEFAULT_CROSSHAIR_WINDOW_STATE,
 	crosshairImages: [],
 });
 
@@ -63,6 +70,9 @@ export function GlobalContextProvider({
 	const [settings, setCurrentSettings] =
 		React.useState<SettingsType>(DEFAULT_SETTINGS);
 
+	const [windowState, setCurrentWindowState] =
+		React.useState<CrosshairWindowStateType>(DEFAULT_CROSSHAIR_WINDOW_STATE);
+
 	const [keybinds, setCurrentKeybinds] =
 		React.useState<CustomAcceleratorsType>(DEFAULT_KEYBINDS);
 
@@ -75,13 +85,16 @@ export function GlobalContextProvider({
 
 			window.electron.ipcRenderer
 				// @ts-ignore
-				.invoke(ipcChannels.GET_RENDERER_SYNC, params?.id ?? '')
+				.invoke(ipcChannels.GET_RENDERER_SYNC, id ?? 'settings')
 				.then((res) => {
-					const { settings: s, keybinds: k, messages: m, appMenu: menu } = res;
-					setCurrentSettings(s);
-					setCurrentKeybinds(k);
-					setMessages(m);
-					setAppMenu(menu);
+					if (!res) return;
+
+					// Set the state of the app
+					if (res.appMenu) setAppMenu(res.appMenu);
+					if (res.messages) setMessages(res.messages);
+					if (res.keybinds) setCurrentKeybinds(res.keybinds);
+					if (res.settings) setCurrentSettings(res.settings);
+					if (res.windowState) setCurrentWindowState(res.windowState);
 				})
 				.catch(console.error);
 
@@ -108,13 +121,9 @@ export function GlobalContextProvider({
 		};
 
 		// Listen for messages from the main process
-		window.electron.ipcRenderer.on(
-			ipcChannels.APP_UPDATED,
-			async (_event, asd) => {
-				console.log('APP_UPDATED', _event, asd);
-				await synchronizeAppState();
-			},
-		);
+		window.electron.ipcRenderer.on(ipcChannels.APP_UPDATED, async (_event) => {
+			await synchronizeAppState();
+		});
 
 		// Create notifications using the renderer
 		window.electron.ipcRenderer.on(
@@ -186,6 +195,7 @@ export function GlobalContextProvider({
 			messages,
 			message: messages[messages.length - 1] ?? '',
 			crosshairImages,
+			windowState,
 		};
 	}, [
 		appInfo,
@@ -195,6 +205,7 @@ export function GlobalContextProvider({
 		settings,
 		setSettings,
 		messages,
+		windowState,
 	]);
 
 	return (
