@@ -5,6 +5,7 @@
 	--app-border-color: hsl(var(--foreground));
 
 	--transition-duration: 100ms;
+	--transition-timing: ease-in-out;
 
 	--crosshair-scale: 1;
 	--crosshair-opacity: 0.8;
@@ -56,9 +57,13 @@ body {
 /* Application background */
 #background {
 	background-color: var(--app-bg-color, hsl(var(--background)));
-	opacity: 1;
 	color: var(--app-foreground-color, hsl(var(--foreground)));
 	border: 1px solid var(--app-foreground-color, hsl(var(--foreground)));
+	transition:
+		color var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out),
+		background-color var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out);
 	border-radius: 12px;
 
 	position: absolute;
@@ -71,6 +76,8 @@ body {
 
 .controls {
 	color: var(--app-foreground-color, hsl(var(--foreground)));
+	transition: color var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 
 	display: flex;
 	flex-direction: column;
@@ -89,19 +96,27 @@ body {
 #crosshair {
 	opacity: var(--crosshair-opacity, 1);
 	transform: scale(var(--crosshair-scale, 1)) rotate(var(--tilt-angle, 0deg));
-	width: var(--crosshair-width, 100px);
-	height: var(--crosshair-height, 100px);
-	transition: transform var(--transition-duration, 100ms) ease-in-out;
+	transition:
+		transform var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out),
+		opacity var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out);
 }
 #crosshair img {
 	transform: rotate(var(--crosshair-rotation, 0deg));
+	transition: transform var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 }
 
 #reticle-wrapper {
 	color: var(--reticle-color, hsl(var(--foreground)));
+	transition: color var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 }
 
 #reticle {
 	transform: scale(var(--reticle-scale, 1))
 		rotate(var(--reticle-rotation, 0deg));
+	transition: transform var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 }

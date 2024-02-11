@@ -87,8 +87,8 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	commandLineFlags: [],
 	hardwareAcceleration: true,
 
-	backgroundColor: '#b80f9cB0',
-	foregroundColor: '#ffffff',
+	backgroundColor: '',
+	foregroundColor: '',
 
 	crosshair: '',
 	crosshairOpacity: 100,
@@ -98,7 +98,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	reticle: 'cross',
 	reticleSize: 100,
 	reticleRotation: 0,
-	reticleColor: '#ffffff',
+	reticleColor: '',
 
 	// iohook
 	followMouse: true,
@@ -165,8 +165,8 @@ export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	width: APP_WIDTH,
 	height: APP_HEIGHT,
 
-	backgroundColor: '#b80f9cB0',
-	foregroundColor: '#ffffff',
+	backgroundColor: '',
+	foregroundColor: '',
 
 	crosshair: '',
 	crosshairRotation: 0,
@@ -176,7 +176,7 @@ export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	reticle: 'dot',
 	reticleRotation: 0,
 	reticleSize: 50,
-	reticleColor: '#ffffff',
+	reticleColor: '',
 
 	// svg
 	fillColor: '#ffffff',

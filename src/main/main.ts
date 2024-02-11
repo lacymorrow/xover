@@ -11,7 +11,6 @@
 // Large crosshair chooser
 // Add a way to reset settings like slider values to default
 // Secondary crosshair - 61
-// Multiple crosshair windows - save window state
 // SVG support
 // Bigger crosshair, Resizable
 // Image overlay - 112
@@ -22,10 +21,13 @@
 // Migrations
 // Notify of new version
 // Ask for accessiblity permissions MAC
+// Reset settings should reload windows
+// Less Renderer sync
 
 /*
 Done:
 - Disable all keyboard shortcuts - 299
+- Multiple crosshair windows - save window state
 /*
 
 Todo:

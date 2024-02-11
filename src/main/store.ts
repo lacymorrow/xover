@@ -24,12 +24,17 @@ export interface StoreType {
 		settings: WindowStateType;
 		[key: string]: Partial<CrosshairWindowStateType>;
 	};
+	activeWindow: string;
 	actionState: ActionStateType;
 }
 
 export type WindowNamesType = 'settings' | 'crosshairs';
 
 const schema: Store.Schema<StoreType> = {
+	activeWindow: {
+		type: 'string',
+		default: '',
+	},
 	actionState: {
 		type: 'object',
 		default: DEFAULT_ACTION_STATE,

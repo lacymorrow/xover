@@ -26,6 +26,7 @@ import {
 	getSettings,
 	getWindowState,
 	getWindowStates,
+	setActiveWindow,
 	setSettings,
 	setWindowState,
 } from './store-actions';
@@ -37,7 +38,7 @@ const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);
 };
 
-const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
+const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 	const options: BrowserWindowConstructorOptions = {
 		title: app.name,
 		tabbingIdentifier: app.name,
@@ -98,14 +99,14 @@ const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
 	browserWindow.on('moved', () => savePosition(browserWindow, id));
 	browserWindow.on('resize', () => savePosition(browserWindow, id));
 
-	// Clean
-	// Clean
+	// Window closed, but app is not quitting
 	browserWindow.on('close', () => {
 		Logger.status('Window is closing', id);
 
 		// Remove window state
+		deleteWindowState(id);
+
 		if (id !== 'settings') {
-			deleteWindowState(id);
 			delete windows.crosshairWindows[id];
 		}
 	});
@@ -115,11 +116,8 @@ const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
 	// Window closed, but app is not quitting
 	browserWindow.on('closed', () => {
 		Logger.status('Window closed', id);
-
-		// Window closed, but app is not quitting
 	});
 
-	console.log(BrowserWindow.getAllWindows().length);
 	dock.initialize();
 
 	// Open urls in the user's browser
@@ -141,6 +139,7 @@ export const createCrosshairWindow = async (
 	opts?: BrowserWindowConstructorOptions,
 	id: string = getUUID(),
 ) => {
+	Logger.status('Creating crosshair window', id);
 	const state = id ? getWindowState(id) : null;
 	const { showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
@@ -184,15 +183,18 @@ export const createCrosshairWindow = async (
 	}
 
 	// Resume previous window state
-
 	if (state) {
+		console.dir(state);
 		options.x = state.x;
 		options.y = state.y;
 		options.width = state.width;
 		options.height = state.height;
+	} else {
+		// New window state
+		setWindowState(id, { ...DEFAULT_CROSSHAIR_WINDOW_STATE });
 	}
 
-	const window = createWindow(options, id);
+	const window = createWindow(id, options);
 
 	window.setAspectRatio(APP_ASPECT_RATIO);
 	window.setFullScreenable(false);
@@ -204,6 +206,13 @@ export const createCrosshairWindow = async (
 		window.show();
 	});
 
+	window.on('focus', () => {
+		Logger.status('Window focused', id);
+
+		// Track the active window to show correct settings
+		setActiveWindow(id);
+	});
+
 	// Context menu disabled in production
 	// See: https://www.electronjs.org/docs/latest/tutorial/window-customization
 	if (is.debug) {
@@ -211,14 +220,9 @@ export const createCrosshairWindow = async (
 	}
 
 	// Load the window
-	window.loadURL(resolveHtmlPath('crosshair.html'));
+	window.loadURL(`${resolveHtmlPath(`crosshair.html`)}?id=${id}`);
 
 	windows.crosshairWindows[id] = window;
-
-	// Resume previous window state
-	if (!id) {
-		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
-	}
 
 	return window;
 };
@@ -252,7 +256,7 @@ export const createSettingsWindow = async () => {
 	};
 	windows.settingsWindow = null;
 
-	const window = createWindow(options, 'settings');
+	const window = createWindow('settings', options);
 
 	// Set window position the same as the main window, so they can overlap
 	// window.setAlwaysOnTop(true, 'screen-saver', 1);
@@ -263,7 +267,7 @@ export const createSettingsWindow = async () => {
 		setSettings({ isSettingsWindowOpen: false });
 
 		// Recreate the window
-		windows.settingsWindow = createWindow(options, 'settings');
+		windows.settingsWindow = createWindow('settings', options);
 		windows.settingsWindow.loadURL(resolveHtmlPath('index.html'));
 		setupContextMenu(windows.settingsWindow);
 	});
@@ -297,7 +301,6 @@ export const createOrReloadCrosshairWindows = async () => {
 	const { settings: _settings, ...crosshairs } = getWindowStates();
 
 	const keys = Object.keys(crosshairs);
-	console.log(keys);
 	if (keys.length > 0) {
 		Logger.status('Reloading multiple crosshair windows', keys.length);
 		keys.forEach((id) => createCrosshairWindow({}, id));

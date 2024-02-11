@@ -39,7 +39,7 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 
 	// Sync with renderer
 	forEachWindow((win) => {
-		win.webContents.send(ipcChannels.APP_UPDATED);
+		win.webContents.send(ipcChannels.APP_UPDATED, 'asd');
 	});
 };
 
@@ -113,10 +113,10 @@ export const setCrosshairImages = (images: string[]) => {
 
 export const getWindowState = (w: string) => {
 	const state = store.get(`windows`);
-	console.log('getWindowState', w, state);
 	if (typeof state === 'object' && w in state) {
 		return state[w];
 	}
+	return {};
 };
 
 export const getWindowStates = () => {
@@ -128,10 +128,17 @@ export const setWindowState = (w: string, state: Partial<WindowStateType>) => {
 };
 
 export const deleteWindowState = (w: string) => {
-	console.log('deleteWindowState', w);
 	const state = store.get(`windows`);
 	delete state[w];
 	store.set(`windows`, state);
+};
+
+export const getActiveWindow = () => {
+	return store.get('activeWindow');
+};
+
+export const setActiveWindow = (w: string) => {
+	store.set('activeWindow', w);
 };
 
 export const getActionState = () => {

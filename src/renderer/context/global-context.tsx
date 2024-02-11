@@ -34,6 +34,10 @@ interface GlobalContextType {
 	crosshairImages: { label: string; value: string }[];
 }
 
+const params = new Proxy(new URLSearchParams(window.location.search), {
+	get: (searchParams, prop: string) => searchParams.get(prop),
+});
+
 export const GlobalContext = React.createContext<GlobalContextType>({
 	app: {},
 	appMenu: [],
@@ -70,7 +74,8 @@ export function GlobalContextProvider({
 			console.log(ipcChannels.APP_UPDATED);
 
 			window.electron.ipcRenderer
-				.invoke(ipcChannels.GET_RENDERER_SYNC)
+				// @ts-ignore
+				.invoke(ipcChannels.GET_RENDERER_SYNC, params?.id ?? '')
 				.then((res) => {
 					const { settings: s, keybinds: k, messages: m, appMenu: menu } = res;
 					setCurrentSettings(s);
@@ -103,9 +108,13 @@ export function GlobalContextProvider({
 		};
 
 		// Listen for messages from the main process
-		window.electron.ipcRenderer.on(ipcChannels.APP_UPDATED, async (_event) => {
-			await synchronizeAppState();
-		});
+		window.electron.ipcRenderer.on(
+			ipcChannels.APP_UPDATED,
+			async (_event, asd) => {
+				console.log('APP_UPDATED', _event, asd);
+				await synchronizeAppState();
+			},
+		);
 
 		// Create notifications using the renderer
 		window.electron.ipcRenderer.on(
