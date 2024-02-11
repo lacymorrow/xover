@@ -113,6 +113,7 @@ export const setCrosshairImages = (images: string[]) => {
 
 export const getWindowState = (w: string) => {
 	const state = store.get(`windows`);
+	console.log('getWindowState', w, state);
 	if (typeof state === 'object' && w in state) {
 		return state[w];
 	}
@@ -124,6 +125,13 @@ export const getWindowStates = () => {
 
 export const setWindowState = (w: string, state: Partial<WindowStateType>) => {
 	store.set(`windows.${w}`, { ...getWindowState(w), ...state });
+};
+
+export const deleteWindowState = (w: string) => {
+	console.log('deleteWindowState', w);
+	const state = store.get(`windows`);
+	delete state[w];
+	store.set(`windows`, state);
 };
 
 export const getActionState = () => {

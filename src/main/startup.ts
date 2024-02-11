@@ -53,7 +53,7 @@ export const startup = () => {
 };
 
 export const ready = async () => {
-	Logger.status($init.started);
+	Logger.status($init.ready);
 	console.timeLog(app.name, $init.ready);
 
 	// Log Node/Electron versions

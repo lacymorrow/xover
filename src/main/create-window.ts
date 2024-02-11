@@ -21,6 +21,7 @@ import dock from './dock';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
 import {
+	deleteWindowState,
 	getSetting,
 	getSettings,
 	getWindowState,
@@ -36,7 +37,7 @@ const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);
 };
 
-const createWindow = (opts?: BrowserWindowConstructorOptions) => {
+const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
 	const options: BrowserWindowConstructorOptions = {
 		title: app.name,
 		tabbingIdentifier: app.name,
@@ -94,11 +95,31 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		Logger.info('Window finished load');
 	});
 
+	browserWindow.on('moved', () => savePosition(browserWindow, id));
+	browserWindow.on('resize', () => savePosition(browserWindow, id));
+
 	// Clean
-	browserWindow.on('closed', () => {
-		Logger.status('Window closed');
+	// Clean
+	browserWindow.on('close', () => {
+		Logger.status('Window is closing', id);
+
+		// Remove window state
+		if (id !== 'settings') {
+			deleteWindowState(id);
+			delete windows.crosshairWindows[id];
+		}
 	});
 
+	// Clean
+
+	// Window closed, but app is not quitting
+	browserWindow.on('closed', () => {
+		Logger.status('Window closed', id);
+
+		// Window closed, but app is not quitting
+	});
+
+	console.log(BrowserWindow.getAllWindows().length);
 	dock.initialize();
 
 	// Open urls in the user's browser
@@ -171,7 +192,7 @@ export const createCrosshairWindow = async (
 		options.height = state.height;
 	}
 
-	const window = createWindow(options);
+	const window = createWindow(options, id);
 
 	window.setAspectRatio(APP_ASPECT_RATIO);
 	window.setFullScreenable(false);
@@ -182,10 +203,6 @@ export const createCrosshairWindow = async (
 	window.on('ready-to-show', () => {
 		window.show();
 	});
-
-	window.on('will-resize', () => {});
-
-	window.on('moved', () => savePosition(window, id));
 
 	// Context menu disabled in production
 	// See: https://www.electronjs.org/docs/latest/tutorial/window-customization
@@ -220,20 +237,6 @@ export const createNewWindow = async () => {
 	return window;
 };
 
-export const createChildWindow = async () => {
-	const window = createWindow({ frame: true });
-
-	window.on('ready-to-show', () => {
-		window.show();
-		windows.mainWindow?.focus();
-	});
-
-	// Load the window
-	window.loadURL(resolveHtmlPath('child.html'));
-
-	return window;
-};
-
 export const createSettingsWindow = async () => {
 	const state = getWindowState('settings');
 
@@ -249,15 +252,18 @@ export const createSettingsWindow = async () => {
 	};
 	windows.settingsWindow = null;
 
-	const window = createWindow(options);
+	const window = createWindow(options, 'settings');
 
 	// Set window position the same as the main window, so they can overlap
 	// window.setAlwaysOnTop(true, 'screen-saver', 1);
 
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
 	window.on('closed', () => {
+		// Reset window state
 		setSettings({ isSettingsWindowOpen: false });
-		windows.settingsWindow = createWindow(options);
+
+		// Recreate the window
+		windows.settingsWindow = createWindow(options, 'settings');
 		windows.settingsWindow.loadURL(resolveHtmlPath('index.html'));
 		setupContextMenu(windows.settingsWindow);
 	});
@@ -270,8 +276,6 @@ export const createSettingsWindow = async () => {
 
 		window.show();
 	});
-
-	window.on('moved', () => savePosition(window, 'settings'));
 
 	// // Hide window when clicked away
 	// window.on('blur', () => {
