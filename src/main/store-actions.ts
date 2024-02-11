@@ -46,8 +46,10 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 
 export const resetStoreSettings = () => {
 	Logger.status($messages.resetStore);
+	// todo: reset windowState
 	store.delete('settings');
 	store.delete('keybinds');
+	store.delete('actionState');
 
 	store.set('windows', {
 		settings: {},
@@ -112,12 +114,20 @@ export const setCrosshairImages = (images: string[]) => {
 	store.set('images', images);
 };
 
+export const getActiveWindow = () => {
+	return store.get('activeWindow');
+};
+
+export const setActiveWindow = (w: string) => {
+	store.set('activeWindow', w);
+	synchronizeApp();
+};
+
 export const getWindowState = (w: string) => {
 	const state = store.get(`windows`);
 	if (typeof state === 'object' && w in state) {
 		return state[w];
 	}
-	return {};
 };
 
 export const setWindowState = (w: string, state: Partial<WindowStateType>) => {
@@ -133,14 +143,6 @@ export const deleteWindowState = (w: string) => {
 
 export const getWindowStates = () => {
 	return store.get('windows');
-};
-
-export const getActiveWindow = () => {
-	return store.get('activeWindow');
-};
-
-export const setActiveWindow = (w: string) => {
-	store.set('activeWindow', w);
 };
 
 export const getActiveWindowState = () => {

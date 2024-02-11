@@ -1,4 +1,3 @@
-import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { CrosshairWindowStateType } from '@/config/settings';
 import { InputColor } from '@/renderer/components/input/InputColor';
@@ -6,14 +5,20 @@ import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
+import { useCallback } from 'react';
 import { SettingsReticle } from './SettingsReticle';
 import { SettingsSVG } from './SettingsSVG';
 
 export function SettingsCrosshair() {
-	const { crosshairImages, settings, windowState } = useGlobalContext();
-	const handleChangeSetting = (setting: Partial<CrosshairWindowStateType>) => {
-		window.electron.setWindowState(setting);
-	};
+	const { crosshairImages, windowState } = useGlobalContext();
+
+	const handleChangeSetting = useCallback(
+		(setting: Partial<CrosshairWindowStateType>) => {
+			window.electron.setWindowState(setting);
+		},
+		[],
+	);
+
 	return (
 		<div className="space-y-6">
 			<div>
@@ -32,7 +37,7 @@ export function SettingsCrosshair() {
 				}}
 			/>
 			<InputColor
-				value={settings.foregroundColor}
+				value={windowState.foregroundColor}
 				label="Accent Color"
 				details="Highlight color used for buttons, links, and other interactive elements."
 				onChange={(value) => {
@@ -40,7 +45,7 @@ export function SettingsCrosshair() {
 				}}
 			/>
 			<InputComboboxForm
-				value={settings.crosshair}
+				value={windowState.crosshair}
 				onChange={(value) => {
 					handleChangeSetting({ crosshair: value });
 				}}
@@ -50,7 +55,7 @@ export function SettingsCrosshair() {
 				className="w-[350px] h-60"
 			/>
 			<InputSlider
-				value={settings.crosshairSize}
+				value={windowState.crosshairSize}
 				onChange={(value) => {
 					handleChangeSetting({ crosshairSize: value });
 				}}
@@ -60,7 +65,7 @@ export function SettingsCrosshair() {
 				max={100}
 			/>
 			<InputSlider
-				value={settings.crosshairOpacity}
+				value={windowState.crosshairOpacity}
 				onChange={(value) => {
 					handleChangeSetting({ crosshairOpacity: value });
 				}}
@@ -70,7 +75,7 @@ export function SettingsCrosshair() {
 				max={100}
 			/>
 			<InputSlider
-				value={settings.crosshairRotation}
+				value={windowState.crosshairRotation}
 				onChange={(value) => {
 					handleChangeSetting({ crosshairRotation: value });
 				}}
@@ -87,10 +92,6 @@ export function SettingsCrosshair() {
 				description="Allow the app window to be resized."
 				card
 			/>
-			Position X
-			<Input value={400} type="number" />
-			Position Y
-			<Input value={400} type="number" />
 		</div>
 	);
 }

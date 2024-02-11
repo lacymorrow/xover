@@ -29,9 +29,6 @@ export interface SettingsType {
 	commandLineFlags: string[];
 	hardwareAcceleration: boolean;
 
-	backgroundColor: string;
-	foregroundColor: string;
-
 	// iohook
 	followMouse: boolean;
 
@@ -53,16 +50,6 @@ export interface SettingsType {
 	hadFirstRun: boolean;
 
 	// vibrancy: 'none' | 'sidebar' | 'full';
-
-	crosshair: string;
-	crosshairRotation: number;
-	crosshairSize: number;
-	crosshairOpacity: number;
-
-	reticle: string;
-	reticleRotation: number;
-	reticleSize: number;
-	reticleColor: string;
 }
 
 // These are the default settings, imported by the store
@@ -86,19 +73,6 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	commandLineFlags: [],
 	hardwareAcceleration: true,
-
-	backgroundColor: '',
-	foregroundColor: '',
-
-	crosshair: '',
-	crosshairOpacity: 100,
-	crosshairSize: 100,
-	crosshairRotation: 0,
-
-	reticle: 'cross',
-	reticleSize: 100,
-	reticleRotation: 0,
-	reticleColor: '',
 
 	// iohook
 	followMouse: true,
@@ -165,7 +139,7 @@ export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	width: APP_WIDTH,
 	height: APP_HEIGHT,
 
-	backgroundColor: '#0f0',
+	backgroundColor: '',
 	foregroundColor: '',
 
 	crosshair: '',

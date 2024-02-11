@@ -57,6 +57,7 @@ export default {
 		ipcMain.handle(ipcChannels.GET_RENDERER_SYNC, (_event, id) => {
 			const windowState =
 				!id || id === 'settings' ? getActiveWindowState() : getWindowState(id);
+			console.log('windowState', id, windowState);
 			return {
 				windowState,
 				settings: getSettings(),

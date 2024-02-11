@@ -35,8 +35,14 @@ import {
 	TargetIcon,
 	ViewHorizontalIcon,
 } from '@radix-ui/react-icons';
+import React from 'react';
 
 export const reticles = [
+	{
+		label: 'None',
+		value: 'none',
+		Icon: React.Fragment,
+	},
 	{
 		label: 'Crosshair',
 		value: 'crosshair',
@@ -49,12 +55,12 @@ export const reticles = [
 	},
 	{
 		label: 'Dot',
-		value: 'point',
+		value: 'dot',
 		Icon: DotFilledIcon,
 	},
 	{
 		label: 'Dot Circled',
-		value: 'pointCircled',
+		value: 'dotCircled',
 		Icon: RadiobuttonIcon,
 	},
 	{

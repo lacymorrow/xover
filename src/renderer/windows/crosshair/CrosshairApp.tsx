@@ -17,19 +17,21 @@ export default function CrosshairApp() {
 		);
 
 		// Properties to apply to renderer every sync
+
 		const properties = {
 			'--app-bg-color': windowState.backgroundColor,
-			'--app-foreground-color': settings.foregroundColor,
-			'--crosshair-opacity': settings.crosshairOpacity / 100,
-			'--crosshair-scale': settings.crosshairSize / 100,
-			'--crosshair-rotation': `${settings.crosshairRotation}deg`,
-			'--reticle-scale': settings.reticleSize / 100,
-			'--reticle-color': settings.reticleColor,
-			'--reticle-rotation': `${settings.reticleRotation}deg`,
+			'--app-foreground-color': windowState.foregroundColor,
+			'--app-opacity': !windowState.backgroundColor ? 0.8 : 1, // Background is transparent even if it's not set
+			'--crosshair-opacity': windowState.crosshairOpacity / 100,
+			'--crosshair-scale': windowState.crosshairSize / 100,
+			'--crosshair-rotation': `${windowState.crosshairRotation}deg`,
+			'--reticle-scale': windowState.reticleSize / 100,
+			'--reticle-color': windowState.reticleColor,
+			'--reticle-rotation': `${windowState.reticleRotation}deg`,
 
-			// '--svg-fill-color': settings.fillColor,
-			// '--svg-stroke-color': settings.strokeColor,
-			// '--svg-stroke-width': settings.strokeWidth,
+			// '--svg-fill-color': windowState.fillColor,
+			// '--svg-stroke-color': windowState.strokeColor,
+			// '--svg-stroke-width': windowState.strokeWidth,
 			'--transition-duration': `${settings.transitionDuration}ms`,
 		};
 

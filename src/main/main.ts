@@ -24,11 +24,13 @@
 // Reset settings should reload windows
 // Less Renderer sync
 // use same dock icon
+// position settings
+// resizeable window
 
 /*
 Done:
 - Disable all keyboard shortcuts - 299
-- Multiple crosshair windows - save window state
+- Multiple crosshair windows - save window state6
 /*
 
 Todo:

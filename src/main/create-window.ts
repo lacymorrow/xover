@@ -143,9 +143,11 @@ export const createCrosshairWindow = async (
 	const state = id ? getWindowState(id) : null;
 
 	// Resume previous window state
+	console.log('No state', id);
 	if (!state) {
+		console.log('No state', id);
 		// New window state
-		setWindowState(id, { ...DEFAULT_CROSSHAIR_WINDOW_STATE });
+		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
 	}
 
 	const { showTaskbarIcon } = getSettings();

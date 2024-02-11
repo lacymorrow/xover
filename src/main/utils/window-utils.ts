@@ -186,7 +186,7 @@ export const moveToNextDisplay = (options?: { window?: BrowserWindow }) => {
 };
 
 export const safeSetBounds = (window: BrowserWindow, bounds: Rectangle) => {
-	if (window.isDestroyed()) {
+	if (!window || window.isDestroyed()) {
 		return;
 	}
 
@@ -342,4 +342,10 @@ export const focusNextWindow = () => {
 	}
 
 	nextWindow.focus();
+};
+
+export const getWindowById = (id: string) => {
+	if (id in windows.crosshairWindows) {
+		return windows.crosshairWindows[id];
+	}
 };

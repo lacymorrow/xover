@@ -13,11 +13,11 @@ import { ResetButton } from './ResetButton';
 import { SettingsButton } from './SettingsButton';
 
 export function Crosshair() {
-	const { settings } = useGlobalContext();
+	const { windowState } = useGlobalContext();
 
 	const Reticle = useMemo(() => {
-		return reticles.find((r) => r.value === settings.reticle)?.Icon;
-	}, [settings.reticle]);
+		return reticles.find((r) => r.value === windowState.reticle)?.Icon;
+	}, [windowState.reticle]);
 
 	const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
 		switch (e.detail) {
@@ -46,7 +46,9 @@ export function Crosshair() {
 				<div id="crosshair">
 					<img
 						src={
-							settings.crosshair ? `file://${settings.crosshair}` : crosshair
+							windowState.crosshair
+								? `file://${windowState.crosshair}`
+								: crosshair
 						}
 						alt=""
 					/>
