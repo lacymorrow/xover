@@ -1,6 +1,7 @@
 import kb from '../keyboard';
 import { getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
+import { focusNextWindow } from './window-utils';
 
 export const closeSettingsWindow = () => {
 	const { isSettingsWindowOpen } = getSettings();
@@ -8,7 +9,7 @@ export const closeSettingsWindow = () => {
 	if (isSettingsWindowOpen) {
 		windows.settingsWindow?.hide();
 		kb.unregisterEscapeKey();
-		windows.mainWindow?.focus();
+		focusNextWindow();
 		setSettings({ isSettingsWindowOpen: false });
 	}
 };

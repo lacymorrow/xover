@@ -5,7 +5,7 @@ import sounds from '../sounds';
 import { getSetting, getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
 import { restoreWindowPosition } from './restoreWindowPosition';
-import { onWindowMoved } from './savePosition';
+import { addWindowMovedListeners } from './savePosition';
 import { forEachWindow } from './window-utils';
 
 export const setAppLock = async (isLocked: boolean) => {
@@ -58,9 +58,7 @@ export const setAppLock = async (isLocked: boolean) => {
 			app.dock.show();
 		}
 
-		forEachWindow((window) => {
-			window.on('moved', () => onWindowMoved(window));
-		});
+		addWindowMovedListeners();
 	}
 };
 

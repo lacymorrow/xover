@@ -1,10 +1,13 @@
 import Store from 'electron-store';
 import {
 	ActionStateType,
+	CrosshairWindowStateType,
 	DEFAULT_ACTION_STATE,
 	DEFAULT_KEYBINDS,
 	DEFAULT_SETTINGS,
+	DEFAULT_WINDOW_STATE,
 	SettingsType,
+	WindowStateType,
 } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 
@@ -17,9 +20,14 @@ export interface StoreType {
 	appMessageLog: AppMessageLogType; // Public-facing console.log()
 	keybinds: CustomAcceleratorsType; // Custom keybinds/accelerators/global shortcuts
 	images: string[];
-	windows: any;
+	windows: {
+		settings: WindowStateType;
+		[key: string]: Partial<CrosshairWindowStateType>;
+	};
 	actionState: ActionStateType;
 }
+
+export type WindowNamesType = 'settings' | 'crosshairs';
 
 const schema: Store.Schema<StoreType> = {
 	actionState: {
@@ -33,7 +41,12 @@ const schema: Store.Schema<StoreType> = {
 	},
 	windows: {
 		type: 'object',
-		default: {},
+		properties: {
+			settings: {
+				type: 'object',
+			},
+		},
+		default: DEFAULT_WINDOW_STATE,
 	},
 	images: {
 		type: 'array',

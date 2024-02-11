@@ -1,29 +1,28 @@
 import { BrowserWindow } from 'electron';
 import Logger from 'electron-log';
-import { forEachWindow } from './window-utils';
+import { setWindowState } from '../store-actions';
+import windows from '../windows';
 
-export const savePosition = (window: BrowserWindow) => {
-	Logger.info('Saving window position', window.getTitle());
-	const position = window.getPosition();
-	const size = window.getSize();
+export const savePosition = (window: BrowserWindow, id: string) => {
+	if (!window || window.isDestroyed()) {
+		return;
+	}
 
-	const isMaximized = window.isMaximized();
-	const isFullScreen = window.isFullScreen();
+	Logger.info('Saving window position', window?.getTitle());
+	const position = window.getBounds();
 
-	// windows.mainWindow?.webContents.send('save-position', {
-	// 	position,
-	// 	size,
-	// 	isMaximized,
-	// 	isFullScreen,
-	// });
-};
+	if (window === windows.settingsWindow) {
+		setWindowState('settings', {
+			...position,
+		});
+		return;
+	}
 
-export const onWindowMoved = (window: BrowserWindow) => {
-	savePosition(window);
+	setWindowState(id, position);
 };
 
 export const addWindowMovedListeners = () => {
-	forEachWindow((window) => {
-		window.on('moved', () => onWindowMoved(window));
+	Object.entries(windows.crosshairWindows).forEach(([id, window]) => {
+		window?.on('moved', () => savePosition(window, id));
 	});
 };

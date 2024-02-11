@@ -14,10 +14,20 @@ import {
 	APP_HEIGHT,
 	APP_WIDTH,
 } from '../config/config';
+import { DEFAULT_CROSSHAIR_WINDOW_STATE } from '../config/settings';
+import { getUUID } from '../utils/getUUID';
 import { setupContextMenu } from './context-menu';
+import dock from './dock';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
-import { getSettings, setSettings } from './store-actions';
+import {
+	getSetting,
+	getSettings,
+	getWindowState,
+	getWindowStates,
+	setSettings,
+	setWindowState,
+} from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
 import windows from './windows';
@@ -68,6 +78,10 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 
 	const browserWindow = new BrowserWindow(options);
 
+	// todo: Maybe dont stay on top when unlocked
+	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706
+	browserWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+
 	browserWindow.on('unresponsive', (event: IpcMainEvent) => {
 		Logger.error(`Window unresponsive: ${event.sender}`);
 	});
@@ -85,9 +99,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		Logger.status('Window closed');
 	});
 
-	browserWindow.on('moved', () => {
-		savePosition(browserWindow);
-	});
+	dock.initialize();
 
 	// Open urls in the user's browser
 	if (browserWindow.webContents.setWindowOpenHandler) {
@@ -106,7 +118,9 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 
 export const createCrosshairWindow = async (
 	opts?: BrowserWindowConstructorOptions,
+	id: string = getUUID(),
 ) => {
+	const state = id ? getWindowState(id) : null;
 	const { showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
 		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
@@ -148,14 +162,19 @@ export const createCrosshairWindow = async (
 		options.type = 'toolbar';
 	}
 
+	// Resume previous window state
+
+	if (state) {
+		options.x = state.x;
+		options.y = state.y;
+		options.width = state.width;
+		options.height = state.height;
+	}
+
 	const window = createWindow(options);
 
 	window.setAspectRatio(APP_ASPECT_RATIO);
 	window.setFullScreenable(false);
-
-	// todo: Maybe dont stay on top when unlocked
-	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706
-	window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
@@ -166,6 +185,8 @@ export const createCrosshairWindow = async (
 
 	window.on('will-resize', () => {});
 
+	window.on('moved', () => savePosition(window, id));
+
 	// Context menu disabled in production
 	// See: https://www.electronjs.org/docs/latest/tutorial/window-customization
 	if (is.debug) {
@@ -175,23 +196,20 @@ export const createCrosshairWindow = async (
 	// Load the window
 	window.loadURL(resolveHtmlPath('crosshair.html'));
 
-	windows.crosshairWindows.push(window);
+	windows.crosshairWindows[id] = window;
+
+	// Resume previous window state
+	if (!id) {
+		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
+	}
 
 	return window;
 };
 
 export const createMainWindow = async () => {
-	const { quitOnWindowClose } = getSettings();
 	const options: BrowserWindowConstructorOptions = {};
 
 	const window = await createCrosshairWindow(options);
-
-	window.on('closed', () => {
-		// Quit if main window closes
-		if (!is.macos || quitOnWindowClose) {
-			app.quit();
-		}
-	});
 
 	windows.mainWindow = window;
 };
@@ -217,11 +235,19 @@ export const createChildWindow = async () => {
 };
 
 export const createSettingsWindow = async () => {
+	const state = getWindowState('settings');
+
 	const options: BrowserWindowConstructorOptions = {
-		// alwaysOnTop: true,
-		trafficLightPosition: { x: 12, y: 20 },
+		alwaysOnTop: true,
+		title: `Settings - ${app.name}`,
 		titleBarStyle: 'hidden',
+		trafficLightPosition: { x: 12, y: 20 },
+
+		...(state?.x && state?.y ? { x: state.x, y: state.y } : {}),
+		...(state?.width ? { width: state.width } : {}),
+		...(state?.height ? { height: state.height } : {}),
 	};
+	windows.settingsWindow = null;
 
 	const window = createWindow(options);
 
@@ -236,6 +262,17 @@ export const createSettingsWindow = async () => {
 		setupContextMenu(windows.settingsWindow);
 	});
 
+	// Show settings if unlocked
+	window.on('ready-to-show', () => {
+		if (getSetting('isLocked')) {
+			return;
+		}
+
+		window.show();
+	});
+
+	window.on('moved', () => savePosition(window, 'settings'));
+
 	// // Hide window when clicked away
 	// window.on('blur', () => {
 	// 	window.hide();
@@ -249,4 +286,19 @@ export const createSettingsWindow = async () => {
 	setupContextMenu(window);
 
 	windows.settingsWindow = window;
+};
+
+export const createOrReloadCrosshairWindows = async () => {
+	// Create the main browser window.
+	const { settings: _settings, ...crosshairs } = getWindowStates();
+
+	const keys = Object.keys(crosshairs);
+	console.log(keys);
+	if (keys.length > 0) {
+		Logger.status('Reloading multiple crosshair windows', keys.length);
+		keys.forEach((id) => createCrosshairWindow({}, id));
+	} else {
+		Logger.status('Open new crosshair', keys.length);
+		createCrosshairWindow();
+	}
 };

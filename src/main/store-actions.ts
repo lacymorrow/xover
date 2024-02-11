@@ -2,7 +2,11 @@ import { app } from 'electron';
 import Logger from 'electron-log';
 import { APP_MESSAGES_MAX } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
-import { ActionStateType, SettingsType } from '../config/settings';
+import {
+	ActionStateType,
+	SettingsType,
+	WindowStateType,
+} from '../config/settings';
 import { $messages } from '../config/strings';
 import store, { AppMessageType } from './store';
 import tray from './tray';
@@ -43,7 +47,10 @@ export const resetStoreSettings = () => {
 	Logger.status($messages.resetStore);
 	store.delete('settings');
 	store.delete('keybinds');
-	store.delete('windows');
+
+	store.set('windows', {
+		settings: {},
+	});
 
 	synchronizeApp();
 };
@@ -102,6 +109,21 @@ export const getCrosshairImages = () => {
 
 export const setCrosshairImages = (images: string[]) => {
 	store.set('images', images);
+};
+
+export const getWindowState = (w: string) => {
+	const state = store.get(`windows`);
+	if (typeof state === 'object' && w in state) {
+		return state[w];
+	}
+};
+
+export const getWindowStates = () => {
+	return store.get('windows');
+};
+
+export const setWindowState = (w: string, state: Partial<WindowStateType>) => {
+	store.set(`windows.${w}`, { ...getWindowState(w), ...state });
 };
 
 export const getActionState = () => {

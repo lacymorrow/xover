@@ -6,7 +6,10 @@ import analytics from './analytics';
 import appListeners from './app-listeners';
 import { AutoUpdate } from './auto-update';
 import commandLineFlags from './command-line-flags';
-import { createMainWindow, createSettingsWindow } from './create-window';
+import {
+	createOrReloadCrosshairWindows,
+	createSettingsWindow,
+} from './create-window';
 import debugging from './debugging';
 import errorHandling from './error-handling';
 import kb from './keyboard';
@@ -66,8 +69,7 @@ export const ready = async () => {
 	// Setup keyboard shortcuts
 	kb.registerKeyboardShortcuts();
 
-	// Create the main browser window.
-	await createMainWindow();
+	createOrReloadCrosshairWindows();
 
 	// Setup Dock Menu
 	setupDockMenu();
@@ -89,6 +91,8 @@ export const ready = async () => {
 
 export const idle = async () => {
 	console.log('idle', getCrosshairImages().length);
+	// Load crosshair images
+	setCrosshairImages([]);
 	getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
 		.then((images) => {
 			setCrosshairImages(images);

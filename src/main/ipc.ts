@@ -113,12 +113,6 @@ export default {
 				return;
 			}
 
-			// Don't close the mainwindow
-			if (window === windows.mainWindow) {
-				windows.mainWindow.hide();
-				return;
-			}
-
 			window.close();
 		});
 
