@@ -31,6 +31,9 @@ Done:
 Todo:
 - Inputs should reset to default value when the settings are reset
 - Debounce Slider
+- sass
+- Homepage
+- Documentation
 */
 
 import { app } from 'electron';
