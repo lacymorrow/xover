@@ -12,11 +12,7 @@ const ACTION_STATE = 'action-state';
 
 // Renderer -> Main
 const GET_APP_INFO = 'get-app-info';
-const GET_APP_MENU = 'get-app-menu';
 const GET_APP_PATHS = 'get-app-paths';
-const GET_MESSAGES = 'get-messages';
-const GET_KEYBINDS = 'get-keybinds';
-const GET_SETTINGS = 'get-settings';
 const GET_CROSSHAIR_IMAGES = 'get-crosshair-images';
 const GET_RENDERER_SYNC = 'get-renderer-sync';
 
@@ -54,11 +50,7 @@ export const ipcChannels = {
 	RENDERER_READY,
 	GET_RENDERER_SYNC,
 	GET_APP_INFO,
-	GET_APP_MENU,
 	GET_APP_PATHS,
-	GET_MESSAGES,
-	GET_KEYBINDS,
-	GET_SETTINGS,
 	GET_CROSSHAIR_IMAGES,
 
 	SET_KEYBIND,
