@@ -8,6 +8,7 @@ import {
 	setActionStateKey,
 	setSettings,
 } from './store-actions';
+import windows from './windows';
 
 export const resetApp = () => {
 	// Sonic announcement
@@ -52,6 +53,8 @@ export const refreshSettingsOnAppStart = () => {
 
 	setSettings(freshSettings);
 	setActionStateKey('tilt', 0);
+
+	windows.crosshairWindows = {};
 };
 
 export const restartApp = () => {

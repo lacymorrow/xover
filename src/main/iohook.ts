@@ -12,16 +12,11 @@ import windows from './windows';
 let iohook: any | null = null;
 
 export const registerFollowMouse = () => {
-	if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
-		return;
-	}
-
-	const { width, height } = windows.mainWindow.getBounds();
-
 	iohook.on('mousemove', (event: any) => {
 		if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 			return;
 		}
+		const { width, height } = windows.mainWindow.getBounds();
 		// todo: fix this
 		// Can't set fractional values
 		windows.mainWindow.setBounds({

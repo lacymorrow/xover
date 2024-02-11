@@ -3,7 +3,8 @@
 	"productName": "CrossOver",
 	"appId": "com.lacymorrow.crossover",
 	"version": "4.0.0-alpha.1",
-	"description": "A batteries-included Electron boilerplate.",
+	"description": "A Crosshair Overlay for any screen.",
+	"company": "Fly5",
 	"license": "CC-BY-NC-SA-4.0",
 	"copyright": "Copyright © Lacy Morrow",
 	"repository": "lacymorrow/crossover",
@@ -59,7 +60,12 @@
 		"start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
 		"test": "jest",
 		"analyze": "ANALYZE=true npm run build",
-		"debug-prod": "npx cross-env DEBUG_PROD=true npm run package"
+		"debug-prod": "npx cross-env DEBUG_PROD=true npm run package",
+		"release": "np --branch release && yarn build:release",
+		"sh:copyexe": "cp dist/CrossOver-[!Portable]*.exe dist/CrossOver.exe",
+		"sh:replacespaces": "find dist/ -name 'CrossOver*' -maxdepth 1 -exec bash -c ' mv \"$0\" \"${0// /-}\" ' {} \\;",
+		"snap:login:export": "snapcraft export-login --snaps crossover --channels edge,stable -",
+		"snap:release": "snapcraft upload --release=stable dist/*.snap"
 	},
 	"browserslist": [],
 	"prettier": {
@@ -237,6 +243,7 @@
 	},
 	"build": {
 		"appId": "com.lacymorrow.crossover",
+		"copyright": "Copyright © Lacy Morrow",
 		"asar": true,
 		"asarUnpack": "**\\*.{node,dll}",
 		"files": [
@@ -291,7 +298,7 @@
 		},
 		"nsis": {
 			"unicode": false,
-			"artifactName": "${productName}-${version}.${ext}"
+			"artifactName": "${productName}-Installer-${version}.${ext}"
 		},
 		"appx": {
 			"applicationId": "CrossOverElectron",
@@ -309,13 +316,12 @@
 				"apk",
 				"deb",
 				"freebsd",
-				"pacman",
-				"rpm"
+				"pacman"
 			],
 			"category": "Game;Shooter"
 		},
 		"snap": {
-			"summary": "🎯 A batteries-included boilerplate for making Electron apps.",
+			"summary": "🎯 A Crosshair Overlay for any screen.",
 			"description": "A batteries-included boilerplate for making Electron apps.",
 			"plugs": [
 				"default",
@@ -337,7 +343,7 @@
 		"publish": {
 			"provider": "github",
 			"owner": "lacymorrow",
-			"repo": "crossover"
+			"repo": "xover"
 		}
 	},
 	"devEngines": {

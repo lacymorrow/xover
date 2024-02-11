@@ -1,9 +1,9 @@
 /* eslint-disable promise/always-return */
-import { app, shell } from 'electron';
+import { BrowserWindow, app, shell } from 'electron';
 import Logger from 'electron-log/main';
 import EXIT_CODES from '../config/exit-codes';
 import { $errors, $init } from '../config/strings';
-import { createMainWindow } from './create-window';
+import { createCrosshairWindow } from './create-window';
 import keyboard from './keyboard';
 import { getSettings } from './store-actions';
 import { is } from './util';
@@ -60,11 +60,19 @@ const ready = () => {
 	app.on('activate', async () => {
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
-		if (windows.mainWindow === null || windows.mainWindow.isDestroyed()) {
+		const openWindows = BrowserWindow.getAllWindows().find((window) => {
+			if (window !== windows.settingsWindow) {
+				// window.show();
+				return true;
+			}
+			return false;
+		});
+
+		if (!openWindows) {
 			// Because we're adding these listeners outside the main.ts file, the window object doesn't get set to null
 			// when the window is closed. So we check `windows.mainWindow?.isDestroyed()` and explicitly set it to null
 			windows.mainWindow = null;
-			await createMainWindow();
+			await createCrosshairWindow();
 		}
 	});
 

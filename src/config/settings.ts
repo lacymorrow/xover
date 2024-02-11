@@ -123,12 +123,13 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	// experimentalFeatures
 };
 
-export interface WindowStateType {
+// These are specific to the settings window
+export type WindowStateType = {
 	x?: number;
 	y?: number;
 	width?: number;
 	height?: number;
-}
+};
 
 export interface CrosshairWindowStateType extends WindowStateType {
 	// isMaximized: boolean;
@@ -160,38 +161,39 @@ export interface CrosshairWindowStateType extends WindowStateType {
 	altTrigger: number;
 }
 
+export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
+	width: APP_WIDTH,
+	height: APP_HEIGHT,
+
+	backgroundColor: '#b80f9cB0',
+	foregroundColor: '#ffffff',
+
+	crosshair: '',
+	crosshairRotation: 0,
+	crosshairSize: 80,
+	crosshairOpacity: 80,
+
+	reticle: 'dot',
+	reticleRotation: 0,
+	reticleSize: 50,
+	reticleColor: '#ffffff',
+
+	// svg
+	fillColor: '#ffffff',
+	strokeColor: '#000000',
+	strokeWidth: 1,
+
+	altActionEnabled: false,
+	altCrosshair: '',
+	altBehavior: 'hold', // toggle/hold
+	altSize: 100,
+	altOpacity: 100,
+	altInput: 'mouse', // mouse/keyboard
+	altTrigger: 0,
+};
+
 export const DEFAULT_WINDOW_STATE = {
 	settings: {},
-	main: {
-		width: APP_WIDTH,
-		height: APP_HEIGHT,
-
-		backgroundColor: '#b80f9cB0',
-		foregroundColor: '#ffffff',
-
-		crosshair: '',
-		crosshairRotation: 0,
-		crosshairSize: 80,
-		crosshairOpacity: 80,
-
-		reticle: 'dot',
-		reticleRotation: 0,
-		reticleSize: 50,
-		reticleColor: '#ffffff',
-
-		// svg
-		fillColor: '#ffffff',
-		strokeColor: '#000000',
-		strokeWidth: 1,
-
-		altActionEnabled: false,
-		altCrosshair: '',
-		altBehavior: 'hold', // toggle/hold
-		altSize: 100,
-		altOpacity: 100,
-		altInput: 'mouse', // mouse/keyboard
-		altTrigger: 0,
-	},
 };
 
 export type ActionStateType = {

@@ -9,7 +9,7 @@ https://www.electronjs.org/docs/latest/tutorial/native-file-drag-drop
 ## Progress Bar
 
 ```js
-windows.mainWindow.setProgressBar(c)
+BrowserWindow.setProgressBar(c)
 ```
 
 ## Recent Documents
