@@ -35,6 +35,14 @@ export function SettingsActions() {
 				description="Keep the crosshair centered on the mouse cursor."
 			/>
 			<Separator />
+			<InputMouseKeyboardBind
+				value={settings.secondaryBind}
+				onChange={(value) => {
+					handleChangeSetting({ secondaryBind: value });
+				}}
+				label="Secondary Bind"
+			/>
+			<Separator />
 			<InputSwitch
 				value={settings.tiltActionEnabled}
 				onChange={() => {

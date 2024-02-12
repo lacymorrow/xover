@@ -6,7 +6,6 @@ import {
 	ActionStateType,
 	CrosshairWindowStateType,
 	SettingsType,
-	WindowStateType,
 } from '../config/settings';
 import { $messages } from '../config/strings';
 import store, { AppMessageType } from './store';
@@ -130,8 +129,15 @@ export const getWindowState = (w: string) => {
 	}
 };
 
-export const setWindowState = (w: string, state: Partial<WindowStateType>) => {
+export const setWindowState = (
+	w: string,
+	state: Partial<CrosshairWindowStateType>,
+) => {
 	store.set(`windows.${w}`, { ...getWindowState(w), ...state });
+	if (state?.resizable !== undefined && windows.crosshairWindows[w]) {
+		windows.crosshairWindows[w]?.setResizable(state.resizable);
+	}
+
 	synchronizeApp();
 };
 
@@ -161,7 +167,9 @@ export const getActionState = () => {
 
 export const setActionStateKey = (key: keyof ActionStateType, state: any) => {
 	// Danger, no type checking - use with caution
-	store.set(`actionState.${key}`, state);
+
+	console.log('setActionStateKey', key, state);
+	store.set(`actionState.${key}`, state); // todo: action state doesn't need to be stored
 	windows?.mainWindow?.webContents.send(ipcChannels.ACTION_STATE, key, state);
 };
 

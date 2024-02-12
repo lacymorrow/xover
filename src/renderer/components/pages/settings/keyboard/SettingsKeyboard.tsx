@@ -43,10 +43,18 @@ export function SettingsKeyboard() {
 			/>
 			<InputKeyboardShortcut
 				value={keybinds.newWindow}
-				label="Duplicate Crosshair"
+				label="New Crosshair Window"
 				description="Create a new crosshair window."
 				onChange={(value) => {
 					handleChangeKeybind('newWindow', value);
+				}}
+			/>
+			<InputKeyboardShortcut
+				value={keybinds.duplicateWindow}
+				label="Duplicate Crosshair Window"
+				description="Create a new crosshair window with the current window settings."
+				onChange={(value) => {
+					handleChangeKeybind('duplicateWindow', value);
 				}}
 			/>
 			<InputKeyboardShortcut
@@ -118,7 +126,7 @@ export function SettingsKeyboard() {
 				value={keybinds.reset}
 				label="Reset Application"
 				description="Clear all settings and restore the app to its default state."
-				details='WARNING: This will delete your settings'
+				details="WARNING: This will delete your settings"
 				onChange={(value) => {
 					handleChangeKeybind('reset', value);
 				}}

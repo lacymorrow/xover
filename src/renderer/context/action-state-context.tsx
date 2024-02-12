@@ -10,6 +10,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import { ActionStateType } from '@/config/settings';
 
 export const ActionStateContext = React.createContext<ActionStateType>({
+	secondary: false,
 	tilt: 0,
 });
 
@@ -18,6 +19,8 @@ export function ActionStateContextProvider({
 }: {
 	children?: React.ReactNode;
 }) {
+	// todo: these dont need to be in state (or context?)
+	const [secondary, setSecondary] = React.useState<boolean>(false);
 	const [tilt, setTilt] = React.useState<number>(0);
 
 	useEffect(() => {
@@ -25,7 +28,14 @@ export function ActionStateContextProvider({
 		window.electron.ipcRenderer.on(
 			ipcChannels.ACTION_STATE,
 			async (key, value) => {
-				console.log(ipcChannels.ACTION_STATE, key, value);
+				if (key === 'secondary') {
+					setSecondary(value as boolean);
+					if (value) {
+						window.document.documentElement.classList.add('secondary');
+					} else {
+						window.document.documentElement.classList.remove('secondary');
+					}
+				}
 
 				// Update the state based on the key and value received
 				if (key === 'tilt') {
@@ -33,6 +43,9 @@ export function ActionStateContextProvider({
 				}
 			},
 		);
+
+		// Setup
+		window.document.documentElement.classList.remove('secondary');
 
 		return () => {
 			// Clean up listeners when the component unmounts
@@ -42,9 +55,10 @@ export function ActionStateContextProvider({
 
 	const value = useMemo(() => {
 		return {
+			secondary,
 			tilt,
 		};
-	}, [tilt]);
+	}, [secondary, tilt]);
 
 	return (
 		<ActionStateContext.Provider value={value}>

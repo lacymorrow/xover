@@ -26,7 +26,52 @@ export const registerFollowMouse = () => {
 	});
 };
 
-const registerToggleHoldShortcut = (
+const registerToggleHoldShortcutAlt = (input: string, behavior: string) => {
+	if (!(input in iohookKeycodes)) {
+		return;
+	}
+
+	const trigger = iohookKeycodes[input as keyof typeof iohookKeycodes];
+
+	if (behavior === 'toggle') {
+		iohook.registerShortcut([trigger], () =>
+			setActionStateKey('secondary', !getActionState().secondary),
+		);
+	} else if (behavior === 'hold') {
+		iohook.registerShortcut(
+			[trigger],
+			() => setActionStateKey('secondary', true), // Press
+			() => setActionStateKey('secondary', false),
+		);
+	}
+};
+
+const registerToggleHoldMouseAlt = (input: string, behavior: string) => {
+	const button = parseInt(input, 10);
+
+	if (behavior === 'toggle') {
+		iohook.on('mousedown', (event: MouseEvent) => {
+			if (event.button === button) {
+				setActionStateKey('secondary', !getActionState().secondary);
+			}
+		});
+	} else if (behavior === 'hold') {
+		iohook.on('mousedown', (event: MouseEvent) => {
+			if (event.button === button) {
+				// MACOS Mousedown fired twice for middle mouse
+				setActionStateKey('secondary', !getActionState().secondary);
+			}
+		});
+
+		iohook.on('mouseup', (event: MouseEvent) => {
+			if (event.button === button) {
+				setActionStateKey('secondary', false);
+			}
+		});
+	}
+};
+
+const registerToggleHoldShortcutTilt = (
 	input: string,
 	tiltAngle: number,
 	tiltBehavior: string,
@@ -55,27 +100,33 @@ const registerToggleHoldShortcut = (
 	}
 };
 
-const registerToggleHoldMouse = (
+const registerToggleHoldMouseTilt = (
 	input: string,
 	tiltAngle: number,
 	tiltBehavior: string,
 ) => {
 	const button = parseInt(input, 10);
+
 	if (tiltBehavior === 'toggle') {
 		iohook.on('mousedown', (event: MouseEvent) => {
-			const currentTilt = getActionState().tilt;
 			if (event.button === button) {
-				if (currentTilt !== tiltAngle) {
-					setActionStateKey('tilt', tiltAngle);
-				} else {
+				const currentTilt = getActionState().tilt;
+				if (currentTilt && currentTilt === tiltAngle) {
 					setActionStateKey('tilt', 0);
+				} else {
+					setActionStateKey('tilt', tiltAngle);
 				}
 			}
 		});
 	} else if (tiltBehavior === 'hold') {
 		iohook.on('mousedown', (event: MouseEvent) => {
 			if (event.button === button) {
-				setActionStateKey('tilt', tiltAngle);
+				const currentTilt = getActionState().tilt;
+				if (currentTilt && currentTilt === tiltAngle) {
+					setActionStateKey('tilt', 0);
+				} else {
+					setActionStateKey('tilt', tiltAngle);
+				}
 			}
 		});
 
@@ -94,6 +145,8 @@ export const startIOHook = async () => {
 
 	const {
 		followMouse,
+		secondaryBind,
+		secondaryBehavior,
 		tiltActionEnabled,
 		tiltAngle,
 		tiltBehavior,
@@ -107,7 +160,7 @@ export const startIOHook = async () => {
 		tiltEnabled = true;
 	}
 
-	if (!followMouse && !tiltEnabled) {
+	if (!followMouse && !secondaryBind && !tiltEnabled) {
 		return;
 	}
 
@@ -121,24 +174,34 @@ export const startIOHook = async () => {
 		registerFollowMouse();
 	}
 
+	if (secondaryBind) {
+		const [input, trigger] = secondaryBind.split(':');
+
+		if (input === 'keyboard') {
+			registerToggleHoldShortcutAlt(trigger, secondaryBehavior);
+		} else if (input === 'mouse') {
+			registerToggleHoldMouseAlt(trigger, secondaryBehavior);
+		}
+	}
+
 	// TILT
 	if (tiltEnabled) {
 		if (tiltLeftBind) {
 			const [input, trigger] = tiltLeftBind.split(':');
 
 			if (input === 'keyboard') {
-				registerToggleHoldShortcut(trigger, tiltAngle * -1, tiltBehavior);
+				registerToggleHoldShortcutTilt(trigger, tiltAngle * -1, tiltBehavior);
 			} else if (input === 'mouse') {
-				registerToggleHoldMouse(trigger, tiltAngle * -1, tiltBehavior);
+				registerToggleHoldMouseTilt(trigger, tiltAngle * -1, tiltBehavior);
 			}
 		}
 
 		if (tiltRightBind) {
 			const [input, trigger] = tiltRightBind.split(':');
 			if (input === 'keyboard') {
-				registerToggleHoldShortcut(trigger, tiltAngle, tiltBehavior);
+				registerToggleHoldShortcutTilt(trigger, tiltAngle, tiltBehavior);
 			} else if (input === 'mouse') {
-				registerToggleHoldMouse(trigger, tiltAngle, tiltBehavior);
+				registerToggleHoldMouseTilt(trigger, tiltAngle, tiltBehavior);
 			}
 		}
 	}
@@ -151,6 +214,7 @@ export const startIOHook = async () => {
 export const stopIOHook = async () => {
 	Logger.status($iohook.enabled);
 
+	setActionStateKey('secondary', false);
 	setActionStateKey('tilt', 0);
 
 	if (!iohook) {

@@ -25,7 +25,7 @@
 // Less Renderer sync
 // use same dock icon
 // position settings
-// resizeable window
+// resizeable window crosshair doesn't stay centered
 
 /*
 Done:

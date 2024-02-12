@@ -10,11 +10,20 @@
 
 	--crosshair-scale: 1;
 	--crosshair-opacity: 0.8;
+	--crosshair-opacity-alt: 0.8;
 	--crosshair-rotation: 0deg;
 
 	--reticle-scale: 1;
 	--reticle-rotation: 0deg;
 	--reticle-color: hsl(var(--foreground));
+
+	--crosshair-scale-alt: 1;
+	--crosshair-opacity-alt: 0.5;
+	--crosshair-rotation-alt: 0deg;
+
+	--reticle-scale-alt: 0.3;
+	--reticle-rotation-alt: 0deg;
+	--reticle-color-alt: hsl(var(--foreground));
 
 	--svg-fill-color: inherit;
 	--svg-stroke-color: inherit;
@@ -22,8 +31,6 @@
 
 	/* Actions */
 	--tilt-angle: 0deg;
-	--alt-size: 100px;
-	--alt-opacity: 1;
 }
 
 * {
@@ -80,6 +87,10 @@ body {
 	z-index: -1;
 }
 
+.active #background {
+	border-width: 6px;
+}
+
 .controls {
 	will-change: color;
 	color: var(--app-foreground-color, hsl(var(--foreground)));
@@ -110,6 +121,12 @@ body {
 		opacity var(--transition-duration, 100ms)
 			var(--transition-timing, ease-in-out);
 }
+
+.secondary #crosshair {
+	opacity: var(--crosshair-opacity-alt, 1);
+	transform: scale(var(--crosshair-scale, 1)) rotate(var(--tilt-angle, 0deg));
+}
+
 #crosshair img {
 	will-change: transform;
 	transform: rotate(var(--crosshair-rotation, 0deg));

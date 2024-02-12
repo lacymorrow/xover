@@ -9,7 +9,7 @@ import { addWindowMovedListeners } from './savePosition';
 import { forEachWindow } from './window-utils';
 
 export const setAppLock = async (isLocked: boolean) => {
-	const { followMouse, showDockIcon } = getSettings();
+	const { followMouse, isSettingsWindowOpen, showDockIcon } = getSettings();
 	// todo
 	// iohook
 	// if unlock + follow mouse = reset position
@@ -41,17 +41,18 @@ export const setAppLock = async (isLocked: boolean) => {
 			app.dock.hide();
 		}
 
-		if (followMouse) {
-			startIOHook();
-		}
+		startIOHook();
 	} else {
 		sounds.play('UNLOCK');
-		windows.settingsWindow?.show(); // hide settings window
 
 		stopIOHook();
 
 		if (followMouse) {
 			restoreWindowPosition(windows.mainWindow);
+		}
+
+		if (isSettingsWindowOpen) {
+			windows.settingsWindow?.show(); // hide settings window
 		}
 
 		if (showDockIcon) {

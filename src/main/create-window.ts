@@ -16,12 +16,14 @@ import {
 } from '../config/config';
 import { DEFAULT_CROSSHAIR_WINDOW_STATE } from '../config/settings';
 import { getUUID } from '../utils/getUUID';
+import { isObjectEmpty } from '../utils/isObjectEmpty';
 import { setupContextMenu } from './context-menu';
 import dock from './dock';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
 import {
 	deleteWindowState,
+	getActiveWindowState,
 	getSetting,
 	getSettings,
 	getWindowState,
@@ -32,6 +34,7 @@ import {
 } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
+import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
@@ -106,8 +109,17 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 		// Remove window state
 		deleteWindowState(id);
 
-		if (id !== 'settings') {
-			delete windows.crosshairWindows[id];
+		delete windows.crosshairWindows[id];
+
+		// Set mainwindow to the next window
+		if (windows.mainWindow === browserWindow) {
+			windows.mainWindow = null;
+			const nextWindow = getNextCrosshairWindow();
+			if (!nextWindow) {
+				windows.settingsWindow?.hide();
+				return;
+			}
+			windows.mainWindow = nextWindow;
 		}
 	});
 
@@ -143,9 +155,7 @@ export const createCrosshairWindow = async (
 	const state = id ? getWindowState(id) : null;
 
 	// Resume previous window state
-	console.log('No state', id);
-	if (!state) {
-		console.log('No state', id);
+	if (isObjectEmpty(state)) {
 		// New window state
 		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
 	}
@@ -158,7 +168,7 @@ export const createCrosshairWindow = async (
 		hasShadow: false,
 		maximizable: false,
 		minimizable: false,
-		resizable: false,
+		resizable: state?.resizable ? state.resizable : false,
 
 		closable: true,
 		movable: true,
@@ -224,6 +234,11 @@ export const createCrosshairWindow = async (
 
 	windows.crosshairWindows[id] = window;
 
+	if (!windows.mainWindow) {
+		console.log('Setting main window', id);
+		windows.mainWindow = window;
+	}
+
 	return window;
 };
 
@@ -237,6 +252,22 @@ export const createMainWindow = async () => {
 
 export const createNewWindow = async () => {
 	const window = await createCrosshairWindow();
+
+	return window;
+};
+
+export const createDuplicateWindow = async () => {
+	const id = getUUID();
+	const state = getActiveWindowState();
+
+	// copy state to a new window
+	if (state) {
+		delete state.x;
+		delete state.y;
+
+		if (state) setWindowState(id, state);
+	}
+	const window = await createCrosshairWindow({}, id);
 
 	return window;
 };

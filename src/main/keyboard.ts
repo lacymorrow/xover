@@ -4,7 +4,7 @@ import { CustomAcceleratorsType, KeyboardShortcut } from '../types/keyboard';
 import store from './store';
 import windows from './windows';
 
-import { createNewWindow } from './create-window';
+import { createDuplicateWindow, createNewWindow } from './create-window';
 import { resetSettings } from './reset';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
@@ -92,6 +92,16 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		allowUnbind: true,
 		fn() {
 			createNewWindow();
+		},
+	},
+
+	// Duplicate window
+	{
+		action: 'duplicateWindow',
+		ignoreWhenLocked: true,
+		allowUnbind: true,
+		fn() {
+			createDuplicateWindow();
 		},
 	},
 

@@ -1,4 +1,7 @@
 export interface CustomAcceleratorsType {
+	lock?: string;
+	hide?: string;
+	center?: string;
 	quit?: string;
 	reset?: string;
 	moveUp?: string;
@@ -6,9 +9,7 @@ export interface CustomAcceleratorsType {
 	moveLeft?: string;
 	moveRight?: string;
 	newWindow?: string;
-	lock?: string;
-	hide?: string;
-	center?: string;
+	duplicateWindow?: string;
 	changeDisplay?: string;
 	focusNextWindow?: string;
 }

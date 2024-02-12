@@ -89,8 +89,11 @@ export function SettingsCrosshair() {
 			WINDOW Size
 			<InputSwitch
 				label="Resizable"
-				description="Allow the app window to be resized."
-				card
+				details="Allow the Crosshair window to be resized."
+				value={windowState.resizable}
+				onChange={(value) => {
+					handleChangeSetting({ resizable: value });
+				}}
 			/>
 		</div>
 	);

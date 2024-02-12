@@ -344,6 +344,12 @@ export const focusNextWindow = () => {
 	nextWindow.focus();
 };
 
+// grab an available crosshair window
+export const getNextCrosshairWindow = () => {
+	const crosshairWindows = Object.values(windows.crosshairWindows);
+	return crosshairWindows.find((win) => win && !win.isDestroyed()) || null;
+};
+
 export const getWindowById = (id: string) => {
 	if (id in windows.crosshairWindows) {
 		return windows.crosshairWindows[id];

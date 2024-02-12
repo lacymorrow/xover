@@ -12,6 +12,7 @@ import { resetApp } from './reset';
 import sounds from './sounds';
 import { idle } from './startup';
 import {
+	getActiveWindow,
 	getActiveWindowState,
 	getAppMessages,
 	getCrosshairImages,
@@ -57,13 +58,13 @@ export default {
 		ipcMain.handle(ipcChannels.GET_RENDERER_SYNC, (_event, id) => {
 			const windowState =
 				!id || id === 'settings' ? getActiveWindowState() : getWindowState(id);
-			console.log('windowState', id, windowState);
 			return {
 				windowState,
 				settings: getSettings(),
 				keybinds: getKeybinds(),
 				messages: getAppMessages(),
 				appMenu: serializeMenu(Menu.getApplicationMenu()),
+				active: id === getActiveWindow(),
 			};
 		});
 		ipcMain.handle(ipcChannels.GET_CROSSHAIR_IMAGES, getCrosshairImages);

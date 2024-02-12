@@ -95,6 +95,14 @@ export function GlobalContextProvider({
 					if (res.keybinds) setCurrentKeybinds(res.keybinds);
 					if (res.settings) setCurrentSettings(res.settings);
 					if (res.windowState) setCurrentWindowState(res.windowState);
+
+					// Highlight the active window
+					const root = window.document.documentElement;
+					if (res.active) {
+						root.classList.add('active');
+					} else {
+						root.classList.remove('active');
+					}
 				})
 				.catch(console.error);
 

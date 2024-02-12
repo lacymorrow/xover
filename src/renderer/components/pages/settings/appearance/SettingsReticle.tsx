@@ -62,14 +62,6 @@ export function SettingsReticle() {
 					handleChangeSetting({ reticleColor: value });
 				}}
 			/>
-			<InputColor
-				value={windowState.strokeColor}
-				label="Stroke Color"
-				details="The color of the stroke around the crosshair."
-				onChange={(value) => {
-					handleChangeSetting({ strokeColor: value });
-				}}
-			/>
 		</div>
 	);
 }
