@@ -44,6 +44,7 @@ export const $errors = {
 
 export const $messages = {
 	resetStore: 'Reset App',
+	resetStoreSettings: 'Reset App Settings',
 
 	// Network messages
 	online: 'Connected',
@@ -77,4 +78,8 @@ export const $init = {
 export const $iohook = {
 	enabled: 'iohook enabled',
 	disabled: 'iohook disabled',
+};
+
+export const $appListeners = {
+	allWindowsClosed: 'All windows closed',
 };

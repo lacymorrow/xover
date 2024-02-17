@@ -31,6 +31,51 @@ export interface StoreType {
 export type WindowNamesType = 'settings' | 'crosshairs';
 
 const schema: Store.Schema<StoreType> = {
+	keybinds: {
+		type: 'object',
+		properties: {
+			lock: {
+				type: 'string',
+			},
+			quit: {
+				type: 'string',
+			},
+			reset: {
+				type: 'string',
+			},
+			hide: {
+				type: 'string',
+			},
+			center: {
+				type: 'string',
+			},
+			newWindow: {
+				type: 'string',
+			},
+			duplicateWindow: {
+				type: 'string',
+			},
+			changeDisplay: {
+				type: 'string',
+			},
+			focusNextWindow: {
+				type: 'string',
+			},
+			moveUp: {
+				type: 'string',
+			},
+			moveDown: {
+				type: 'string',
+			},
+			moveLeft: {
+				type: 'string',
+			},
+			moveRight: {
+				type: 'string',
+			},
+		},
+		default: DEFAULT_KEYBINDS,
+	},
 	activeWindow: {
 		type: 'string',
 		default: '',
@@ -61,21 +106,12 @@ const schema: Store.Schema<StoreType> = {
 		type: 'array',
 		default: [],
 	},
-	keybinds: {
-		type: 'object',
-		properties: {
-			quit: {
-				type: 'string',
-			},
-			reset: {
-				type: 'string',
-			},
-		},
-		default: DEFAULT_KEYBINDS,
-	},
 	settings: {
 		type: 'object',
 		properties: {
+			appVersion: {
+				type: 'string',
+			},
 			allowAnalytics: {
 				type: 'boolean',
 			},
@@ -145,47 +181,19 @@ const schema: Store.Schema<StoreType> = {
 				type: 'boolean',
 			},
 
-			backgroundColor: {
-				type: 'string',
-			},
-			foregroundColor: {
-				type: 'string',
-			},
-			crosshair: {
-				type: 'string',
-			},
-			crosshairSize: {
-				type: 'number',
-			},
-			crosshairOpacity: {
-				type: 'number',
-			},
-			crosshairRotation: {
-				type: 'number',
-			},
-			reticle: {
-				type: 'string',
-			},
-			reticleSize: {
-				type: 'number',
-			},
-			reticleRotation: {
-				type: 'number',
-			},
-			reticleColor: {
-				type: 'string',
-			},
-			fillColor: {
-				type: 'string',
-			},
-			strokeColor: {
-				type: 'string',
-			},
-			strokeWidth: {
-				type: 'number',
-			},
-			followMouse: {
+			// iohook
+			followMouseEnabled: {
 				type: 'boolean',
+			},
+			secondaryActionEnabled: {
+				type: 'boolean',
+			},
+			secondaryBind: {
+				type: 'string',
+			},
+			secondaryBehavior: {
+				type: 'string',
+				enum: ['toggle', 'hold'],
 			},
 			tiltActionEnabled: {
 				type: 'boolean',
@@ -196,6 +204,12 @@ const schema: Store.Schema<StoreType> = {
 			tiltBehavior: {
 				type: 'string',
 				enum: ['toggle', 'hold'],
+			},
+			tiltLeftBind: {
+				type: 'string',
+			},
+			tiltRightBind: {
+				type: 'string',
 			},
 			transitionDuration: {
 				type: 'number',

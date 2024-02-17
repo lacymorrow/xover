@@ -134,7 +134,7 @@ export function SettingsKeyboard() {
 
 			<InputCheckbox
 				label="Disable all keyboard shortcuts"
-				description="Disable all keyboard shortcuts."
+				description="Disable all keyboard shortcuts except for 'lock'."
 				value={settings.allowDisableKeyboardShortcuts}
 				onChange={(value) => {
 					window.electron.setSettings({

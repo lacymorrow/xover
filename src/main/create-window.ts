@@ -109,18 +109,17 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 		// Remove window state
 		deleteWindowState(id);
 
-		delete windows.crosshairWindows[id];
-
-		// Set mainwindow to the next window
-		if (windows.mainWindow === browserWindow) {
+		// Basically we always want to have a main window, so we find the next window and set it as main
+		if (windows.mainWindow === windows.crosshairWindows[id]) {
 			windows.mainWindow = null;
 			const nextWindow = getNextCrosshairWindow();
 			if (!nextWindow) {
 				windows.settingsWindow?.hide();
-				return;
+			} else {
+				windows.mainWindow = nextWindow;
 			}
-			windows.mainWindow = nextWindow;
 		}
+		delete windows.crosshairWindows[id];
 	});
 
 	// Clean

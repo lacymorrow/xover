@@ -8,7 +8,6 @@ import kb from './keyboard';
 import { serializeMenu, triggerMenuItemById } from './menu';
 import { notification } from './notifications';
 import { rendererPaths } from './paths';
-import { resetApp } from './reset';
 import sounds from './sounds';
 import { idle } from './startup';
 import {
@@ -19,6 +18,7 @@ import {
 	getKeybinds,
 	getSettings,
 	getWindowState,
+	resetStoreSettings,
 	setActiveWindowState,
 	setSettings,
 } from './store-actions';
@@ -31,6 +31,13 @@ import {
 
 import { is } from './util';
 import windows from './windows';
+
+const centerWindowId = (id: string) => {
+	const window = windows.crosshairWindows[id];
+	if (window) {
+		centerWindow({ window, animated: true });
+	}
+};
 
 export default {
 	initialize() {
@@ -139,7 +146,8 @@ export default {
 		});
 
 		ipcMain.on(ipcChannels.RESET_APP, () => {
-			resetApp();
+			resetStoreSettings();
+			// todo: maybe resetApp() should be called here
 		});
 
 		ipcMain.on(ipcChannels.UPDATE_APP, () => {

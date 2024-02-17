@@ -1,31 +1,40 @@
-import { app } from 'electron';
 import Logger from 'electron-log';
-import { getSetting, setSettings } from '../store-actions';
+import dock from '../dock';
+import { getSetting, getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
+import { forEachWindow } from './window-utils';
 
 export const setAppHide = (isHidden: boolean) => {
-	if (!windows.mainWindow) {
+	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
 		return;
 	}
 
 	Logger.status(`App is ${isHidden ? 'hidden' : 'unhidden'}`);
 
-	const showDockIcon = getSetting('showDockIcon');
+	const { isSettingsWindowOpen, showDockIcon } = getSettings();
 
 	if (isHidden) {
-		windows.mainWindow.hide();
-
-		// Hide settings window
-		windows.settingsWindow?.hide();
-		setSettings({ isSettingsWindowOpen: false });
+		// Hide all windows
+		forEachWindow((window) => {
+			window.hide();
+		});
 
 		// Hide dock icon
-		app.dock.hide();
+		dock.setVisible(false);
 	} else {
-		windows.mainWindow.show();
+		// Show all windows
+		forEachWindow((window) => {
+			window.show();
+		});
 
+		// Restore settings window
+		if (isSettingsWindowOpen) {
+			windows.settingsWindow?.show();
+		}
+
+		// Show dock icon
 		if (showDockIcon) {
-			app.dock.show();
+			dock.setVisible(true);
 		}
 	}
 };

@@ -19,7 +19,7 @@ import { __crosshairs } from './paths';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
-import { getCrosshairImages, setCrosshairImages } from './store-actions';
+import { setCrosshairImages } from './store-actions';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import { getImages } from './utils/getImages';
@@ -90,10 +90,9 @@ export const ready = async () => {
 };
 
 export const idle = async () => {
-	console.log('idle', getCrosshairImages().length);
 	// Load crosshair images
 	setCrosshairImages([]);
-	getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
+	await getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
 		.then((images) => {
 			setCrosshairImages(images);
 		})
@@ -102,9 +101,7 @@ export const idle = async () => {
 		});
 
 	await createSettingsWindow();
-
 	sounds.play('STARTUP');
-
 	// ... do something with your app
 
 	Logger.status($init.idle);

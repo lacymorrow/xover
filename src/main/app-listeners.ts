@@ -2,8 +2,9 @@
 import { BrowserWindow, app, shell } from 'electron';
 import Logger from 'electron-log/main';
 import EXIT_CODES from '../config/exit-codes';
-import { $errors, $init } from '../config/strings';
+import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
+import dock from './dock';
 import keyboard from './keyboard';
 import { getSettings } from './store-actions';
 import { is } from './util';
@@ -32,11 +33,15 @@ const register = () => {
 	// make use of it to ensure the browser window is completely destroyed.
 	// See https://github.com/electron/electron/issues/5273
 	app.on('before-quit', () => {
+		// Dock persists after app quits on macOS
+		dock.setVisible(false);
+
 		app.releaseSingleInstanceLock();
 		process.exit(EXIT_CODES.SUCCESS);
 	});
 
 	app.on('window-all-closed', () => {
+		Logger.status($appListeners.allWindowsClosed);
 		// Respect the OSX convention of having the application in memory even
 		// after all windows have been closed
 		if (!is.macos || quitOnWindowClose) {
@@ -69,9 +74,6 @@ const ready = () => {
 		});
 
 		if (!openWindows) {
-			// Because we're adding these listeners outside the main.ts file, the window object doesn't get set to null
-			// when the window is closed. So we check `windows.mainWindow?.isDestroyed()` and explicitly set it to null
-			windows.mainWindow = null;
 			await createCrosshairWindow();
 		}
 	});
@@ -79,10 +81,11 @@ const ready = () => {
 	app.on('second-instance', () => {
 		Logger.warn($errors.secondInstance);
 		// Someone tried to run a second instance, we should focus our window.
-		if (windows.mainWindow) {
+		if (windows.settingsWindow) {
 			// If the window is minimized, we should restore it and focus it.
-			if (windows.mainWindow.isMinimized()) windows.mainWindow.restore();
-			windows.mainWindow.focus();
+			if (windows.settingsWindow.isMinimized())
+				windows.settingsWindow.restore();
+			windows.settingsWindow.focus();
 		}
 	});
 };

@@ -1,28 +1,32 @@
-import { app } from 'electron';
 import Logger from 'electron-log';
 import { startIOHook, stopIOHook } from '../iohook';
 import sounds from '../sounds';
 import { getSetting, getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
 import { restoreWindowPosition } from './restoreWindowPosition';
-import { addWindowMovedListeners } from './savePosition';
+import {
+	addWindowMovedListeners,
+	removeWindowMovedListeners,
+} from './savePosition';
 import { forEachWindow } from './window-utils';
 
-export const setAppLock = async (isLocked: boolean) => {
-	const { followMouse, isSettingsWindowOpen, showDockIcon } = getSettings();
+export const toggleAppLock = () => {
+	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+		return;
+	}
+	const isLocked = !getSetting('isLocked');
+
+	const { followMouseEnabled, isSettingsWindowOpen } = getSettings();
 	// todo
 	// iohook
 	// if unlock + follow mouse = reset position
 	// unregister iohook
 	// enable move listener (save position)
 
-	if (!windows.mainWindow) {
-		return;
-	}
 	Logger.status(`App is ${isLocked ? 'locked' : 'unlocked'}`);
 
 	forEachWindow((window) => {
-		window.closable = !isLocked;
+		// window.closable = !isLocked;
 		// window.minimizable = !isLocked;
 		window.movable = !isLocked;
 		window.setFocusable(!isLocked);
@@ -33,38 +37,24 @@ export const setAppLock = async (isLocked: boolean) => {
 		sounds.play('LOCK');
 		windows.settingsWindow?.hide(); // hide settings window
 
-		forEachWindow((window) => {
-			window.removeAllListeners('moved');
-		});
-
-		if (!showDockIcon) {
-			app.dock.hide();
-		}
+		removeWindowMovedListeners();
 
 		startIOHook();
 	} else {
-		sounds.play('UNLOCK');
-
 		stopIOHook();
 
-		if (followMouse) {
+		sounds.play('UNLOCK');
+
+		if (followMouseEnabled) {
 			restoreWindowPosition(windows.mainWindow);
 		}
 
 		if (isSettingsWindowOpen) {
-			windows.settingsWindow?.show(); // hide settings window
-		}
-
-		if (showDockIcon) {
-			app.dock.show();
+			windows.settingsWindow?.show();
 		}
 
 		addWindowMovedListeners();
 	}
-};
 
-export const toggleAppLock = () => {
-	const isLocked = !getSetting('isLocked');
-	setAppLock(isLocked);
 	setSettings({ isLocked });
 };

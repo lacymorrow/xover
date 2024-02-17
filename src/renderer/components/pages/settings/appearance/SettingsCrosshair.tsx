@@ -7,7 +7,6 @@ import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback } from 'react';
 import { SettingsReticle } from './SettingsReticle';
-import { SettingsSVG } from './SettingsSVG';
 
 export function SettingsCrosshair() {
 	const { crosshairImages, windowState } = useGlobalContext();
@@ -22,9 +21,9 @@ export function SettingsCrosshair() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Crosshair</h3>
+				<h3 className="text-lg font-medium">Edit Crosshair Window</h3>
 				<p className="text-sm text-muted-foreground">
-					Adjust the crosshair size, color, and opacity.
+					Adjust the crosshair settings for the active window.
 				</p>
 			</div>
 			<Separator />
@@ -85,8 +84,7 @@ export function SettingsCrosshair() {
 				max={180}
 			/>
 			<SettingsReticle />
-			<SettingsSVG />
-			WINDOW Size
+			<Separator />
 			<InputSwitch
 				label="Resizable"
 				details="Allow the Crosshair window to be resized."
@@ -94,6 +92,7 @@ export function SettingsCrosshair() {
 				onChange={(value) => {
 					handleChangeSetting({ resizable: value });
 				}}
+				card
 			/>
 		</div>
 	);

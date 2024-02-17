@@ -9,7 +9,7 @@ import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
 
 export function SettingsActions() {
-	const { app, settings } = useGlobalContext();
+	const { settings } = useGlobalContext();
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		window.electron.setSettings(setting);
@@ -18,30 +18,47 @@ export function SettingsActions() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Mouse and Keyboard Actions</h3>
+				<h3 className="text-lg font-medium">
+					Mouse and Keyboard Actions (Beta)
+				</h3>
 				<p className="text-sm text-muted-foreground">
-					Tweaks and settings for advanced users and debugging.
+					These actions use native hooks to control the mouse and keyboard. The
+					hooks are not loaded until the action is enabled and the crosshair is
+					activated.
 					<br />
 					Use with caution.
 				</p>
 			</div>
 			<Separator />
 			<InputSwitch
-				value={settings.followMouse}
+				value={settings.followMouseEnabled}
 				onChange={() => {
-					handleChangeSetting({ followMouse: !settings.followMouse });
+					handleChangeSetting({
+						followMouseEnabled: !settings.followMouseEnabled,
+					});
 				}}
 				label="Follow Mouse"
 				description="Keep the crosshair centered on the mouse cursor."
 			/>
-			<Separator />
+			{/* <Separator />
+			<InputSwitch
+				value={settings.secondaryActionEnabled}
+				onChange={() => {
+					handleChangeSetting({
+						secondaryActionEnabled: !settings.secondaryActionEnabled,
+					});
+				}}
+				label="Enable Secondary Action"
+				description="Enable a secondary action to be performed when the secondary bind is active."
+				details="You can show, hide, resize, or change the crosshair when the secondary bind is active."
+			/>
 			<InputMouseKeyboardBind
 				value={settings.secondaryBind}
 				onChange={(value) => {
 					handleChangeSetting({ secondaryBind: value });
 				}}
 				label="Secondary Bind"
-			/>
+			/> */}
 			<Separator />
 			<InputSwitch
 				value={settings.tiltActionEnabled}

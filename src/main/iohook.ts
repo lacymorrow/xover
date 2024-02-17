@@ -144,9 +144,10 @@ export const startIOHook = async () => {
 	}
 
 	const {
-		followMouse,
+		followMouseEnabled,
 		secondaryBind,
 		secondaryBehavior,
+		secondaryActionEnabled,
 		tiltActionEnabled,
 		tiltAngle,
 		tiltBehavior,
@@ -160,7 +161,7 @@ export const startIOHook = async () => {
 		tiltEnabled = true;
 	}
 
-	if (!followMouse && !secondaryBind && !tiltEnabled) {
+	if (!followMouseEnabled && !secondaryBind && !tiltEnabled) {
 		return;
 	}
 
@@ -170,7 +171,7 @@ export const startIOHook = async () => {
 	iohook = iohook || require('iohook');
 
 	// FOLLOW MOUSE
-	if (followMouse) {
+	if (followMouseEnabled) {
 		registerFollowMouse();
 	}
 

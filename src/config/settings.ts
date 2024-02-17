@@ -30,8 +30,9 @@ export interface SettingsType {
 	hardwareAcceleration: boolean;
 
 	// iohook
-	followMouse: boolean;
+	followMouseEnabled: boolean;
 
+	secondaryActionEnabled: boolean;
 	secondaryBind: string;
 	secondaryBehavior: IOHookBehaviorType; // toggle/hold
 
@@ -78,8 +79,9 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	hardwareAcceleration: true,
 
 	// iohook
-	followMouse: true,
+	followMouseEnabled: false,
 
+	secondaryActionEnabled: false,
 	secondaryBind: '',
 	secondaryBehavior: 'hold', // toggle/hold
 
@@ -198,9 +200,9 @@ export const DEFAULT_ACTION_STATE: ActionStateType = {
 const accelerator = 'Control+Shift+Alt';
 
 export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
+	lock: `${accelerator}+X`,
 	quit: `${accelerator}+Q`,
 	reset: `${accelerator}+R`,
-	lock: `${accelerator}+X`,
 	hide: `${accelerator}+H`,
 	center: `${accelerator}+C`,
 	newWindow: `${accelerator}+N`,

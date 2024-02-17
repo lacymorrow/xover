@@ -129,7 +129,7 @@ Center a window on the screen.
 */
 export const centerWindow = (options?: CenterWindowOptions) => {
 	const window = options?.window ?? activeWindow();
-	if (!window) {
+	if (!window || window.isDestroyed()) {
 		// throw new Error('No active window');
 		Logger.error('No active window');
 		return;
@@ -144,6 +144,7 @@ export const centerWindow = (options?: CenterWindowOptions) => {
 	};
 
 	const bounds = getWindowBoundsCentered(opts);
+
 	window.setBounds(bounds, opts.animated);
 };
 
@@ -346,8 +347,15 @@ export const focusNextWindow = () => {
 
 // grab an available crosshair window
 export const getNextCrosshairWindow = () => {
-	const crosshairWindows = Object.values(windows.crosshairWindows);
-	return crosshairWindows.find((win) => win && !win.isDestroyed()) || null;
+	const crosshairWindows = BrowserWindow.getAllWindows().filter(
+		(win) => win !== windows.settingsWindow,
+	);
+
+	if (crosshairWindows.length === 0) {
+		return;
+	}
+
+	return crosshairWindows[0];
 };
 
 export const getWindowById = (id: string) => {

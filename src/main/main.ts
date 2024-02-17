@@ -24,13 +24,15 @@
 // Reset settings should reload windows
 // Less Renderer sync
 // use same dock icon
+// dock icon remains after quitting
 // position settings
 // resizeable window crosshair doesn't stay centered
+// lock without crosshair windows === broken: check for windows.mainWindow
 
 /*
 Done:
 - Disable all keyboard shortcuts - 299
-- Multiple crosshair windows - save window state6
+- Multiple crosshair windows - save window state
 /*
 
 Todo:

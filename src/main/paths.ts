@@ -2,18 +2,13 @@
 import { app } from 'electron';
 import path from 'path';
 
-export const __app = app.getAppPath();
-export const __build = path.join(__app, 'build');
-export const __src = path.join(__app, 'src');
-export const __main = path.join(__src, 'main');
-export const __renderer = path.join(__src, 'renderer');
-export const __static = path.join(__src, 'static');
-export const __sounds = path.join(__static, 'sounds') + path.sep;
-export const __crosshairs = path.join(__static, 'crosshairs');
-
 export const __resources = app.isPackaged
 	? path.join(process.resourcesPath, 'assets')
 	: path.join(__dirname, '../../assets');
+
+export const __app = app.getAppPath();
+export const __sounds = path.join(__resources, 'sounds') + path.sep;
+export const __crosshairs = path.join(__resources, 'crosshairs');
 
 export const rendererPaths = {
 	sounds: __sounds,

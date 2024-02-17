@@ -23,7 +23,6 @@ export function SettingsReticle() {
 				</p>
 			</div>
 			<Separator />
-			{windowState.reticle}
 			<InputComboboxForm
 				value={windowState.reticle}
 				onChange={(value) => {
