@@ -213,7 +213,7 @@ export const startIOHook = async () => {
 };
 
 export const stopIOHook = async () => {
-	Logger.status($iohook.enabled);
+	Logger.status($iohook.disabled);
 
 	setActionStateKey('secondary', false);
 	setActionStateKey('tilt', 0);

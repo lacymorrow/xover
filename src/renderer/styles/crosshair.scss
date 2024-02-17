@@ -58,7 +58,7 @@ body {
 .is-locked {
 	#background,
 	.controls {
-		display: none;
+		visibility: hidden;
 	}
 }
 

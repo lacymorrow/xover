@@ -28,6 +28,7 @@
 // position settings
 // resizeable window crosshair doesn't stay centered
 // lock without crosshair windows === broken: check for windows.mainWindow
+// spamming the crosshair reset button can make it go invisible
 
 /*
 Done:

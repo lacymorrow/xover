@@ -108,6 +108,7 @@ export function SettingsActions() {
 				label="Right tilt bind"
 			/>
 
+			<Separator />
 			<InputSlider
 				value={settings.transitionDuration}
 				onChange={(value) => {
@@ -118,7 +119,6 @@ export function SettingsActions() {
 				min={0}
 				max={1000}
 			/>
-			<Separator />
 		</div>
 	);
 }

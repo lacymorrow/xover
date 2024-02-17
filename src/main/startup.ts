@@ -4,7 +4,6 @@ import { DIRECTORY_SCAN_DEPTH } from '../config/config';
 import { $init } from '../config/strings';
 import analytics from './analytics';
 import appListeners from './app-listeners';
-import { AutoUpdate } from './auto-update';
 import commandLineFlags from './command-line-flags';
 import {
 	createOrReloadCrosshairWindows,
@@ -82,7 +81,7 @@ export const ready = async () => {
 
 	// Auto updates
 	// eslint-disable-next-line no-new
-	new AutoUpdate();
+	// new AutoUpdate();
 
 	// Idle
 	Logger.status($init.mainIdle);

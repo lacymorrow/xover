@@ -46,7 +46,6 @@ export function Crosshair() {
 		>
 			<div className="controls">
 				<QuitButton />
-				<SettingsButton />
 			</div>
 
 			<div id="crosshair-wrapper" className="relative">

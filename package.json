@@ -344,7 +344,7 @@
 		"publish": {
 			"provider": "github",
 			"owner": "lacymorrow",
-			"repo": "xover"
+			"repo": "crossover"
 		}
 	},
 	"devEngines": {
