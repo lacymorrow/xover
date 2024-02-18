@@ -11,6 +11,7 @@ import { rendererPaths } from './paths';
 import sounds from './sounds';
 import { idle } from './startup';
 import {
+	addCrosshairImage,
 	getActiveWindow,
 	getActiveWindowState,
 	getAppMessages,
@@ -31,13 +32,6 @@ import {
 
 import { is } from './util';
 import windows from './windows';
-
-const centerWindowId = (id: string) => {
-	const window = windows.crosshairWindows[id];
-	if (window) {
-		centerWindow({ window, animated: true });
-	}
-};
 
 export default {
 	initialize() {
@@ -117,13 +111,15 @@ export default {
 			},
 		);
 
+		// Open a file
+		ipcMain.on(ipcChannels.OPEN_FILE, (_event: any, file: string) => {
+			addCrosshairImage(file);
+			setActiveWindowState({ crosshair: file });
+		});
+
 		// Open a URL in the default browser
 		ipcMain.on(ipcChannels.OPEN_URL, (_event: any, url: string) => {
 			shell.openExternal(url);
-		});
-
-		ipcMain.on(ipcChannels.OPEN_FILE, (_event: any, file: string) => {
-			// todo
 		});
 
 		ipcMain.on(ipcChannels.OPEN_SETTINGS, () => {
@@ -186,8 +182,5 @@ export default {
 		ipcMain.on(ipcChannels.FOCUS_WINDOW_MAIN, () => {
 			focusNextWindow();
 		});
-
-		// OPEN_FILE,
-		// SET_CROSSHAIR,
 	},
 };

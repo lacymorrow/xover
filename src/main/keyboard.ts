@@ -23,6 +23,10 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'lock',
 		fn() {
+			if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+				return;
+			}
+
 			toggleAppLock();
 
 			// eslint-disable-next-line no-use-before-define
@@ -53,6 +57,10 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'hide',
 		allowUnbind: true,
 		fn() {
+			if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+				return;
+			}
+
 			toggleAppHide();
 
 			// eslint-disable-next-line no-use-before-define
@@ -231,7 +239,6 @@ const kb: ShortcutType = {
 			return;
 		}
 
-		console.log('setKeybind', keybind, accelerator);
 		const shortcut = keyboardShortcuts.find((s) => s.action === keybind);
 
 		// No accelerator, remove keybind if allowed

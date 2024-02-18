@@ -311,6 +311,16 @@ export const forEachWindow = (callback: (window: BrowserWindow) => void) => {
 	});
 };
 
+export const forEachCrosshairWindow = (
+	callback: (window: BrowserWindow) => void,
+) => {
+	BrowserWindow.getAllWindows().forEach((win) => {
+		if (win !== windows.settingsWindow) {
+			callback(win);
+		}
+	});
+};
+
 // -1 to disable
 export const setProgress = (percentage: number) => {
 	windows.mainWindow?.setProgressBar(percentage || -1);
@@ -347,15 +357,15 @@ export const focusNextWindow = () => {
 
 // grab an available crosshair window
 export const getNextCrosshairWindow = () => {
-	const crosshairWindows = BrowserWindow.getAllWindows().filter(
+	const crosshairWindow = BrowserWindow.getAllWindows().find(
 		(win) => win !== windows.settingsWindow,
 	);
 
-	if (crosshairWindows.length === 0) {
+	if (!crosshairWindow) {
 		return;
 	}
 
-	return crosshairWindows[0];
+	return crosshairWindow;
 };
 
 export const getWindowById = (id: string) => {

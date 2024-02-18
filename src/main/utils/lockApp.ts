@@ -1,7 +1,7 @@
 import Logger from 'electron-log';
 import { startIOHook, stopIOHook } from '../iohook';
 import sounds from '../sounds';
-import { getSetting, getSettings, setSettings } from '../store-actions';
+import { getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
 import { restoreWindowPosition } from './restoreWindowPosition';
 import {
@@ -14,26 +14,27 @@ export const toggleAppLock = () => {
 	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
 		return;
 	}
-	const isLocked = !getSetting('isLocked');
 
-	const { followMouseEnabled, isSettingsWindowOpen } = getSettings();
+	const { followMouseEnabled, isSettingsWindowOpen, isLocked } = getSettings();
+	const isLocking = !isLocked;
 	// todo
 	// iohook
 	// if unlock + follow mouse = reset position
 	// unregister iohook
 	// enable move listener (save position)
 
-	Logger.status(`App is ${isLocked ? 'locked' : 'unlocked'}`);
+	Logger.status(`App is ${isLocking ? 'locked' : 'unlocked'}`);
 
 	forEachWindow((window) => {
-		// window.closable = !isLocked;
-		// window.minimizable = !isLocked;
-		window.movable = !isLocked;
-		window.setFocusable(!isLocked);
-		window.setIgnoreMouseEvents(isLocked);
+		// window.closable = !isLocking;
+		// window.minimizable = !isLocking;
+		// window.movable = !isLocking;
+		window.setMovable(!isLocking);
+		window.setFocusable(!isLocking);
+		window.setIgnoreMouseEvents(isLocking);
 	});
 
-	if (isLocked) {
+	if (isLocking) {
 		sounds.play('LOCK');
 		windows.settingsWindow?.hide(); // hide settings window
 
@@ -56,5 +57,5 @@ export const toggleAppLock = () => {
 		addWindowMovedListeners();
 	}
 
-	setSettings({ isLocked });
+	setSettings({ isLocked: isLocking });
 };

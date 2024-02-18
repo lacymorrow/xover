@@ -5,10 +5,6 @@ import windows from '../windows';
 import { forEachWindow } from './window-utils';
 
 export const setAppHide = (isHidden: boolean) => {
-	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
-		return;
-	}
-
 	Logger.status(`App is ${isHidden ? 'hidden' : 'unhidden'}`);
 
 	const { isSettingsWindowOpen, showDockIcon } = getSettings();
@@ -40,6 +36,10 @@ export const setAppHide = (isHidden: boolean) => {
 };
 
 export const toggleAppHide = () => {
+	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+		return;
+	}
+
 	const isHidden = !getSetting('isHidden');
 	setAppHide(isHidden);
 	setSettings({ isHidden });

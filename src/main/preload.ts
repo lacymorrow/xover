@@ -20,6 +20,7 @@ const electronHandler = {
 	notify: (options: NotificationOptions) =>
 		ipcRenderer.send(ipcChannels.APP_NOTIFICATION, options),
 	playSound: (sound: string) => ipcRenderer.send(ipcChannels.PLAY_SOUND, sound),
+	openFile: (file: string) => ipcRenderer.send(ipcChannels.OPEN_FILE, file),
 	openUrl: (url: string) => ipcRenderer.send(ipcChannels.OPEN_URL, url),
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {

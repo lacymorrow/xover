@@ -1,13 +1,13 @@
 /* eslint-disable promise/always-return */
-import { BrowserWindow, app, shell } from 'electron';
+import { app, shell } from 'electron';
 import Logger from 'electron-log/main';
 import EXIT_CODES from '../config/exit-codes';
 import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
 import dock from './dock';
 import keyboard from './keyboard';
-import { getSettings } from './store-actions';
-import { is } from './util';
+import { windowClosed } from './utils/window-closed';
+import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
 const register = () => {
@@ -16,8 +16,6 @@ const register = () => {
 	/**
 	 * Add app event listeners...
 	 */
-
-	const { quitOnWindowClose } = getSettings();
 
 	app.on('will-quit', () => {
 		// Unregister all shortcuts.
@@ -42,11 +40,7 @@ const register = () => {
 
 	app.on('window-all-closed', () => {
 		Logger.status($appListeners.allWindowsClosed);
-		// Respect the OSX convention of having the application in memory even
-		// after all windows have been closed
-		if (!is.macos || quitOnWindowClose) {
-			app.quit();
-		}
+		windowClosed();
 	});
 
 	// Security measures
@@ -65,15 +59,9 @@ const ready = () => {
 	app.on('activate', async () => {
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
-		const openWindows = BrowserWindow.getAllWindows().find((window) => {
-			if (window !== windows.settingsWindow) {
-				// window.show();
-				return true;
-			}
-			return false;
-		});
+		const openWindow = getNextCrosshairWindow();
 
-		if (!openWindows) {
+		if (!openWindow) {
 			await createCrosshairWindow();
 		}
 	});

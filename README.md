@@ -1,3 +1,21 @@
+CrossOver data is stored as `config.json` in the Per-user application data directory, which by default points to:
+- `%APPDATA%` on Windows (e.g. `C:\Users\username\AppData\Roaming\CrossOver`)
+- `$XDG_CONFIG_HOME` or `~/.config` on Linux (e.g. `~/.config/CrossOver`)
+- `~/Library/Application Support` on macOS (e.g. `~/Library/Application Support/CrossOver`)
+
+#### Disable the "Lock" keybind
+
+Open the `config.json` file and change the `keybind` value to `""` (empty string) to disable the "Lock" keybind:
+
+```json
+{
+  "keybinds": {
+    "lock": "",
+		// ...
+  }
+}
+```
+
 # Cait Title
 
 Based on the [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate), this boilerplate adds UI components from [Shadcn](https://ui.shadcn.com/), styling with [Tailwind CSS](https://tailwindcss.com/), persistance with [electron-store](https://github.com/sindresorhus/electron-store), and a structured [React](https://react.dev/) context that promotes a data flow from the top down: Main process -> Renderer process.

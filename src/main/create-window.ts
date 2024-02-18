@@ -34,6 +34,7 @@ import {
 } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
+import { windowClosed } from './utils/window-closed';
 import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
@@ -47,6 +48,8 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 		tabbingIdentifier: app.name,
 		frame: APP_FRAME,
 		show: false,
+		minWidth: 300,
+		minHeight: 300,
 
 		// closable: false,
 		// fullscreen: true,
@@ -159,7 +162,7 @@ export const createCrosshairWindow = async (
 		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
 	}
 
-	const { showTaskbarIcon } = getSettings();
+	const { isLocked, showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
 		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
 		alwaysOnTop: true,
@@ -168,9 +171,10 @@ export const createCrosshairWindow = async (
 		maximizable: false,
 		minimizable: false,
 		resizable: state?.resizable ? state.resizable : false,
-
 		closable: true,
-		movable: true,
+		fullscreenable: false,
+		focusable: !isLocked,
+		movable: !isLocked,
 
 		show: false,
 		skipTaskbar: !showTaskbarIcon, // Whether to show the window in taskbar. Default is false.
@@ -204,9 +208,8 @@ export const createCrosshairWindow = async (
 	};
 
 	const window = createWindow(id, options);
-
 	window.setAspectRatio(APP_ASPECT_RATIO);
-	window.setFullScreenable(false);
+	window.setIgnoreMouseEvents(isLocked);
 
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
@@ -222,6 +225,10 @@ export const createCrosshairWindow = async (
 		setActiveWindow(id);
 	});
 
+	window.on('closed', () => {
+		windowClosed();
+	});
+
 	// Context menu disabled in production
 	// See: https://www.electronjs.org/docs/latest/tutorial/window-customization
 	if (is.debug) {
@@ -233,8 +240,7 @@ export const createCrosshairWindow = async (
 
 	windows.crosshairWindows[id] = window;
 
-	if (!windows.mainWindow) {
-		console.log('Setting main window', id);
+	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
 		windows.mainWindow = window;
 	}
 
@@ -276,6 +282,7 @@ export const createSettingsWindow = async () => {
 
 	const options: BrowserWindowConstructorOptions = {
 		alwaysOnTop: true,
+
 		title: `Settings - ${app.name}`,
 		titleBarStyle: 'hidden',
 		trafficLightPosition: { x: 12, y: 20 },
@@ -292,19 +299,17 @@ export const createSettingsWindow = async () => {
 	// window.setAlwaysOnTop(true, 'screen-saver', 1);
 
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
-	window.on('closed', () => {
+	window.on('close', (e) => {
+		e.preventDefault();
+
 		// Reset window state
 		setSettings({ isSettingsWindowOpen: false });
-
-		// Recreate the window
-		windows.settingsWindow = createWindow('settings', options);
-		windows.settingsWindow.loadURL(`${resolveHtmlPath(`index.html`)}`);
-		setupContextMenu(windows.settingsWindow);
+		windows.settingsWindow?.hide();
 	});
 
 	// Show settings if unlocked
 	window.on('ready-to-show', () => {
-		if (getSetting('isLocked')) {
+		if (!getSetting('isSettingsWindowOpen') || getSetting('isLocked')) {
 			return;
 		}
 
