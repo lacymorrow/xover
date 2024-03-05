@@ -4,7 +4,6 @@ import Logger from 'electron-log/main';
 import EXIT_CODES from '../config/exit-codes';
 import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
-import dock from './dock';
 import keyboard from './keyboard';
 import { windowClosed } from './utils/window-closed';
 import { getNextCrosshairWindow } from './utils/window-utils';
@@ -18,6 +17,7 @@ const register = () => {
 	 */
 
 	app.on('will-quit', () => {
+		Logger.status($appListeners.willQuit);
 		// Unregister all shortcuts.
 		// todo: iohook
 		// iohook.unregisterAll();
@@ -31,8 +31,10 @@ const register = () => {
 	// make use of it to ensure the browser window is completely destroyed.
 	// See https://github.com/electron/electron/issues/5273
 	app.on('before-quit', () => {
-		// Dock persists after app quits on macOS
-		dock.setVisible(false);
+		Logger.status($appListeners.beforeQuit);
+
+		// TODO: BUG - Dock persists after app quits on macOS
+		app.dock.hide();
 
 		app.releaseSingleInstanceLock();
 		process.exit(EXIT_CODES.SUCCESS);
@@ -49,14 +51,17 @@ const register = () => {
 		// https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
 		webContents.on('will-navigate', (event, navigationUrl) => {
 			event.preventDefault();
-			shell.openExternal(navigationUrl);
+
 			Logger.warn($errors.blockedNavigation, navigationUrl);
+			shell.openExternal(navigationUrl);
 		});
 	});
 };
 
 const ready = () => {
 	app.on('activate', async () => {
+		Logger.status($appListeners.activate);
+
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
 		const openWindow = getNextCrosshairWindow();
@@ -67,7 +72,7 @@ const ready = () => {
 	});
 
 	app.on('second-instance', () => {
-		Logger.warn($errors.secondInstance);
+		Logger.warn($appListeners.secondInstance);
 		// Someone tried to run a second instance, we should focus our window.
 		if (windows.settingsWindow) {
 			// If the window is minimized, we should restore it and focus it.

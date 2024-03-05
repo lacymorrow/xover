@@ -1,25 +1,27 @@
-export const $settings = {
-	title: 'Settings',
-	description: 'Manage your account settings and application preferences',
-	reloadToApply: 'Changes will not take effect until the app is restarted.',
-	app: {
-		githubUrl: 'https://github.com/lacymorrow/electron-hotplate',
-	},
-	appearance: {
-		themeLabel: 'Theme',
-		themeDescription: 'Select the theme for the application',
-		light: 'Light',
-		dark: 'Dark',
-		system: 'System',
-	},
-	theme: {
-		themeLabel: 'Theme',
-		themeDescription: 'Select the theme for the application',
-		light: 'Light',
-		dark: 'Dark',
-		system: 'System',
-		action: 'Change Theme',
-	},
+export const $errors = {
+	prefix: 'Main> ',
+	blockedNavigation: 'Blocked navigation to: ',
+	invalidChannel: 'Invalid IPC channel',
+	invalidDirection: 'Invalid direction',
+	noActiveWindow: 'No active window',
+};
+export const $actions = {
+	centerWindow: 'Centering window',
+	moveToNextDisplay: 'Moving window to next display',
+};
+
+export const $appListeners = {
+	allWindowsClosed: 'All windows closed',
+	activate: 'App activated',
+	willQuit: 'App will quit',
+	beforeQuit: 'Before quit',
+	secondInstance: 'Second instance detected',
+};
+
+export const $autoUpdate = {
+	autoUpdate: 'Checking for updates...',
+	updateAvailable: 'Update Available',
+	updateAvailableBody: 'Click to download',
 };
 
 export const $dialog = {
@@ -35,13 +37,6 @@ export const $dialog = {
 	},
 };
 
-export const $errors = {
-	prefix: 'Main> ',
-	blockedNavigation: 'Blocked navigation to: ',
-	invalidChannel: 'Invalid IPC channel',
-	secondInstance: 'Second instance detected',
-};
-
 export const $messages = {
 	resetStore: 'Reset App',
 	resetStoreSettings: 'Reset App Settings',
@@ -49,12 +44,6 @@ export const $messages = {
 	// Network messages
 	online: 'Connected',
 	offline: 'Disconnected - Cannot fetch metadata',
-};
-
-export const $autoUpdate = {
-	autoUpdate: 'Checking for updates...',
-	updateAvailable: 'Update Available',
-	updateAvailableBody: 'Click to download',
 };
 
 export const $init = {
@@ -80,6 +69,26 @@ export const $iohook = {
 	disabled: 'iohook disabled',
 };
 
-export const $appListeners = {
-	allWindowsClosed: 'All windows closed',
+export const $settings = {
+	title: 'Settings',
+	description: 'Manage your account settings and application preferences',
+	reloadToApply: 'Changes will not take effect until the app is restarted.',
+	app: {
+		githubUrl: 'https://github.com/lacymorrow/electron-hotplate',
+	},
+	appearance: {
+		themeLabel: 'Theme',
+		themeDescription: 'Select the theme for the application',
+		light: 'Light',
+		dark: 'Dark',
+		system: 'System',
+	},
+	theme: {
+		themeLabel: 'Theme',
+		themeDescription: 'Select the theme for the application',
+		light: 'Light',
+		dark: 'Dark',
+		system: 'System',
+		action: 'Change Theme',
+	},
 };
