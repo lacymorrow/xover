@@ -33,7 +33,9 @@ Done:
 /*
 
 Todo:
+- Push data instead of pulling from renderer s
 - Inputs should reset to default value when the settings are reset
+- Allow disabling of the inputs
 - Debounce Slider
 - sass
 - Homepage

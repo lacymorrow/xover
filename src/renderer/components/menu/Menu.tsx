@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { MenuItemConstructorOptions } from 'electron/renderer';
 import { v4 as uuidv4 } from 'uuid';
+import { DragHandle } from '../ui/DragHandle';
 
 export function Menu({ className }: { className?: string }) {
 	const { app, appMenu } = useGlobalContext();
@@ -177,11 +178,12 @@ export function Menu({ className }: { className?: string }) {
 		<Menubar
 			className={cn(
 				'drag', // Allow the titlebar to be draggable, to reposition the window. Useful when using frameless windows.
-				'rounded-none border-b border-none px-4 w-full overflow-hidden text-ellipsis',
+				'rounded-none border-b border-none px-4 w-full overflow-hidden text-ellipsis items-stretch',
 				app.isMac && 'pl-20',
 				className,
 			)}
 		>
+			<DragHandle />
 			{/* Hide the Menu Bar on Mac, as it is redundant */}
 			{(!app.isMac || app.isDev) &&
 				Array.isArray(appMenu) &&
@@ -190,7 +192,7 @@ export function Menu({ className }: { className?: string }) {
 						<MenubarMenu key={uuidv4()}>
 							<MenubarTrigger
 								className={cn(
-									'no-drag', // Draggable elements cannot be interacted with, undo the draggable class
+									'no-drag px-2 sm:px-3', // Draggable elements cannot be interacted with, undo the draggable class
 									app.isMac && index === 0 && 'font-bold', // Bold the first Menu Item (the App Name) on Mac
 								)}
 							>

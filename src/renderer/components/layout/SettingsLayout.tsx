@@ -1,5 +1,7 @@
+import { Separator } from '@/components/ui/separator';
 import { IMAGE_EXTENSIONS } from '@/config/config';
-import { cn } from '@/lib/utils';
+import { $settings } from '@/config/strings';
+import { ScrollArea } from '@/renderer/components/ui/ScrollPane';
 import { SidebarNav } from '@/renderer/components/ui/SidebarNav';
 import { settingsNavItems } from '@/renderer/config/nav';
 import React, { useCallback } from 'react';
@@ -36,12 +38,30 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
 	return (
 		<>
-			<div className={cn('space-y-6 p-10 py-8')} {...getRootProps()}>
-				<div className="flex flex-col space-y-8 md:flex-row md:space-x-12 md:space-y-0">
-					<aside className="-mx-4 md:w-1/5">
-						<SidebarNav items={[...settingsNavItems]} />
-					</aside>
-					<div className="flex-1 md:max-w-2xl">{children || <Outlet />}</div>
+			<div className="h-full flex flex-col justify-stretch" {...getRootProps()}>
+				<div className="space-y-0.5 p-4">
+					<h2 className="text-xl font-bold tracking-tight">
+						{$settings.title}
+					</h2>
+					<p className="text-sm text-muted-foreground">
+						{$settings.description}
+					</p>
+				</div>
+				<Separator />
+				<div className="flex h-full min-h-0">
+					<ScrollArea className="bg-secondary min-w-20 md:w-1/5">
+						<SidebarNav
+							items={[
+								...settingsNavItems,
+								// { title: 'Back', href: '/', icon: ResetIcon },
+							]}
+							className="py-2"
+						/>
+					</ScrollArea>
+					<Separator className="shadow" orientation="vertical" />
+					<ScrollArea className="flex-1 px-1 sm:px-4">
+						<div className="py-4 pb-10">{children || <Outlet />}</div>
+					</ScrollArea>
 				</div>
 			</div>
 			<DropIndicator isDragActive={isDragActive} />

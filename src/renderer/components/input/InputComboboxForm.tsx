@@ -109,7 +109,7 @@ export function InputComboboxForm({
 												placeholder={searchMessage || 'Search...'}
 											/>
 											<CommandEmpty>
-												{noValueMessage || 'No language found.'}
+												{noValueMessage || 'No results found.'}
 											</CommandEmpty>
 											<CommandGroup className="overflow-auto">
 												{items.map((item) => (

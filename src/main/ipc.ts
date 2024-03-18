@@ -5,7 +5,6 @@ import { CustomAcceleratorsType } from '../types/keyboard';
 import { getOS } from '../utils/getOS';
 import autoUpdate from './auto-update';
 import kb from './keyboard';
-import { serializeMenu, triggerMenuItemById } from './menu';
 import { notification } from './notifications';
 import { rendererPaths } from './paths';
 import sounds from './sounds';
@@ -31,6 +30,7 @@ import {
 } from './utils/window-utils';
 
 import { is } from './util';
+import { serializeMenu, triggerMenuItemById } from './utils/menu-utils';
 import windows from './windows';
 
 export default {
