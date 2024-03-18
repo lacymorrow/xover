@@ -6,7 +6,7 @@ import { SidebarNav } from '@/renderer/components/ui/SidebarNav';
 import { settingsNavItems } from '@/renderer/config/nav';
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import DropIndicator from '../app/DropIndicator';
 
 interface SettingsLayoutProps {
@@ -35,6 +35,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 			'image/png': IMAGE_EXTENSIONS,
 		},
 	});
+	const { pathname: location } = useLocation(); // We use this to reset the scroll position when the location changes
 
 	return (
 		<>
@@ -49,7 +50,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 				</div>
 				<Separator />
 				<div className="flex h-full min-h-0">
-					<ScrollArea className="bg-secondary min-w-20 md:w-1/5">
+					<ScrollArea className="bg-secondary min-w-20 md:w-1/5 shadow-inner">
 						<SidebarNav
 							items={[
 								...settingsNavItems,
@@ -58,9 +59,9 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 							className="py-2"
 						/>
 					</ScrollArea>
-					<Separator className="shadow" orientation="vertical" />
-					<ScrollArea className="flex-1 px-1 sm:px-4">
-						<div className="py-4 pb-10">{children || <Outlet />}</div>
+					<Separator orientation="vertical" />
+					<ScrollArea className="flex-1" key={location}>
+						<div className="px-4 py-4 pb-10">{children || <Outlet />}</div>
 					</ScrollArea>
 				</div>
 			</div>

@@ -4,7 +4,7 @@ import { Home } from '@/renderer/components/pages/Home';
 import {
 	Route,
 	RouterProvider,
-	createMemoryRouter,
+	createHashRouter,
 	createRoutesFromElements,
 } from 'react-router-dom';
 
@@ -58,7 +58,7 @@ export default function App() {
 		</Route>
 	);
 
-	const router = createMemoryRouter(createRoutesFromElements(crosshairRoutes));
+	const router = createHashRouter(createRoutesFromElements(crosshairRoutes));
 
 	return (
 		<>
