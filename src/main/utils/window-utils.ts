@@ -138,7 +138,7 @@ export const centerWindow = (options?: CenterWindowOptions) => {
 	Logger.status($actions.centerWindow, window.id);
 	const opts = {
 		window,
-		animated: false,
+		animated: true,
 		useFullBounds: false,
 		...options,
 	};
@@ -210,7 +210,7 @@ export const safeSetBounds = (window: BrowserWindow, bounds: Rectangle) => {
 		bounds.y = workArea.y + workArea.height - height;
 	}
 
-	window.setBounds(bounds);
+	window.setBounds(bounds, true);
 
 	// Ensure the window is not minimized
 	if (window.isMinimized()) {
@@ -249,7 +249,7 @@ export const moveWindowToDisplayEdge = ({
 			Logger.error($errors.invalidDirection, direction);
 	}
 
-	window.setBounds(bounds);
+	window.setBounds(bounds, true);
 };
 
 export const moveWindow = ({

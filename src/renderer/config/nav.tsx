@@ -41,6 +41,7 @@ export const settingsNavItems = [
 		href: 'crosshair',
 		element: <SettingsWindow />,
 		icon: Crosshair1Icon,
+		index: true,
 	},
 	{
 		title: 'Actions',

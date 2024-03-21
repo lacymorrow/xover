@@ -44,17 +44,24 @@ export default function App() {
 				</MainLayout>
 			}
 		>
-			<Route index element={<SettingsApplication />} />
 			{settingsNavItems.map((item) => {
 				/* Dynamically add routes for settings */
 				return (
 					<Route
 						key={item.title}
 						path={item.href}
-						element={<>{item.element}</>}
+						element={
+							<>
+								{item.element}
+								{item.index && 'yay'}
+							</>
+						}
+						{...(item.index ? { index: true } : {})}
 					/>
 				);
 			})}
+
+			<Route path="*" element={<SettingsApplication />} />
 		</Route>
 	);
 
