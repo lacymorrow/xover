@@ -14,8 +14,7 @@ export interface SettingsType {
 	allowAutoUpdate: boolean;
 	allowDisableKeyboardShortcuts: boolean;
 	allowNotifications: boolean;
-	notifcationType: NotificationType;
-
+	notificationType: NotificationType;
 	showDockIcon: boolean; // macOS only
 	showTaskbarIcon: boolean; // windows only
 	showTrayIcon: boolean;
@@ -64,7 +63,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	allowDisableKeyboardShortcuts: false,
 	allowSounds: true,
 	allowNotifications: true,
-	notifcationType: 'all',
+	notificationType: 'all',
 	showDockIcon: true,
 	showTaskbarIcon: true,
 	showTrayIcon: true,

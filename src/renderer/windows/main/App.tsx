@@ -9,15 +9,17 @@ import {
 } from 'react-router-dom';
 
 import SettingsLayout from '@/renderer/components/layout/SettingsLayout';
-import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
 import { settingsNavItems } from '@/renderer/config/nav';
 import '@/renderer/styles/globals.scss';
 
 export default function App() {
+	// Set default/catch-all route (we use the same for both)
+	const index =
+		settingsNavItems.find((item) => item.index) || settingsNavItems[0];
+
 	const routes = (
 		<Route path="/" element={<MainLayout />}>
 			<Route path="settings" element={<SettingsLayout />}>
-				<Route index element={<SettingsApplication />} />
 				{settingsNavItems.map((item) => {
 					/* Dynamically add routes for settings */
 					return (
@@ -28,6 +30,12 @@ export default function App() {
 						/>
 					);
 				})}
+
+				{index && (
+					<>
+						<Route index path="*" element={<>{index.element}</>} />
+					</>
+				)}
 			</Route>
 
 			<Route index element={<Home />} />
@@ -50,18 +58,16 @@ export default function App() {
 					<Route
 						key={item.title}
 						path={item.href}
-						element={
-							<>
-								{item.element}
-								{item.index && 'yay'}
-							</>
-						}
-						{...(item.index ? { index: true } : {})}
+						element={<>{item.element}</>}
 					/>
 				);
 			})}
 
-			<Route path="*" element={<SettingsApplication />} />
+			{index && (
+				<>
+					<Route index path="*" element={<>{index.element}</>} />
+				</>
+			)}
 		</Route>
 	);
 

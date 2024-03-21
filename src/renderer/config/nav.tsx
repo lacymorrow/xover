@@ -35,6 +35,7 @@ export const settingsNavItems = [
 		href: 'general',
 		element: <SettingsApplication />,
 		icon: GearIcon,
+		index: true,
 	},
 	{
 		title: 'Crosshair',
