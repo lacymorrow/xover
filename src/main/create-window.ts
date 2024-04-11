@@ -62,7 +62,7 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 
 		// Conditionally enable features based on the platform
 		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
-		// ...(is.windows ? { type: 'toolbar' } : {}),
+		...(is.windows ? { type: 'toolbar' } : {}),
 
 		// Don't set icon on Windows so the exe's ico will be used as window and
 		// taskbar's icon. See https://github.com/atom/atom/issues/4811 for more.
@@ -170,7 +170,8 @@ export const createCrosshairWindow = async (
 		hasShadow: false,
 		maximizable: false,
 		minimizable: false,
-		resizable: state?.resizable ? state.resizable : false,
+		// resizable: state?.resizable ? state.resizable : false,
+		resizable: false,
 		closable: true,
 		fullscreenable: false,
 		focusable: !isLocked,
@@ -285,7 +286,7 @@ export const createSettingsWindow = async () => {
 
 		title: `Settings - ${app.name}`,
 		titleBarStyle: 'hidden',
-		trafficLightPosition: { x: 12, y: 20 },
+		trafficLightPosition: { x: 19, y: 20 },
 
 		...(state?.x && state?.y ? { x: state.x, y: state.y } : {}),
 		...(state?.width ? { width: state.width } : {}),

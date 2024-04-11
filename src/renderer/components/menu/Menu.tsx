@@ -168,7 +168,7 @@ export function Menu({ className }: { className?: string }) {
 					className="gap-2"
 				>
 					{formatLabel(item.label)}
-					{convertAcceleratorToElement(item.accelerator)}
+					{convertAcceleratorToElement(String(item.accelerator))}
 				</MenubarItem>
 			);
 		});
@@ -179,7 +179,7 @@ export function Menu({ className }: { className?: string }) {
 			className={cn(
 				'drag', // Allow the titlebar to be draggable, to reposition the window. Useful when using frameless windows.
 				'rounded-none border-b border-none px-4 w-full overflow-hidden text-ellipsis items-stretch',
-				app.isMac && 'pl-20',
+				app.isMac && 'pl-[5.5rem]',
 				className,
 			)}
 		>
