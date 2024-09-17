@@ -23,29 +23,35 @@ import { scanImages } from './utils/getImages';
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
 
-	// Initialize logger
-	logger.initialize();
+	try {
+		// Initialize logger
+		logger.initialize();
 
-	// Initialize analytics
-	analytics.initialize();
-	analytics.track('app_started');
+		// Initialize analytics
+		analytics.initialize();
+		analytics.track('app_started');
 
-	// Initialize the error handler
-	errorHandling.initialize();
+		// Initialize the error handler
+		errorHandling.initialize();
 
-	refreshSettingsOnAppStart();
+		refreshSettingsOnAppStart();
 
-	// Enable electron debug and source map support
-	debugging.initialize();
+		// Enable electron debug and source map support
+		debugging.initialize();
 
-	// App CLI flags
-	commandLineFlags.initialize();
+		// App CLI flags
+		commandLineFlags.initialize();
 
-	// Register app listeners, e.g. `app.on()`
-	appListeners.register();
+		// Register app listeners, e.g. `app.on()`
+		appListeners.register();
 
-	Logger.status($init.started);
-	console.timeLog(app.name, $init.started);
+		Logger.status($init.started);
+		console.timeLog(app.name, $init.started);
+	} catch (error) {
+		Logger.error('Startup initialization failed', error);
+		// TODO: Notify the user or attempt a graceful shutdown
+		app.quit();
+	}
 };
 
 export const ready = async () => {
@@ -79,6 +85,7 @@ export const ready = async () => {
 	// Auto updates
 	// eslint-disable-next-line no-new
 	// new AutoUpdate();
+	// TODO: Uncomment this
 
 	// Idle
 	Logger.status($init.mainIdle);
@@ -88,7 +95,6 @@ export const ready = async () => {
 export const idle = async () => {
 	await createSettingsWindow();
 	sounds.play('STARTUP');
-	// ... do something with your app
 
 	Logger.status($init.idle);
 	console.timeLog(app.name, $init.idle);
