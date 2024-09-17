@@ -16,33 +16,40 @@ import {
 } from '../config/config';
 import { DEFAULT_CROSSHAIR_WINDOW_STATE } from '../config/settings';
 import { getUUID } from '../utils/getUUID';
+import { isObjectEmpty } from '../utils/isObjectEmpty';
 import { setupContextMenu } from './context-menu';
 import dock from './dock';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
 import {
 	deleteWindowState,
+	getActiveWindowState,
 	getSetting,
 	getSettings,
 	getWindowState,
 	getWindowStates,
+	setActiveWindow,
 	setSettings,
 	setWindowState,
 } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
+import { windowClosed } from './utils/window-closed';
+import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);
 };
 
-const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
+const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 	const options: BrowserWindowConstructorOptions = {
 		title: app.name,
 		tabbingIdentifier: app.name,
 		frame: APP_FRAME,
 		show: false,
+		minWidth: 300,
+		minHeight: 300,
 
 		// closable: false,
 		// fullscreen: true,
@@ -55,7 +62,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
 
 		// Conditionally enable features based on the platform
 		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
-		// ...(is.windows ? { type: 'toolbar' } : {}),
+		...(is.windows ? { type: 'toolbar' } : {}),
 
 		// Don't set icon on Windows so the exe's ico will be used as window and
 		// taskbar's icon. See https://github.com/atom/atom/issues/4811 for more.
@@ -98,16 +105,24 @@ const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
 	browserWindow.on('moved', () => savePosition(browserWindow, id));
 	browserWindow.on('resize', () => savePosition(browserWindow, id));
 
-	// Clean
-	// Clean
+	// Window closed, but app is not quitting
 	browserWindow.on('close', () => {
 		Logger.status('Window is closing', id);
 
 		// Remove window state
-		if (id !== 'settings') {
-			deleteWindowState(id);
-			delete windows.crosshairWindows[id];
+		deleteWindowState(id);
+
+		// Basically we always want to have a main window, so we find the next window and set it as main
+		if (windows.mainWindow === windows.crosshairWindows[id]) {
+			windows.mainWindow = null;
+			const nextWindow = getNextCrosshairWindow();
+			if (!nextWindow) {
+				windows.settingsWindow?.hide();
+			} else {
+				windows.mainWindow = nextWindow;
+			}
 		}
+		delete windows.crosshairWindows[id];
 	});
 
 	// Clean
@@ -115,11 +130,8 @@ const createWindow = (opts?: BrowserWindowConstructorOptions, id: string) => {
 	// Window closed, but app is not quitting
 	browserWindow.on('closed', () => {
 		Logger.status('Window closed', id);
-
-		// Window closed, but app is not quitting
 	});
 
-	console.log(BrowserWindow.getAllWindows().length);
 	dock.initialize();
 
 	// Open urls in the user's browser
@@ -141,8 +153,16 @@ export const createCrosshairWindow = async (
 	opts?: BrowserWindowConstructorOptions,
 	id: string = getUUID(),
 ) => {
+	Logger.status('Creating crosshair window', id);
 	const state = id ? getWindowState(id) : null;
-	const { showTaskbarIcon } = getSettings();
+
+	// Resume previous window state
+	if (isObjectEmpty(state)) {
+		// New window state
+		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
+	}
+
+	const { isLocked, showTaskbarIcon } = getSettings();
 	const options: BrowserWindowConstructorOptions = {
 		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
 		alwaysOnTop: true,
@@ -150,10 +170,12 @@ export const createCrosshairWindow = async (
 		hasShadow: false,
 		maximizable: false,
 		minimizable: false,
+		// resizable: state?.resizable ? state.resizable : false,
 		resizable: false,
-
 		closable: true,
-		movable: true,
+		fullscreenable: false,
+		focusable: !isLocked,
+		movable: !isLocked,
 
 		show: false,
 		skipTaskbar: !showTaskbarIcon, // Whether to show the window in taskbar. Default is false.
@@ -172,36 +194,40 @@ export const createCrosshairWindow = async (
 		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
 		// vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
 
-		width: APP_WIDTH,
+		width: state?.width ? state?.width : APP_WIDTH,
 		minWidth: APP_WIDTH,
-		height: APP_HEIGHT,
+		height: state?.height ? state?.height : APP_HEIGHT,
 		minHeight: APP_HEIGHT,
+		...(state?.x ? { x: state.x } : {}),
+		...(state?.y ? { y: state.y } : {}),
+
+		// Conditionally enable features based on the platform
+		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
+		...(is.windows ? { type: 'toolbar' } : {}),
+
 		...opts,
 	};
 
-	if (is.windows) {
-		options.type = 'toolbar';
-	}
-
-	// Resume previous window state
-
-	if (state) {
-		options.x = state.x;
-		options.y = state.y;
-		options.width = state.width;
-		options.height = state.height;
-	}
-
-	const window = createWindow(options, id);
-
+	const window = createWindow(id, options);
 	window.setAspectRatio(APP_ASPECT_RATIO);
-	window.setFullScreenable(false);
+	window.setIgnoreMouseEvents(isLocked);
 
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
 
 	window.on('ready-to-show', () => {
 		window.show();
+	});
+
+	window.on('focus', () => {
+		Logger.status('Window focused', id);
+
+		// Track the active window to show correct settings
+		setActiveWindow(id);
+	});
+
+	window.on('closed', () => {
+		windowClosed();
 	});
 
 	// Context menu disabled in production
@@ -211,13 +237,12 @@ export const createCrosshairWindow = async (
 	}
 
 	// Load the window
-	window.loadURL(resolveHtmlPath('crosshair.html'));
+	window.loadURL(`${resolveHtmlPath(`crosshair.html`)}?id=${id}`);
 
 	windows.crosshairWindows[id] = window;
 
-	// Resume previous window state
-	if (!id) {
-		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
+	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+		windows.mainWindow = window;
 	}
 
 	return window;
@@ -237,14 +262,31 @@ export const createNewWindow = async () => {
 	return window;
 };
 
+export const createDuplicateWindow = async () => {
+	const id = getUUID();
+	const state = getActiveWindowState();
+
+	// copy state to a new window
+	if (state) {
+		delete state.x;
+		delete state.y;
+
+		if (state) setWindowState(id, state);
+	}
+	const window = await createCrosshairWindow({}, id);
+
+	return window;
+};
+
 export const createSettingsWindow = async () => {
 	const state = getWindowState('settings');
 
 	const options: BrowserWindowConstructorOptions = {
 		alwaysOnTop: true,
+
 		title: `Settings - ${app.name}`,
 		titleBarStyle: 'hidden',
-		trafficLightPosition: { x: 12, y: 20 },
+		trafficLightPosition: { x: 19, y: 20 },
 
 		...(state?.x && state?.y ? { x: state.x, y: state.y } : {}),
 		...(state?.width ? { width: state.width } : {}),
@@ -252,25 +294,23 @@ export const createSettingsWindow = async () => {
 	};
 	windows.settingsWindow = null;
 
-	const window = createWindow(options, 'settings');
+	const window = createWindow('settings', options);
 
 	// Set window position the same as the main window, so they can overlap
 	// window.setAlwaysOnTop(true, 'screen-saver', 1);
 
 	// Keep settings window loaded in memory, so it can be re-opened quickly using show()/hide()
-	window.on('closed', () => {
+	window.on('close', (e) => {
+		e.preventDefault();
+
 		// Reset window state
 		setSettings({ isSettingsWindowOpen: false });
-
-		// Recreate the window
-		windows.settingsWindow = createWindow(options, 'settings');
-		windows.settingsWindow.loadURL(resolveHtmlPath('index.html'));
-		setupContextMenu(windows.settingsWindow);
+		windows.settingsWindow?.hide();
 	});
 
 	// Show settings if unlocked
 	window.on('ready-to-show', () => {
-		if (getSetting('isLocked')) {
+		if (!getSetting('isSettingsWindowOpen') || getSetting('isLocked')) {
 			return;
 		}
 
@@ -297,7 +337,6 @@ export const createOrReloadCrosshairWindows = async () => {
 	const { settings: _settings, ...crosshairs } = getWindowStates();
 
 	const keys = Object.keys(crosshairs);
-	console.log(keys);
 	if (keys.length > 0) {
 		Logger.status('Reloading multiple crosshair windows', keys.length);
 		keys.forEach((id) => createCrosshairWindow({}, id));

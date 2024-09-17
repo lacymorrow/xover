@@ -14,8 +14,7 @@ export interface SettingsType {
 	allowAutoUpdate: boolean;
 	allowDisableKeyboardShortcuts: boolean;
 	allowNotifications: boolean;
-	notifcationType: NotificationType;
-
+	notificationType: NotificationType;
 	showDockIcon: boolean; // macOS only
 	showTaskbarIcon: boolean; // windows only
 	showTrayIcon: boolean;
@@ -29,11 +28,12 @@ export interface SettingsType {
 	commandLineFlags: string[];
 	hardwareAcceleration: boolean;
 
-	backgroundColor: string;
-	foregroundColor: string;
-
 	// iohook
-	followMouse: boolean;
+	followMouseEnabled: boolean;
+
+	secondaryActionEnabled: boolean;
+	secondaryBind: string;
+	secondaryBehavior: IOHookBehaviorType; // toggle/hold
 
 	tiltActionEnabled: boolean;
 	tiltAngle: number;
@@ -53,16 +53,6 @@ export interface SettingsType {
 	hadFirstRun: boolean;
 
 	// vibrancy: 'none' | 'sidebar' | 'full';
-
-	crosshair: string;
-	crosshairRotation: number;
-	crosshairSize: number;
-	crosshairOpacity: number;
-
-	reticle: string;
-	reticleRotation: number;
-	reticleSize: number;
-	reticleColor: string;
 }
 
 // These are the default settings, imported by the store
@@ -73,7 +63,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	allowDisableKeyboardShortcuts: false,
 	allowSounds: true,
 	allowNotifications: true,
-	notifcationType: 'all',
+	notificationType: 'all',
 	showDockIcon: true,
 	showTaskbarIcon: true,
 	showTrayIcon: true,
@@ -87,21 +77,12 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	commandLineFlags: [],
 	hardwareAcceleration: true,
 
-	backgroundColor: '#b80f9cB0',
-	foregroundColor: '#ffffff',
-
-	crosshair: '',
-	crosshairOpacity: 100,
-	crosshairSize: 100,
-	crosshairRotation: 0,
-
-	reticle: 'cross',
-	reticleSize: 100,
-	reticleRotation: 0,
-	reticleColor: '#ffffff',
-
 	// iohook
-	followMouse: true,
+	followMouseEnabled: false,
+
+	secondaryActionEnabled: false,
+	secondaryBind: '',
+	secondaryBehavior: 'hold', // toggle/hold
 
 	tiltActionEnabled: false,
 	tiltAngle: 15,
@@ -133,6 +114,7 @@ export type WindowStateType = {
 
 export interface CrosshairWindowStateType extends WindowStateType {
 	// isMaximized: boolean;
+	resizable: boolean;
 
 	backgroundColor: string;
 	foregroundColor: string;
@@ -152,21 +134,25 @@ export interface CrosshairWindowStateType extends WindowStateType {
 	strokeColor: string;
 	strokeWidth: number;
 
-	altActionEnabled: boolean;
-	altCrosshair: string;
-	altBehavior: IOHookBehaviorType; // toggle/hold
-	altSize: number;
-	altOpacity: number;
-	altInput: IOHookInputType; // mouse/keyboard
-	altTrigger: number;
+	crosshairSecondary: string;
+	crosshairRotationSecondary: number;
+	crosshairSizeSecondary: number;
+	crosshairOpacitySecondary: number;
+
+	reticleSecondary: string;
+	reticleRotationSecondary: number;
+	reticleSizeSecondary: number;
+	reticleColorSecondary: string;
 }
 
 export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	width: APP_WIDTH,
 	height: APP_HEIGHT,
 
-	backgroundColor: '#b80f9cB0',
-	foregroundColor: '#ffffff',
+	resizable: false,
+
+	backgroundColor: '',
+	foregroundColor: '',
 
 	crosshair: '',
 	crosshairRotation: 0,
@@ -176,20 +162,22 @@ export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	reticle: 'dot',
 	reticleRotation: 0,
 	reticleSize: 50,
-	reticleColor: '#ffffff',
+	reticleColor: '',
 
 	// svg
 	fillColor: '#ffffff',
 	strokeColor: '#000000',
 	strokeWidth: 1,
 
-	altActionEnabled: false,
-	altCrosshair: '',
-	altBehavior: 'hold', // toggle/hold
-	altSize: 100,
-	altOpacity: 100,
-	altInput: 'mouse', // mouse/keyboard
-	altTrigger: 0,
+	crosshairSecondary: '',
+	crosshairRotationSecondary: 0,
+	crosshairSizeSecondary: 80,
+	crosshairOpacitySecondary: 80,
+
+	reticleSecondary: 'dot',
+	reticleRotationSecondary: 0,
+	reticleSizeSecondary: 30,
+	reticleColorSecondary: '',
 };
 
 export const DEFAULT_WINDOW_STATE = {
@@ -198,10 +186,12 @@ export const DEFAULT_WINDOW_STATE = {
 
 export type ActionStateType = {
 	tilt: number;
+	secondary: boolean;
 };
 
 export const DEFAULT_ACTION_STATE: ActionStateType = {
 	tilt: 0,
+	secondary: false,
 };
 
 // see src/main/keyboard.ts
@@ -209,12 +199,13 @@ export const DEFAULT_ACTION_STATE: ActionStateType = {
 const accelerator = 'Control+Shift+Alt';
 
 export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
+	lock: `${accelerator}+X`,
 	quit: `${accelerator}+Q`,
 	reset: `${accelerator}+R`,
-	lock: `${accelerator}+X`,
 	hide: `${accelerator}+H`,
 	center: `${accelerator}+C`,
-	newWindow: `${accelerator}+D`,
+	newWindow: `${accelerator}+N`,
+	duplicateWindow: `${accelerator}+D`,
 	changeDisplay: `${accelerator}+M`,
 	focusNextWindow: `${accelerator}+F`,
 	moveUp: `${accelerator}+Up`,

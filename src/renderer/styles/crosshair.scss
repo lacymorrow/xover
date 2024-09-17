@@ -3,16 +3,27 @@
 	--app-bg-color: hsl(var(--background));
 	--app-foreground-color: hsl(var(--foreground));
 	--app-border-color: hsl(var(--foreground));
+	--app-opacity: 1;
 
 	--transition-duration: 100ms;
+	--transition-timing: ease-in-out;
 
 	--crosshair-scale: 1;
 	--crosshair-opacity: 0.8;
+	--crosshair-opacity-alt: 0.8;
 	--crosshair-rotation: 0deg;
 
 	--reticle-scale: 1;
 	--reticle-rotation: 0deg;
 	--reticle-color: hsl(var(--foreground));
+
+	--crosshair-scale-alt: 1;
+	--crosshair-opacity-alt: 0.5;
+	--crosshair-rotation-alt: 0deg;
+
+	--reticle-scale-alt: 0.3;
+	--reticle-rotation-alt: 0deg;
+	--reticle-color-alt: hsl(var(--foreground));
 
 	--svg-fill-color: inherit;
 	--svg-stroke-color: inherit;
@@ -20,8 +31,6 @@
 
 	/* Actions */
 	--tilt-angle: 0deg;
-	--alt-size: 100px;
-	--alt-opacity: 1;
 }
 
 * {
@@ -49,16 +58,25 @@ body {
 .is-locked {
 	#background,
 	.controls {
-		display: none;
+		visibility: hidden;
 	}
 }
 
 /* Application background */
 #background {
+	will-change: background-color, color, opacity;
+
+	opacity: var(--app-opacity, 1);
 	background-color: var(--app-bg-color, hsl(var(--background)));
-	opacity: 1;
 	color: var(--app-foreground-color, hsl(var(--foreground)));
 	border: 1px solid var(--app-foreground-color, hsl(var(--foreground)));
+	transition:
+		color var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out),
+		background-color var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out),
+		opacity var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out);
 	border-radius: 12px;
 
 	position: absolute;
@@ -69,8 +87,15 @@ body {
 	z-index: -1;
 }
 
+.active #background {
+	border-width: 6px;
+}
+
 .controls {
+	will-change: color;
 	color: var(--app-foreground-color, hsl(var(--foreground)));
+	transition: color var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 
 	display: flex;
 	flex-direction: column;
@@ -87,21 +112,39 @@ body {
 }
 
 #crosshair {
+	will-change: transform, opacity;
 	opacity: var(--crosshair-opacity, 1);
 	transform: scale(var(--crosshair-scale, 1)) rotate(var(--tilt-angle, 0deg));
-	width: var(--crosshair-width, 100px);
-	height: var(--crosshair-height, 100px);
-	transition: transform var(--transition-duration, 100ms) ease-in-out;
+	transition:
+		transform var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out),
+		opacity var(--transition-duration, 100ms)
+			var(--transition-timing, ease-in-out);
 }
+
+.secondary #crosshair {
+	opacity: var(--crosshair-opacity-alt, 1);
+	transform: scale(var(--crosshair-scale, 1)) rotate(var(--tilt-angle, 0deg));
+}
+
 #crosshair img {
+	will-change: transform;
 	transform: rotate(var(--crosshair-rotation, 0deg));
+	transition: transform var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 }
 
 #reticle-wrapper {
+	will-change: transform, color;
 	color: var(--reticle-color, hsl(var(--foreground)));
+	transition: color var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 }
 
 #reticle {
+	will-change: transform;
 	transform: scale(var(--reticle-scale, 1))
 		rotate(var(--reticle-rotation, 0deg));
+	transition: transform var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 }

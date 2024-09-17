@@ -1,5 +1,6 @@
 import { Separator } from '@/components/ui/separator';
-import { SettingsType } from '@/config/settings';
+import { CrosshairWindowStateType } from '@/config/settings';
+
 import { InputColor } from '@/renderer/components/input/InputColor';
 import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
@@ -7,10 +8,12 @@ import { reticleItems } from '@/renderer/config/reticles';
 import { useGlobalContext } from '@/renderer/context/global-context';
 
 export function SettingsReticle() {
-	const { settings } = useGlobalContext();
-	const handleChangeSetting = (setting: Partial<SettingsType>) => {
-		window.electron.setSettings(setting);
+	const { windowState } = useGlobalContext();
+
+	const handleChangeSetting = (setting: Partial<CrosshairWindowStateType>) => {
+		window.electron.setWindowState(setting);
 	};
+
 	return (
 		<div className="space-y-6">
 			<div>
@@ -20,9 +23,8 @@ export function SettingsReticle() {
 				</p>
 			</div>
 			<Separator />
-
 			<InputComboboxForm
-				value={settings.reticle}
+				value={windowState.reticle}
 				onChange={(value) => {
 					handleChangeSetting({ reticle: value });
 				}}
@@ -32,7 +34,7 @@ export function SettingsReticle() {
 				className="w-[250px] h-60 h"
 			/>
 			<InputSlider
-				value={settings.reticleSize}
+				value={windowState.reticleSize}
 				onChange={(value) => {
 					handleChangeSetting({ reticleSize: value });
 				}}
@@ -42,7 +44,7 @@ export function SettingsReticle() {
 				max={100}
 			/>
 			<InputSlider
-				value={settings.reticleRotation}
+				value={windowState.reticleRotation}
 				onChange={(value) => {
 					handleChangeSetting({ reticleRotation: value });
 				}}
@@ -50,22 +52,13 @@ export function SettingsReticle() {
 				details="Adjust the rotation of the reticle in the center of the crosshair."
 				min={-180}
 				max={180}
-				throttleDelay={5}
 			/>
 			<InputColor
-				value={settings.reticleColor}
+				value={windowState.reticleColor}
 				label="Reticle Color"
 				details="The color of the reticle in the center of the crosshair."
 				onChange={(value) => {
 					handleChangeSetting({ reticleColor: value });
-				}}
-			/>
-			<InputColor
-				value={settings.strokeColor}
-				label="Stroke Color"
-				details="The color of the stroke around the crosshair."
-				onChange={(value) => {
-					handleChangeSetting({ strokeColor: value });
 				}}
 			/>
 		</div>

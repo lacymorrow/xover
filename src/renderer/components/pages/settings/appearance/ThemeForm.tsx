@@ -31,16 +31,16 @@ function LightModeIcon() {
 		<>
 			<div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
 				<div className="space-y-2 rounded-md bg-white p-2 shadow-sm">
-					<div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
-					<div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+					<div className="h-2 sm:w-[80px] rounded-lg bg-[#ecedef]" />
+					<div className="h-2 sm:w-[100px] rounded-lg bg-[#ecedef]" />
 				</div>
 				<div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
 					<div className="h-4 w-4 rounded-full bg-[#ecedef]" />
-					<div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+					<div className="h-2 sm:w-[100px] rounded-lg bg-[#ecedef]" />
 				</div>
 				<div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
 					<div className="h-4 w-4 rounded-full bg-[#ecedef]" />
-					<div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+					<div className="h-2 sm:w-[100px] rounded-lg bg-[#ecedef]" />
 				</div>
 			</div>
 		</>
@@ -52,16 +52,16 @@ function DarkModeIcon() {
 		<>
 			<div className="space-y-2 rounded-sm bg-slate-950 p-2">
 				<div className="space-y-2 rounded-md bg-slate-800 p-2 shadow-sm">
-					<div className="h-2 w-[80px] rounded-lg bg-slate-400" />
-					<div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+					<div className="h-2 sm:w-[80px] rounded-lg bg-slate-400" />
+					<div className="h-2 sm:w-[100px] rounded-lg bg-slate-400" />
 				</div>
 				<div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
 					<div className="h-4 w-4 rounded-full bg-slate-400" />
-					<div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+					<div className="h-2 sm:w-[100px] rounded-lg bg-slate-400" />
 				</div>
 				<div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
 					<div className="h-4 w-4 rounded-full bg-slate-400" />
-					<div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+					<div className="h-2 sm:w-[100px] rounded-lg bg-slate-400" />
 				</div>
 			</div>
 		</>
@@ -74,7 +74,7 @@ function SystemModeIcon() {
 			<div className="">
 				<LightModeIcon />
 			</div>
-			<div className="top-0 left-1/2 w-full absolute z-10">
+			<div className="top-0 right-0 left-1/2 sm:w-full absolute z-10">
 				<DarkModeIcon />
 			</div>
 		</div>
@@ -116,7 +116,7 @@ export function ThemeForm() {
 									onThemeChange(e);
 								}}
 								defaultValue={field.value}
-								className="grid w-full grid-cols-3 gap-8 pt-2"
+								className="w-full pt-4 px-2 sm:pt-2 sm:px-0 grid grid-cols-1 sm:grid-cols-3 gap-8"
 							>
 								<FormItem>
 									<FormLabel className="[&:has([data-state=checked])>div]:border-primary">
@@ -126,7 +126,7 @@ export function ThemeForm() {
 
 										<div
 											className={cn(
-												'items-center rounded-md border-2 border-muted bg-popover p-1',
+												'items-center rounded-md border-2 border-muted bg-popover p-1 max-w-60 mx-auto',
 												theme !== 'light' &&
 													'hover:bg-accent hover:text-accent-foreground',
 											)}
@@ -147,7 +147,7 @@ export function ThemeForm() {
 
 										<div
 											className={cn(
-												'items-center rounded-md border-2 border-muted bg-popover p-1',
+												'items-center rounded-md border-2 border-muted bg-popover p-1 max-w-60 mx-auto',
 												theme !== 'dark' &&
 													'hover:bg-accent hover:text-accent-foreground',
 											)}
@@ -167,7 +167,7 @@ export function ThemeForm() {
 
 										<div
 											className={cn(
-												'items-center rounded-md border-2 border-muted bg-popover p-1',
+												'items-center rounded-md border-2 border-muted bg-popover p-1 max-w-60 mx-auto',
 												theme !== 'system' &&
 													'hover:bg-accent hover:text-accent-foreground',
 											)}

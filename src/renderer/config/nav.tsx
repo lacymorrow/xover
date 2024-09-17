@@ -1,13 +1,12 @@
-import { SettingsJson } from '@/renderer/components/pages/settings/SettingsJson';
 import { SettingsAbout } from '@/renderer/components/pages/settings/about/SettingsAbout';
 import { SettingsAppearance } from '@/renderer/components/pages/settings/appearance/SettingsAppearance';
 import {
 	BellIcon,
 	BlendingModeIcon,
+	Component1Icon,
 	Crosshair1Icon,
 	GearIcon,
 	IdCardIcon,
-	ImageIcon,
 	KeyboardIcon,
 	LightningBoltIcon,
 } from '@radix-ui/react-icons';
@@ -15,7 +14,7 @@ import {
 import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
 import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/SettingsKeyboard';
 import { SettingsNotifications } from '@/renderer/components/pages/settings/notifications/SettingsNotifications';
-import { SettingsCrosshair } from '../components/pages/settings/appearance/SettingsCrosshair';
+import { SettingsWindow } from '../components/pages/settings/appearance/SettingsWindow';
 import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
 import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
 
@@ -36,12 +35,14 @@ export const settingsNavItems = [
 		href: 'general',
 		element: <SettingsApplication />,
 		icon: GearIcon,
+		index: true,
 	},
 	{
 		title: 'Crosshair',
 		href: 'crosshair',
-		element: <SettingsCrosshair />,
+		element: <SettingsWindow />,
 		icon: Crosshair1Icon,
+		index: true,
 	},
 	{
 		title: 'Actions',
@@ -63,12 +64,6 @@ export const settingsNavItems = [
 		icon: BellIcon,
 	},
 	{
-		title: 'Display',
-		href: 'display',
-		element: <SettingsJson />,
-		icon: ImageIcon,
-	},
-	{
 		title: 'Keyboard',
 		href: 'keyboard',
 		element: <SettingsKeyboard />,
@@ -78,7 +73,7 @@ export const settingsNavItems = [
 		title: 'Advanced',
 		href: 'advanced',
 		element: <SettingsAdvanced />,
-		icon: LightningBoltIcon,
+		icon: Component1Icon,
 	},
 	{
 		title: 'About',

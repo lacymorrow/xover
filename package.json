@@ -2,7 +2,7 @@
 	"name": "crossover",
 	"productName": "CrossOver",
 	"appId": "com.lacymorrow.crossover",
-	"version": "4.0.0-alpha.1",
+	"version": "4.0.0-alpha.2",
 	"description": "A Crosshair Overlay for any screen.",
 	"company": "Fly5",
 	"license": "CC-BY-NC-SA-4.0",
@@ -247,10 +247,10 @@
 		"asar": true,
 		"asarUnpack": "**\\*.{node,dll}",
 		"files": [
-			"public",
 			"dist",
 			"node_modules",
-			"package.json"
+			"package.json",
+			"public"
 		],
 		"afterSign": ".erb/scripts/notarize.js",
 		"mac": {
@@ -338,12 +338,13 @@
 			"output": "release/build"
 		},
 		"extraResources": [
-			"./assets/**"
+			"./assets/**",
+			"./public/**"
 		],
 		"publish": {
 			"provider": "github",
 			"owner": "lacymorrow",
-			"repo": "xover"
+			"repo": "crossover"
 		}
 	},
 	"devEngines": {

@@ -1,17 +1,25 @@
 import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
-import { SettingsType } from '../config/settings';
+import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
+import { getOS } from '../utils/getOS';
 import autoUpdate from './auto-update';
-import { serializeMenu, triggerMenuItemById } from './menu';
+import kb from './keyboard';
+import { notification } from './notifications';
 import { rendererPaths } from './paths';
-import { resetApp } from './reset';
+import sounds from './sounds';
 import { idle } from './startup';
 import {
+	addCrosshairImage,
+	getActiveWindow,
+	getActiveWindowState,
 	getAppMessages,
 	getCrosshairImages,
 	getKeybinds,
 	getSettings,
+	getWindowState,
+	resetStoreSettings,
+	setActiveWindowState,
 	setSettings,
 } from './store-actions';
 import { openSettingsWindow } from './utils/settingsWindow';
@@ -21,11 +29,8 @@ import {
 	focusNextWindow,
 } from './utils/window-utils';
 
-import { getOS } from '../utils/getOS';
-import kb from './keyboard';
-import { notification } from './notifications';
-import sounds from './sounds';
 import { is } from './util';
+import { serializeMenu, triggerMenuItemById } from './utils/menu-utils';
 import windows from './windows';
 
 export default {
@@ -51,12 +56,18 @@ export default {
 		});
 
 		// These send data back to the renderer process
-		ipcMain.handle(ipcChannels.GET_APP_MENU, () =>
-			serializeMenu(Menu.getApplicationMenu()),
-		);
-		ipcMain.handle(ipcChannels.GET_MESSAGES, getAppMessages);
-		ipcMain.handle(ipcChannels.GET_KEYBINDS, getKeybinds);
-		ipcMain.handle(ipcChannels.GET_SETTINGS, getSettings);
+		ipcMain.handle(ipcChannels.GET_RENDERER_SYNC, (_event, id) => {
+			const windowState =
+				!id || id === 'settings' ? getActiveWindowState() : getWindowState(id);
+			return {
+				windowState,
+				settings: getSettings(),
+				keybinds: getKeybinds(),
+				messages: getAppMessages(),
+				appMenu: serializeMenu(Menu.getApplicationMenu()),
+				active: id === getActiveWindow(),
+			};
+		});
 		ipcMain.handle(ipcChannels.GET_CROSSHAIR_IMAGES, getCrosshairImages);
 
 		// These do not send data back to the renderer process
@@ -71,6 +82,13 @@ export default {
 			ipcChannels.SET_SETTINGS,
 			(_event, settings: Partial<SettingsType>) => {
 				setSettings(settings);
+			},
+		);
+
+		ipcMain.on(
+			ipcChannels.SET_WINDOW_STATE,
+			(_event, settings: Partial<CrosshairWindowStateType>) => {
+				setActiveWindowState(settings);
 			},
 		);
 
@@ -93,13 +111,15 @@ export default {
 			},
 		);
 
+		// Open a file
+		ipcMain.on(ipcChannels.OPEN_FILE, (_event: any, file: string) => {
+			addCrosshairImage(file);
+			setActiveWindowState({ crosshair: file });
+		});
+
 		// Open a URL in the default browser
 		ipcMain.on(ipcChannels.OPEN_URL, (_event: any, url: string) => {
 			shell.openExternal(url);
-		});
-
-		ipcMain.on(ipcChannels.OPEN_FILE, (_event: any, file: string) => {
-			// todo
 		});
 
 		ipcMain.on(ipcChannels.OPEN_SETTINGS, () => {
@@ -122,7 +142,8 @@ export default {
 		});
 
 		ipcMain.on(ipcChannels.RESET_APP, () => {
-			resetApp();
+			resetStoreSettings();
+			// todo: maybe resetApp() should be called here
 		});
 
 		ipcMain.on(ipcChannels.UPDATE_APP, () => {
@@ -161,8 +182,5 @@ export default {
 		ipcMain.on(ipcChannels.FOCUS_WINDOW_MAIN, () => {
 			focusNextWindow();
 		});
-
-		// OPEN_FILE,
-		// SET_CROSSHAIR,
 	},
 };

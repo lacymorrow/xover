@@ -1,10 +1,8 @@
 import { app } from 'electron';
 import Logger from 'electron-log/main';
-import { DIRECTORY_SCAN_DEPTH } from '../config/config';
 import { $init } from '../config/strings';
 import analytics from './analytics';
 import appListeners from './app-listeners';
-import { AutoUpdate } from './auto-update';
 import commandLineFlags from './command-line-flags';
 import {
 	createOrReloadCrosshairWindows,
@@ -15,14 +13,12 @@ import errorHandling from './error-handling';
 import kb from './keyboard';
 import logger from './logger';
 import { setupDockMenu } from './menu';
-import { __crosshairs } from './paths';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
-import { getCrosshairImages, setCrosshairImages } from './store-actions';
 import tray from './tray';
 import { debugInfo, is } from './util';
-import { getImages } from './utils/getImages';
+import { scanImages } from './utils/getImages';
 
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
@@ -82,7 +78,7 @@ export const ready = async () => {
 
 	// Auto updates
 	// eslint-disable-next-line no-new
-	new AutoUpdate();
+	// new AutoUpdate();
 
 	// Idle
 	Logger.status($init.mainIdle);
@@ -90,23 +86,11 @@ export const ready = async () => {
 };
 
 export const idle = async () => {
-	console.log('idle', getCrosshairImages().length);
-	// Load crosshair images
-	setCrosshairImages([]);
-	getImages(__crosshairs, DIRECTORY_SCAN_DEPTH)
-		.then((images) => {
-			setCrosshairImages(images);
-		})
-		.catch((error) => {
-			Logger.error(error);
-		});
-
 	await createSettingsWindow();
-
 	sounds.play('STARTUP');
-
 	// ... do something with your app
 
 	Logger.status($init.idle);
 	console.timeLog(app.name, $init.idle);
+	await scanImages();
 };

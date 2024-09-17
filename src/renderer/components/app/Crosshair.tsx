@@ -7,19 +7,19 @@ import '@/renderer/styles/crosshair.scss';
 import crosshair from '@/static/crosshairs/Actual/leupold-dot.png';
 
 import { reticles } from '@/renderer/config/reticles';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { QuitButton } from './QuitButton';
 import { ResetButton } from './ResetButton';
 import { SettingsButton } from './SettingsButton';
 
 export function Crosshair() {
-	const { settings } = useGlobalContext();
+	const { windowState } = useGlobalContext();
 
 	const Reticle = useMemo(() => {
-		return reticles.find((r) => r.value === settings.reticle)?.Icon;
-	}, [settings.reticle]);
+		return reticles.find((r) => r.value === windowState.reticle)?.Icon;
+	}, [windowState.reticle]);
 
-	const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+	const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
 		switch (e.detail) {
 			case 2:
 				// Double click
@@ -30,7 +30,14 @@ export function Crosshair() {
 			default:
 				break;
 		}
-	};
+	}, []);
+
+	const handleError = useCallback(
+		(e: React.SyntheticEvent<HTMLImageElement>) => {
+			e.currentTarget.src = crosshair;
+		},
+		[],
+	);
 
 	return (
 		<div
@@ -39,16 +46,18 @@ export function Crosshair() {
 		>
 			<div className="controls">
 				<QuitButton />
-				<SettingsButton />
 			</div>
 
 			<div id="crosshair-wrapper" className="relative">
 				<div id="crosshair">
 					<img
 						src={
-							settings.crosshair ? `file://${settings.crosshair}` : crosshair
+							windowState.crosshair
+								? `file://${windowState.crosshair}`
+								: crosshair
 						}
 						alt=""
+						onError={handleError}
 					/>
 				</div>
 				<div

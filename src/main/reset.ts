@@ -8,6 +8,7 @@ import {
 	setActionStateKey,
 	setSettings,
 } from './store-actions';
+import { scanImages } from './utils/getImages';
 import windows from './windows';
 
 export const resetApp = () => {
@@ -65,6 +66,10 @@ export const restartApp = () => {
 export const resetSettings = () => {
 	// Sonic announcement
 	sounds.play('RESET');
+
+	// Rescan images
+	scanImages();
+
 	resetStoreSettings();
 	refreshSettingsOnAppStart();
 };

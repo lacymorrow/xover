@@ -4,8 +4,9 @@ import { APP_MESSAGES_MAX } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
 import {
 	ActionStateType,
+	CrosshairWindowStateType,
+	DEFAULT_CROSSHAIR_WINDOW_STATE,
 	SettingsType,
-	WindowStateType,
 } from '../config/settings';
 import { $messages } from '../config/strings';
 import store, { AppMessageType } from './store';
@@ -41,25 +42,6 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	forEachWindow((win) => {
 		win.webContents.send(ipcChannels.APP_UPDATED);
 	});
-};
-
-export const resetStoreSettings = () => {
-	Logger.status($messages.resetStore);
-	store.delete('settings');
-	store.delete('keybinds');
-
-	store.set('windows', {
-		settings: {},
-	});
-
-	synchronizeApp();
-};
-
-export const resetStore = () => {
-	Logger.status($messages.resetStore);
-	store.clear();
-
-	synchronizeApp();
 };
 
 export const getKeybinds = () => {
@@ -100,7 +82,11 @@ export const addAppMessage = (message: AppMessageType) => {
 };
 
 export const getAppMessages = () => {
-	return store.get('appMessageLog');
+	const messages = store.get('appMessageLog');
+
+	// Reverse the messages so that the most recent is at the top
+	const reversed = messages.slice().reverse();
+	return reversed;
 };
 
 export const getCrosshairImages = () => {
@@ -109,29 +95,62 @@ export const getCrosshairImages = () => {
 
 export const setCrosshairImages = (images: string[]) => {
 	store.set('images', images);
+
+	// Does not Sync!
+};
+
+export const addCrosshairImage = (image: string) => {
+	const images = getCrosshairImages();
+	images.push(image);
+	setCrosshairImages(images);
+};
+
+export const getActiveWindow = () => {
+	return store.get('activeWindow');
+};
+
+export const setActiveWindow = (w: string) => {
+	store.set('activeWindow', w);
+	synchronizeApp();
 };
 
 export const getWindowState = (w: string) => {
 	const state = store.get(`windows`);
-	console.log('getWindowState', w, state);
 	if (typeof state === 'object' && w in state) {
 		return state[w];
 	}
+};
+
+export const setWindowState = (
+	w: string,
+	state: Partial<CrosshairWindowStateType>,
+) => {
+	store.set(`windows.${w}`, { ...getWindowState(w), ...state });
+	if (state?.resizable !== undefined && windows.crosshairWindows[w]) {
+		windows.crosshairWindows[w]?.setResizable(state.resizable);
+	}
+
+	synchronizeApp();
+};
+
+export const deleteWindowState = (w: string) => {
+	const state = store.get(`windows`);
+	delete state[w];
+	store.set(`windows`, state);
 };
 
 export const getWindowStates = () => {
 	return store.get('windows');
 };
 
-export const setWindowState = (w: string, state: Partial<WindowStateType>) => {
-	store.set(`windows.${w}`, { ...getWindowState(w), ...state });
+export const getActiveWindowState = () => {
+	return getWindowState(getActiveWindow());
 };
 
-export const deleteWindowState = (w: string) => {
-	console.log('deleteWindowState', w);
-	const state = store.get(`windows`);
-	delete state[w];
-	store.set(`windows`, state);
+export const setActiveWindowState = (
+	state: Partial<CrosshairWindowStateType>,
+) => {
+	setWindowState(getActiveWindow(), state);
 };
 
 export const getActionState = () => {
@@ -140,8 +159,35 @@ export const getActionState = () => {
 
 export const setActionStateKey = (key: keyof ActionStateType, state: any) => {
 	// Danger, no type checking - use with caution
-	store.set(`actionState.${key}`, state);
+
+	store.set(`actionState.${key}`, state); // todo: action state doesn't need to be stored
 	windows?.mainWindow?.webContents.send(ipcChannels.ACTION_STATE, key, state);
+};
+
+export const resetStoreSettings = () => {
+	Logger.status($messages.resetStoreSettings);
+
+	store.delete('settings');
+	store.delete('keybinds');
+	store.delete('actionState');
+	store.delete('appMessageLog');
+
+	const wins = store.get('windows');
+	store.set('windows', { settings: {} });
+	Object.keys(wins).forEach((w: string) => {
+		if (w !== 'settings') {
+			setWindowState(w, DEFAULT_CROSSHAIR_WINDOW_STATE);
+		}
+	});
+
+	// synchronizeApp(); // No need to sync, this is called during setWindowState
+};
+
+export const resetStore = () => {
+	Logger.status($messages.resetStore);
+	store.clear();
+
+	synchronizeApp();
 };
 
 export default store;

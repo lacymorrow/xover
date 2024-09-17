@@ -1,10 +1,10 @@
+import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
 import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
-import { CustomAcceleratorsType, KeyboardShortcut } from '../types/keyboard';
 import store from './store';
 import windows from './windows';
 
-import { createNewWindow } from './create-window';
+import { createDuplicateWindow, createNewWindow } from './create-window';
 import { resetSettings } from './reset';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
@@ -16,6 +16,8 @@ import {
 	moveWindow,
 } from './utils/window-utils';
 
+const APP_UPDATED = 'app-updated';
+
 export const keyboardShortcuts: KeyboardShortcut[] = [
 	/* Default accelerators */
 
@@ -23,6 +25,10 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'lock',
 		fn() {
+			if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+				return;
+			}
+
 			toggleAppLock();
 
 			// eslint-disable-next-line no-use-before-define
@@ -53,6 +59,10 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		action: 'hide',
 		allowUnbind: true,
 		fn() {
+			if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+				return;
+			}
+
 			toggleAppHide();
 
 			// eslint-disable-next-line no-use-before-define
@@ -92,6 +102,16 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		allowUnbind: true,
 		fn() {
 			createNewWindow();
+		},
+	},
+
+	// Duplicate window
+	{
+		action: 'duplicateWindow',
+		ignoreWhenLocked: true,
+		allowUnbind: true,
+		fn() {
+			createDuplicateWindow();
 		},
 	},
 
@@ -221,7 +241,6 @@ const kb: ShortcutType = {
 			return;
 		}
 
-		console.log('setKeybind', keybind, accelerator);
 		const shortcut = keyboardShortcuts.find((s) => s.action === keybind);
 
 		// No accelerator, remove keybind if allowed

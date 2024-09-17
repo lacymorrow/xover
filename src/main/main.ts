@@ -11,9 +11,7 @@
 // Large crosshair chooser
 // Add a way to reset settings like slider values to default
 // Secondary crosshair - 61
-// Multiple crosshair windows - save window state
 // SVG support
-// Bigger crosshair, Resizable
 // Image overlay - 112
 // Tray/Dock menus
 // Reset app button in settings should restart app
@@ -22,15 +20,24 @@
 // Migrations
 // Notify of new version
 // Ask for accessiblity permissions MAC
+// Less Renderer sync
+// use same dock icon
+// dock icon remains after quitting
+// position settings
+// resizeable window crosshair doesn't stay centered
 
 /*
 Done:
 - Disable all keyboard shortcuts - 299
+- Multiple crosshair windows - save window state
 /*
 
 Todo:
-- Inputs should reset to default value when the settings are reset
-- Debounce Slider
+- Allow disabling of the inputs
+- Debounce Slider/color picker input
+- sass
+- Homepage
+- Documentation
 */
 
 import { app } from 'electron';

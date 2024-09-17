@@ -12,12 +12,9 @@ const ACTION_STATE = 'action-state';
 
 // Renderer -> Main
 const GET_APP_INFO = 'get-app-info';
-const GET_APP_MENU = 'get-app-menu';
 const GET_APP_PATHS = 'get-app-paths';
-const GET_MESSAGES = 'get-messages';
-const GET_KEYBINDS = 'get-keybinds';
-const GET_SETTINGS = 'get-settings';
 const GET_CROSSHAIR_IMAGES = 'get-crosshair-images';
+const GET_RENDERER_SYNC = 'get-renderer-sync';
 
 const SET_KEYBIND = 'set-keybind';
 const SET_SETTINGS = 'set-settings';
@@ -39,6 +36,7 @@ const CENTER_WINDOW_SETTINGS = 'center-settings-window';
 const FOCUS_WINDOW = 'focus-window';
 const FOCUS_WINDOW_MAIN = 'focus-main-window';
 const SET_CROSSHAIR = 'set-crosshair';
+const SET_WINDOW_STATE = 'set-window-state';
 const OPEN_SETTINGS = 'open-settings';
 
 export const ipcChannels = {
@@ -51,12 +49,9 @@ export const ipcChannels = {
 
 	// renderer -> main
 	RENDERER_READY,
+	GET_RENDERER_SYNC,
 	GET_APP_INFO,
-	GET_APP_MENU,
 	GET_APP_PATHS,
-	GET_MESSAGES,
-	GET_KEYBINDS,
-	GET_SETTINGS,
 	GET_CROSSHAIR_IMAGES,
 
 	SET_KEYBIND,
@@ -76,5 +71,6 @@ export const ipcChannels = {
 	FOCUS_WINDOW,
 	FOCUS_WINDOW_MAIN,
 	SET_CROSSHAIR,
+	SET_WINDOW_STATE,
 	OPEN_SETTINGS,
 };

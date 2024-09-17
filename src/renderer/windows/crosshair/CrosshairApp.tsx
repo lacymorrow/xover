@@ -7,7 +7,7 @@ import '@/renderer/styles/crosshair.scss';
 import { useEffect } from 'react';
 
 export default function CrosshairApp() {
-	const { settings } = useGlobalContext();
+	const { settings, windowState } = useGlobalContext();
 	const { tilt } = useActionStateContext();
 
 	useEffect(() => {
@@ -17,19 +17,21 @@ export default function CrosshairApp() {
 		);
 
 		// Properties to apply to renderer every sync
-		const properties = {
-			'--app-bg-color': settings.backgroundColor,
-			'--app-foreground-color': settings.foregroundColor,
-			'--crosshair-opacity': settings.crosshairOpacity / 100,
-			'--crosshair-scale': settings.crosshairSize / 100,
-			'--crosshair-rotation': `${settings.crosshairRotation}deg`,
-			'--reticle-scale': settings.reticleSize / 100,
-			'--reticle-color': settings.reticleColor,
-			'--reticle-rotation': `${settings.reticleRotation}deg`,
 
-			// '--svg-fill-color': settings.fillColor,
-			// '--svg-stroke-color': settings.strokeColor,
-			// '--svg-stroke-width': settings.strokeWidth,
+		const properties = {
+			'--app-bg-color': windowState.backgroundColor,
+			'--app-foreground-color': windowState.foregroundColor,
+			'--app-opacity': !windowState.backgroundColor ? 0.8 : 1, // Background is transparent even if it's not set
+			'--crosshair-opacity': windowState.crosshairOpacity / 100,
+			'--crosshair-scale': windowState.crosshairSize / 100,
+			'--crosshair-rotation': `${windowState.crosshairRotation}deg`,
+			'--reticle-scale': windowState.reticleSize / 100,
+			'--reticle-color': windowState.reticleColor,
+			'--reticle-rotation': `${windowState.reticleRotation}deg`,
+
+			// '--svg-fill-color': windowState.fillColor,
+			// '--svg-stroke-color': windowState.strokeColor,
+			// '--svg-stroke-width': windowState.strokeWidth,
 			'--transition-duration': `${settings.transitionDuration}ms`,
 		};
 
@@ -37,7 +39,7 @@ export default function CrosshairApp() {
 		Object.entries(properties).forEach(([key, value]) => {
 			document.documentElement.style.setProperty(key, String(value));
 		});
-	}, [settings]);
+	}, [settings, windowState]);
 
 	useEffect(() => {
 		// Tilt

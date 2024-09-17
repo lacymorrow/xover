@@ -14,30 +14,36 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 
 export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
 	const { pathname } = useLocation();
+	const currentPage =
+		items.find((item) => pathname.endsWith(item.href)) || items[0];
 
 	return (
 		<nav
 			className={cn(
-				'flex flex-wrap gap-2 md:flex-col items-start justify-stretch',
+				'flex flex-wrap flex-col items-start justify-stretch',
 				className,
 			)}
 			{...props}
 		>
-			{items.map((item) => (
-				<Link
-					key={item.href}
-					to={item.href}
-					className={cn(
-						buttonVariants({
-							variant: pathname.endsWith(item.href) ? 'secondary' : 'ghost',
-						}),
-						'justify-start md:w-full flex gap-2',
-					)}
-				>
-					{item.icon && <item.icon />}
-					{item.title}
-				</Link>
-			))}
+			{items.map((item) => {
+				return (
+					<Link
+						draggable={false}
+						key={item.href}
+						to={item.href}
+						className={cn(
+							buttonVariants({
+								variant: currentPage.href === item.href ? 'default' : 'ghost',
+							}),
+							currentPage.href === item.href ? 'font-bold' : 'font-normal',
+							'justify-start w-full flex gap-2 rounded-none py-6',
+						)}
+					>
+						{item.icon && <item.icon />}
+						{item.title}
+					</Link>
+				);
+			})}
 		</nav>
 	);
 }

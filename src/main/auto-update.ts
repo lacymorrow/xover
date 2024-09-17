@@ -28,7 +28,7 @@ export class AutoUpdate {
 }
 
 const checkForUpdates = () => {
-	Logger.status($messages.auto_update);
+	Logger.status($autoUpdate.autoUpdate);
 
 	autoUpdater.checkForUpdatesAndNotify();
 };
@@ -43,7 +43,7 @@ const onDownloadProgress = (progressObject: ProgressInfo) => {
 		Logger.info(message);
 
 		// Dock progress bar
-		windows.mainWindow?.setProgressBar(progressObject.percent / 100);
+		windows.settingsWindow?.setProgressBar(progressObject.percent / 100); // todo: fix this
 	} catch (error) {
 		Logger.error('onDownloadProgress', error);
 	}
@@ -74,13 +74,13 @@ const onUpdateAvailable = () => {
 
 const onUpdateDownloaded = () => {
 	try {
-		windows.mainWindow?.setProgressBar(-1);
+		windows.settingsWindow?.setProgressBar(-1); // todo: fix this
 		dock.setBadge('!');
 		notification({
 			title: 'CrossOver has been Updated',
 			body: 'Relaunch to take effect',
 		});
-		// sound.play( 'DONE' ) // comment if we make notification silent
+		sound.play('DONE'); // comment if we make notification silent
 	} catch (error) {
 		Logger.error(error);
 	}

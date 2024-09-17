@@ -1,12 +1,12 @@
 /* eslint-disable promise/always-return */
-import { BrowserWindow, app, shell } from 'electron';
+import { app, shell } from 'electron';
 import Logger from 'electron-log/main';
 import EXIT_CODES from '../config/exit-codes';
-import { $errors, $init } from '../config/strings';
+import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
 import keyboard from './keyboard';
-import { getSettings } from './store-actions';
-import { is } from './util';
+import { windowClosed } from './utils/window-closed';
+import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
 const register = () => {
@@ -16,9 +16,8 @@ const register = () => {
 	 * Add app event listeners...
 	 */
 
-	const { quitOnWindowClose } = getSettings();
-
 	app.on('will-quit', () => {
+		Logger.status($appListeners.willQuit);
 		// Unregister all shortcuts.
 		// todo: iohook
 		// iohook.unregisterAll();
@@ -32,16 +31,18 @@ const register = () => {
 	// make use of it to ensure the browser window is completely destroyed.
 	// See https://github.com/electron/electron/issues/5273
 	app.on('before-quit', () => {
+		Logger.status($appListeners.beforeQuit);
+
+		// TODO: BUG - Dock persists after app quits on macOS
+		app.dock.hide();
+
 		app.releaseSingleInstanceLock();
 		process.exit(EXIT_CODES.SUCCESS);
 	});
 
 	app.on('window-all-closed', () => {
-		// Respect the OSX convention of having the application in memory even
-		// after all windows have been closed
-		if (!is.macos || quitOnWindowClose) {
-			app.quit();
-		}
+		Logger.status($appListeners.allWindowsClosed);
+		windowClosed();
 	});
 
 	// Security measures
@@ -50,38 +51,34 @@ const register = () => {
 		// https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
 		webContents.on('will-navigate', (event, navigationUrl) => {
 			event.preventDefault();
-			shell.openExternal(navigationUrl);
+
 			Logger.warn($errors.blockedNavigation, navigationUrl);
+			shell.openExternal(navigationUrl);
 		});
 	});
 };
 
 const ready = () => {
 	app.on('activate', async () => {
+		Logger.status($appListeners.activate);
+
 		// On macOS it's common to re-create a window in the app when the
 		// dock icon is clicked and there are no other windows open.
-		const openWindows = BrowserWindow.getAllWindows().find((window) => {
-			if (window !== windows.settingsWindow) {
-				// window.show();
-				return true;
-			}
-			return false;
-		});
+		const openWindow = getNextCrosshairWindow();
 
-		if (!openWindows) {
-			// Because we're adding these listeners outside the main.ts file, the window object doesn't get set to null
-			// when the window is closed. So we check `windows.mainWindow?.isDestroyed()` and explicitly set it to null
-			windows.mainWindow = null;
+		if (!openWindow) {
 			await createCrosshairWindow();
 		}
 	});
 
 	app.on('second-instance', () => {
+		Logger.warn($appListeners.secondInstance);
 		// Someone tried to run a second instance, we should focus our window.
-		if (windows.mainWindow) {
+		if (windows.settingsWindow) {
 			// If the window is minimized, we should restore it and focus it.
-			if (windows.mainWindow.isMinimized()) windows.mainWindow.restore();
-			windows.mainWindow.focus();
+			if (windows.settingsWindow.isMinimized())
+				windows.settingsWindow.restore();
+			windows.settingsWindow.focus();
 		}
 	});
 };

@@ -2,6 +2,7 @@
 import { BrowserWindow, Rectangle, Size, screen } from 'electron';
 import Logger from 'electron-log';
 import { Display } from 'electron/main';
+import { $actions, $errors } from '../../config/strings';
 import { is } from '../util';
 import windows, { WindowInstanceType } from '../windows';
 
@@ -103,7 +104,7 @@ export const getWindowBoundsCentered = (
 ): Rectangle => {
 	const window = options?.window ?? activeWindow();
 	if (!window) {
-		throw new Error('No active window');
+		throw new Error($errors.noActiveWindow);
 	}
 
 	const [width, height] = window.getSize();
@@ -129,21 +130,21 @@ Center a window on the screen.
 */
 export const centerWindow = (options?: CenterWindowOptions) => {
 	const window = options?.window ?? activeWindow();
-	if (!window) {
-		// throw new Error('No active window');
-		Logger.error('No active window');
+	if (!window || window.isDestroyed()) {
+		Logger.error($errors.noActiveWindow);
 		return;
 	}
 
-	Logger.status('Centering window', window.id);
+	Logger.status($actions.centerWindow, window.id);
 	const opts = {
 		window,
-		animated: false,
+		animated: true,
 		useFullBounds: false,
 		...options,
 	};
 
 	const bounds = getWindowBoundsCentered(opts);
+
 	window.setBounds(bounds, opts.animated);
 };
 
@@ -164,7 +165,7 @@ export const moveToNextDisplay = (options?: { window?: BrowserWindow }) => {
 		return;
 	}
 
-	Logger.status('Moving window to next display');
+	Logger.status($actions.moveToNextDisplay);
 
 	// Get list of displays
 	const displays = screen.getAllDisplays();
@@ -186,7 +187,7 @@ export const moveToNextDisplay = (options?: { window?: BrowserWindow }) => {
 };
 
 export const safeSetBounds = (window: BrowserWindow, bounds: Rectangle) => {
-	if (window.isDestroyed()) {
+	if (!window || window.isDestroyed()) {
 		return;
 	}
 
@@ -209,7 +210,7 @@ export const safeSetBounds = (window: BrowserWindow, bounds: Rectangle) => {
 		bounds.y = workArea.y + workArea.height - height;
 	}
 
-	window.setBounds(bounds);
+	window.setBounds(bounds, true);
 
 	// Ensure the window is not minimized
 	if (window.isMinimized()) {
@@ -245,10 +246,10 @@ export const moveWindowToDisplayEdge = ({
 			bounds.x = display.workArea.x + display.workArea.width - bounds.width;
 			break;
 		default:
-			Logger.error('Invalid direction');
+			Logger.error($errors.invalidDirection, direction);
 	}
 
-	window.setBounds(bounds);
+	window.setBounds(bounds, true);
 };
 
 export const moveWindow = ({
@@ -280,7 +281,7 @@ export const moveWindow = ({
 			bounds.x += 1;
 			break;
 		default:
-			Logger.error('Invalid direction');
+			Logger.error($errors.invalidDirection, direction);
 	}
 
 	safeSetBounds(win, bounds);
@@ -307,6 +308,16 @@ export const moveWindow = ({
 export const forEachWindow = (callback: (window: BrowserWindow) => void) => {
 	BrowserWindow.getAllWindows().forEach((win) => {
 		callback(win);
+	});
+};
+
+export const forEachCrosshairWindow = (
+	callback: (window: BrowserWindow) => void,
+) => {
+	BrowserWindow.getAllWindows().forEach((win) => {
+		if (win !== windows.settingsWindow) {
+			callback(win);
+		}
 	});
 };
 
@@ -342,4 +353,23 @@ export const focusNextWindow = () => {
 	}
 
 	nextWindow.focus();
+};
+
+// grab an available crosshair window
+export const getNextCrosshairWindow = () => {
+	const crosshairWindow = BrowserWindow.getAllWindows().find(
+		(win) => win !== windows.settingsWindow,
+	);
+
+	if (!crosshairWindow) {
+		return;
+	}
+
+	return crosshairWindow;
+};
+
+export const getWindowById = (id: string) => {
+	if (id in windows.crosshairWindows) {
+		return windows.crosshairWindows[id];
+	}
 };
