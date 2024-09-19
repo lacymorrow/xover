@@ -23,9 +23,17 @@ import { scanImages } from './utils/getImages';
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
 
+<<<<<<< HEAD
 	try {
 		// Initialize logger
 		logger.initialize();
+=======
+	// App CLI flags
+	appFlags.initialize();
+
+	// Initialize logger
+	logger.initialize();
+>>>>>>> upstream/main
 
 		// Initialize analytics
 		analytics.initialize();
@@ -52,6 +60,20 @@ export const startup = () => {
 		// TODO: Notify the user or attempt a graceful shutdown
 		app.quit();
 	}
+<<<<<<< HEAD
+=======
+
+	// Enable electron debug and source map support
+	debugging.initialize();
+
+	protocol.register();
+
+	// Register app listeners, e.g. `app.on()`
+	appListeners.register();
+
+	Logger.status($init.started);
+	console.timeLog(app.name, $init.started);
+>>>>>>> upstream/main
 };
 
 export const ready = async () => {
@@ -64,6 +86,9 @@ export const ready = async () => {
 	if (is.debug) {
 		await debugging.installExtensions();
 	}
+
+	// Register custom protocol like `app://`
+	protocol.initialize();
 
 	// Add remaining app listeners
 	appListeners.ready();
@@ -78,9 +103,6 @@ export const ready = async () => {
 
 	// Setup Tray
 	tray.initialize();
-
-	// Register custom protocol like `app://`
-	protocol.initialize();
 
 	// Auto updates
 	// eslint-disable-next-line no-new
@@ -100,3 +122,13 @@ export const idle = async () => {
 	console.timeLog(app.name, $init.idle);
 	await scanImages();
 };
+
+process.on('uncaughtException', (error) => {
+	Logger.error('Uncaught exception:', error);
+	// Optionally, you can show an error dialog to the user here
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+	Logger.error('Unhandled rejection at:', promise, 'reason:', reason);
+	// Optionally, you can show an error dialog to the user here
+});

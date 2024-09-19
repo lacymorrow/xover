@@ -60,6 +60,12 @@ yarn
 yarn start
 ```
 
+## Production
+
+### Auto Update
+
+After publishing your first version, you can enable auto-update by uncommenting the `update` function contents in `src/main/auto-update.ts`.
+
 ## BuiltWith
 
 - [Electron](https://electronjs.org/)
@@ -68,7 +74,6 @@ yarn start
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Shadcn](https://ui.shadcn.com/)
 - [TypeScript](https://www.typescriptlang.org/)
-
 
 ## Development
 
@@ -96,23 +101,34 @@ npx shadcn-ui@latest add button checkbox dropdown-menu form input menubar radio-
 
 _To list components with updates: `npx shadcn-ui@latest diff`_
 
-## Electron-React-Boilerplate Docs
+### Build for production
+
+```sh
+npm run package
+```
+
+#### Important Notes
+
+- The `src/main/auto-update.ts` file is where the auto-updater is configured. Uncomment the `update` function to enable auto-update after publishing your first version.
+- The app icon will **ALWAYS** be the default Electron icon in development. You will need to build the app with `npm run package` to get a new icon.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Electron-React-Boilerplate
 
 See the Electron React Boilerplate [docs and guides here](https://electron-react-boilerplate.js.org/docs/installation)
 
+#### Tutorials
 
-### Tutorials
+- Creating multiple windows: <https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/623#issuecomment-1382717291>
 
-- Creating multiple windows: https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/623#issuecomment-1382717291
+## 📄 License
 
-
-## License
-
-MIT © [Lacy Morrow](https://github.com/lacymorrow)
+This project is licensed under the CC-BY-NC-SA-4.0 License.
 
 [github-actions-status]: https://github.com/lacymorrow/electron-shadcn-boilerplate/workflows/Build/badge.svg
 [github-actions-url]: https://github.com/lacymorrow/electron-shadcn-boilerplate/actions
 [github-tag-image]: https://img.shields.io/github/tag/electron-react-boilerplate/electron-react-boilerplate.svg?label=version
 [github-tag-url]: https://github.com/lacymorrow/electron-shadcn-boilerplate/releases/latest
-[stackoverflow-img]: https://img.shields.io/badge/stackoverflow-electron_react_boilerplate-blue.svg
-[stackoverflow-url]: https://stackoverflow.com/questions/tagged/electron-react-boilerplate

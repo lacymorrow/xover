@@ -1,14 +1,15 @@
 // todo: menubar ellipsis on overflow
 import { MainLayout } from '@/renderer/components/layout/MainLayout';
-import { Home } from '@/renderer/components/pages/Home';
+import { Home } from '@/renderer/components/views/Home';
 import {
-	Route,
-	RouterProvider,
-	createHashRouter,
-	createRoutesFromElements,
+    Route,
+    RouterProvider,
+    createHashRouter,
+    createRoutesFromElements,
 } from 'react-router-dom';
 
 import SettingsLayout from '@/renderer/components/layout/SettingsLayout';
+import ErrorPage from '@/renderer/components/views/ErrorPage';
 import { settingsNavItems } from '@/renderer/config/nav';
 import '@/renderer/styles/globals.scss';
 
@@ -18,7 +19,7 @@ export default function App() {
 		settingsNavItems.find((item) => item.index) || settingsNavItems[0];
 
 	const routes = (
-		<Route path="/" element={<MainLayout />}>
+		<Route path="/" element={<MainLayout />} errorElement={<ErrorPage />}>
 			<Route path="settings" element={<SettingsLayout />}>
 				{settingsNavItems.map((item) => {
 					/* Dynamically add routes for settings */

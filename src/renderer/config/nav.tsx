@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { SettingsAbout } from '@/renderer/components/pages/settings/about/SettingsAbout';
 import { SettingsAppearance } from '@/renderer/components/pages/settings/appearance/SettingsAppearance';
 import {
@@ -17,6 +18,23 @@ import { SettingsNotifications } from '@/renderer/components/pages/settings/noti
 import { SettingsWindow } from '../components/pages/settings/appearance/SettingsWindow';
 import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
 import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
+=======
+import { SettingsJson } from '@/renderer/components/views/settings/SettingsJson';
+import { SettingsAbout } from '@/renderer/components/views/settings/about/SettingsAbout';
+import { SettingsAppearance } from '@/renderer/components/views/settings/appearance/SettingsAppearance';
+import {
+    BellIcon,
+    BlendingModeIcon,
+    GearIcon,
+    IdCardIcon,
+    ImageIcon,
+    KeyboardIcon,
+} from '@radix-ui/react-icons';
+
+import { SettingsApplication } from '@/renderer/components/views/settings/general/SettingsApplication';
+import { SettingsKeyboard } from '@/renderer/components/views/settings/keyboard/SettingsKeyboard';
+import { SettingsNotifications } from '@/renderer/components/views/settings/notifications/SettingsNotifications';
+>>>>>>> upstream/main
 
 export const nav = {
 	home: {

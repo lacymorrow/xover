@@ -9,6 +9,7 @@ export type NotificationType = 'system' | 'app' | 'all';
 
 export interface SettingsType {
 	appVersion?: string;
+	accentColor: string;
 	allowAnalytics: boolean;
 	allowSounds: boolean;
 	allowAutoUpdate: boolean;
@@ -58,6 +59,7 @@ export interface SettingsType {
 // These are the default settings, imported by the store
 export const DEFAULT_SETTINGS: SettingsType = {
 	appVersion: '',
+	accentColor: '#b453ff',
 	allowAnalytics: true,
 	allowAutoUpdate: true,
 	allowDisableKeyboardShortcuts: false,

@@ -20,7 +20,7 @@ import { isObjectEmpty } from '../utils/isObjectEmpty';
 import { setupContextMenu } from './context-menu';
 import dock from './dock';
 import MenuBuilder from './menu';
-import { __resources } from './paths';
+<<<<<<< HEAD
 import {
 	deleteWindowState,
 	getActiveWindowState,
@@ -32,6 +32,10 @@ import {
 	setSettings,
 	setWindowState,
 } from './store-actions';
+=======
+import { __assets } from './paths';
+import { getSetting } from './store-actions';
+>>>>>>> upstream/main
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
 import { windowClosed } from './utils/window-closed';
@@ -39,7 +43,7 @@ import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
-	return path.join(__resources, ...paths);
+	return path.join(__assets, ...paths);
 };
 
 const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
@@ -71,8 +75,8 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 	};
 
 	options.webPreferences = {
-		sandbox: false, // todo: enable
-		webSecurity: !is.development, // Required for loading sounds, comment out if not using sounds
+		// sandbox: false, // todo: enable
+		// webSecurity: false,
 		// Prevent throttling when the window is in the background:
 		// backgroundThrottling: false,
 		// Disable the `auxclick` feature so that `click` events are triggered in
@@ -211,12 +215,22 @@ export const createCrosshairWindow = async (
 		...opts,
 	};
 
+	if(is.windows){
+		options.titleBarOverlay = {
+			color: getSetting('theme') === 'dark' ? '#000000' : '#ffffff',
+			symbolColor: String(getSetting('accentColor')) || '#000000',
+			height: 34
+		  }
+	}
+
 	const window = createWindow(id, options);
 	window.setAspectRatio(APP_ASPECT_RATIO);
 	window.setIgnoreMouseEvents(isLocked);
 
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
+
+
 
 	window.on('ready-to-show', () => {
 		window.show();

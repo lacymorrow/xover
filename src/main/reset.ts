@@ -1,5 +1,8 @@
 import { app } from 'electron';
+import Logger from 'electron-log';
 import { SettingsType } from '../config/settings';
+import { $init } from '../config/strings';
+import { notification } from './notifications';
 import sounds from './sounds';
 import {
 	getSettings,
@@ -14,6 +17,12 @@ import windows from './windows';
 export const resetApp = () => {
 	// Sonic announcement
 	sounds.play('RESET');
+
+	// Notification
+	notification({
+		title: $init.resetApp,
+	});
+
 	resetStore();
 };
 
@@ -64,8 +73,16 @@ export const restartApp = () => {
 };
 
 export const resetSettings = () => {
+	Logger.status($init.refreshSettings);
+
 	// Sonic announcement
 	sounds.play('RESET');
+
+	// Notification
+	notification({
+		title: $init.refreshSettings,
+	});
+
 
 	// Rescan images
 	scanImages();

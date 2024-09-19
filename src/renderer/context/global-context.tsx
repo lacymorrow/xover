@@ -162,14 +162,14 @@ export function GlobalContextProvider({
 				setAppInfo(info);
 				return info;
 			})
-			.then(({ paths }) => {
+			.then(() => {
 				// SOUNDS
-				preload(paths.sounds);
+				preload();
 
 				// Setup listener to play sounds
 				window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound: any) => {
 					if (!settings.allowSounds) return;
-					play({ name: sound, path: paths.sounds });
+					play({ name: sound });
 				});
 			})
 			.catch(console.error);
@@ -188,7 +188,7 @@ export function GlobalContextProvider({
 				ipcChannels.APP_NOTIFICATION,
 			);
 		};
-	}, [settings.allowSounds]);
+	}, []);
 
 	// Electron API functions
 	const setSettings = useCallback((newSettings: Partial<SettingsType>) => {
@@ -203,9 +203,13 @@ export function GlobalContextProvider({
 			settings,
 			setSettings,
 			messages,
+<<<<<<< HEAD
 			message: messages[messages.length - 1] ?? '',
 			crosshairImages,
 			windowState,
+=======
+			message: messages[0] ?? '',
+>>>>>>> upstream/main
 		};
 	}, [
 		appInfo,

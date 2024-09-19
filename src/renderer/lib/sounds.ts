@@ -1,39 +1,39 @@
-import { VOLUME } from '@/config/config';
+import { PROTOCOL, VOLUME } from '@/config/config';
 
 /* Cache of Audio elements, for instant playback */
 const cache: Record<string, HTMLAudioElement> = {};
 
 const sounds: Record<string, { url: string; volume: number }> = {
 	HERO: {
-		url: 'ui-sounds/heros/hero_decorative-celebration-01.wav',
+		url: 'sounds/ui-sounds/heros/hero_decorative-celebration-01.wav',
 		volume: VOLUME,
 	},
 	STARTUP: {
-		url: 'ui-sounds/alerts/notification_ambient.wav',
+		url: 'sounds/ui-sounds/alerts/notification_ambient.wav',
 		volume: VOLUME,
 	},
 	NOTIFICATION: {
-		url: 'ui-sounds/alerts/notification_simple-02.wav',
+		url: 'sounds/ui-sounds/alerts/notification_simple-02.wav',
 		volume: VOLUME,
 	},
 	UPDATE: {
-		url: 'ui-sounds/alerts/alert_high-intensity.wav',
+		url: 'sounds/ui-sounds/alerts/alert_high-intensity.wav',
 		volume: VOLUME,
 	},
 	LOCK: {
-		url: 'ui-sounds/primary-system/ui_lock.wav',
+		url: 'sounds/ui-sounds/primary-system/ui_lock.wav',
 		volume: VOLUME,
 	},
 	UNLOCK: {
-		url: 'ui-sounds/primary-system/ui_unlock.wav',
+		url: 'sounds/ui-sounds/primary-system/ui_unlock.wav',
 		volume: VOLUME,
 	},
 	DONE: {
-		url: 'ui-sounds/primary-system/navigation_selection-complete-celebration.wav',
+		url: 'sounds/ui-sounds/primary-system/navigation_selection-complete-celebration.wav',
 		volume: VOLUME,
 	},
 	ERROR: {
-		url: 'ui-sounds/secondary-system/alert_error-03.wav',
+		url: 'sounds/ui-sounds/secondary-system/alert_error-03.wav',
 		volume: VOLUME,
 	},
 	RESET: {
@@ -43,24 +43,27 @@ const sounds: Record<string, { url: string; volume: number }> = {
 };
 
 export const preload = (basepath = '') => {
-	console.warn(`Preloading sounds from ${basepath}`);
+	console.warn(`Preloading sounds`);
 
 	let audio: HTMLAudioElement | undefined;
 	Object.keys(sounds).forEach((name) => {
 		if (!cache[name]) {
-			cache[name] = new window.Audio();
-
 			const sound = sounds[name];
+			const url = `${PROTOCOL}://${basepath}${sound.url}`;
+			console.warn(`Preloading sound: ${name}, URL: ${url}`);
+
+			cache[name] = new window.Audio();
+			cache[name].crossOrigin = '*';
+			cache[name].volume = sound.volume;
+			cache[name].src = url;
 			audio = cache[name];
-			audio.volume = sound.volume;
-			audio.src = `file://${basepath}${sound.url}`; // this requires web security to be disabled
 		}
 	});
 
 	return audio;
 };
 
-export const play = ({ name, path }: { name: string; path: string }) => {
+export const play = ({ name, path }: { name: string; path?: string }) => {
 	const sound = name.toUpperCase();
 	console.info(`Playing sound: ${name}, path: ${path}`);
 

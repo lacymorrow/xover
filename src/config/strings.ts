@@ -1,10 +1,4 @@
-export const $errors = {
-	prefix: 'Main> ',
-	blockedNavigation: 'Blocked navigation to: ',
-	invalidChannel: 'Invalid IPC channel',
-	invalidDirection: 'Invalid direction',
-	noActiveWindow: 'No active window',
-};
+
 export const $actions = {
 	centerWindow: 'Centering window',
 	moveToNextDisplay: 'Moving window to next display',
@@ -25,10 +19,6 @@ export const $autoUpdate = {
 };
 
 export const $dialog = {
-	add: {
-		title: 'Add Media',
-		buttonLabel: 'Add',
-	},
 	error: {
 		title: 'An error occurred',
 		ignore: 'Ignore',
@@ -37,13 +27,22 @@ export const $dialog = {
 	},
 };
 
+export const $errors = {
+	prefix: 'Main> ',
+	blockedNavigation: 'Blocked navigation to: ',
+	github: 'Failed to fetch GitHub data',
+	invalidChannel: 'Invalid IPC channel',
+	invalidDirection: 'Invalid direction',
+	noActiveWindow: 'No active window',
+};
+
 export const $messages = {
 	resetStore: 'Reset App',
 	resetStoreSettings: 'Reset App Settings',
 
 	// Network messages
 	online: 'Connected',
-	offline: 'Disconnected - Cannot fetch metadata',
+	offline: 'Disconnected - No internet connection',
 };
 
 export const $init = {
@@ -58,6 +57,7 @@ export const $init = {
 	debugging: 'Initializing debugging...',
 	commandLineFlags: 'Initializing command line flags...',
 	refreshSettings: 'Refreshing settings...',
+	resetApp: 'Resetting app...',
 	appFlags: 'Registering app flags...',
 	appListeners: 'Registering app listeners...',
 	mainIdle: 'Main process is now idle',
@@ -75,6 +75,8 @@ export const $settings = {
 	reloadToApply: 'Changes will not take effect until the app is restarted.',
 	app: {
 		githubUrl: 'https://github.com/lacymorrow/electron-hotplate',
+		repo: 'lacymorrow/electron-hotplate',
+		description: 'A boilerplate for Electron applications',
 	},
 	appearance: {
 		themeLabel: 'Theme',
