@@ -1,4 +1,3 @@
-
 export const $actions = {
 	centerWindow: 'Centering window',
 	moveToNextDisplay: 'Moving window to next display',
@@ -74,8 +73,8 @@ export const $settings = {
 	description: 'Manage your account settings and application preferences',
 	reloadToApply: 'Changes will not take effect until the app is restarted.',
 	app: {
-		githubUrl: 'https://github.com/lacymorrow/electron-hotplate',
-		repo: 'lacymorrow/electron-hotplate',
+		githubUrl: 'https://github.com/lacymorrow/crossover',
+		repo: 'lacymorrow/crossover',
 		description: 'A boilerplate for Electron applications',
 	},
 	appearance: {

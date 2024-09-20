@@ -20,7 +20,7 @@ import { isObjectEmpty } from '../utils/isObjectEmpty';
 import { setupContextMenu } from './context-menu';
 import dock from './dock';
 import MenuBuilder from './menu';
-<<<<<<< HEAD
+import { __assets } from './paths';
 import {
 	deleteWindowState,
 	getActiveWindowState,
@@ -32,10 +32,6 @@ import {
 	setSettings,
 	setWindowState,
 } from './store-actions';
-=======
-import { __assets } from './paths';
-import { getSetting } from './store-actions';
->>>>>>> upstream/main
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
 import { windowClosed } from './utils/window-closed';
@@ -215,12 +211,12 @@ export const createCrosshairWindow = async (
 		...opts,
 	};
 
-	if(is.windows){
+	if (is.windows) {
 		options.titleBarOverlay = {
 			color: getSetting('theme') === 'dark' ? '#000000' : '#ffffff',
 			symbolColor: String(getSetting('accentColor')) || '#000000',
-			height: 34
-		  }
+			height: 34,
+		};
 	}
 
 	const window = createWindow(id, options);
@@ -229,8 +225,6 @@ export const createCrosshairWindow = async (
 
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);
-
-
 
 	window.on('ready-to-show', () => {
 		window.show();

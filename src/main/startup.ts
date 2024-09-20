@@ -2,6 +2,7 @@ import { app } from 'electron';
 import Logger from 'electron-log/main';
 import { $init } from '../config/strings';
 import analytics from './analytics';
+import appFlags from './app-flags';
 import appListeners from './app-listeners';
 import commandLineFlags from './command-line-flags';
 import {
@@ -23,57 +24,33 @@ import { scanImages } from './utils/getImages';
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
 
-<<<<<<< HEAD
-	try {
-		// Initialize logger
-		logger.initialize();
-=======
 	// App CLI flags
 	appFlags.initialize();
 
 	// Initialize logger
 	logger.initialize();
->>>>>>> upstream/main
 
-		// Initialize analytics
-		analytics.initialize();
-		analytics.track('app_started');
+	// Initialize analytics
+	analytics.initialize();
+	analytics.track('app_started');
 
-		// Initialize the error handler
-		errorHandling.initialize();
+	// Initialize the error handler
+	errorHandling.initialize();
 
-		refreshSettingsOnAppStart();
-
-		// Enable electron debug and source map support
-		debugging.initialize();
-
-		// App CLI flags
-		commandLineFlags.initialize();
-
-		// Register app listeners, e.g. `app.on()`
-		appListeners.register();
-
-		Logger.status($init.started);
-		console.timeLog(app.name, $init.started);
-	} catch (error) {
-		Logger.error('Startup initialization failed', error);
-		// TODO: Notify the user or attempt a graceful shutdown
-		app.quit();
-	}
-<<<<<<< HEAD
-=======
+	refreshSettingsOnAppStart();
 
 	// Enable electron debug and source map support
 	debugging.initialize();
 
-	protocol.register();
+	// App CLI flags
+	commandLineFlags.initialize();
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();
+	protocol.register();
 
 	Logger.status($init.started);
 	console.timeLog(app.name, $init.started);
->>>>>>> upstream/main
 };
 
 export const ready = async () => {
@@ -86,9 +63,6 @@ export const ready = async () => {
 	if (is.debug) {
 		await debugging.installExtensions();
 	}
-
-	// Register custom protocol like `app://`
-	protocol.initialize();
 
 	// Add remaining app listeners
 	appListeners.ready();

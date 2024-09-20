@@ -203,13 +203,9 @@ export function GlobalContextProvider({
 			settings,
 			setSettings,
 			messages,
-<<<<<<< HEAD
-			message: messages[messages.length - 1] ?? '',
+			message: messages[0] ?? '',
 			crosshairImages,
 			windowState,
-=======
-			message: messages[0] ?? '',
->>>>>>> upstream/main
 		};
 	}, [
 		appInfo,
