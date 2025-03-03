@@ -18,12 +18,16 @@ export const resetApp = () => {
 	// Sonic announcement
 	sounds.play('RESET');
 
-	// Notification
-	notification({
-		title: $init.resetApp,
-	});
+	try {
+		// Notification
+		notification({
+			title: $init.resetApp,
+		});
 
-	resetStore();
+		resetStore();
+	} catch (error) {
+		Logger.error('Error during reset app:', error);
+	}
 };
 
 export const refreshSettingsOnAppStart = () => {
@@ -78,15 +82,18 @@ export const resetSettings = () => {
 	// Sonic announcement
 	sounds.play('RESET');
 
-	// Notification
-	notification({
-		title: $init.refreshSettings,
-	});
+	try {
+		// Notification
+		notification({
+			title: $init.refreshSettings,
+		});
 
+		// Rescan images
+		scanImages();
 
-	// Rescan images
-	scanImages();
-
-	resetStoreSettings();
-	refreshSettingsOnAppStart();
+		resetStoreSettings();
+		refreshSettingsOnAppStart();
+	} catch (error) {
+		Logger.error('Error during reset settings:', error);
+	}
 };

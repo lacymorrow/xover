@@ -23,13 +23,18 @@ export const rendererNotification = (options: NotificationOptions) => {
 		`Sending notification to renderer process: ${options.title} - ${options.body}`,
 	);
 
+	let targetWindow = null;
+
 	if (getSetting('isSettingsWindowOpen')) {
-		windows.settingsWindow?.webContents.send(
-			ipcChannels.APP_NOTIFICATION,
-			options,
-		);
+		targetWindow = windows.settingsWindow;
 	} else {
-		windows.mainWindow?.webContents.send(ipcChannels.APP_NOTIFICATION, options);
+		targetWindow = windows.mainWindow;
+	}
+
+	if (targetWindow && !targetWindow.isDestroyed()) {
+		targetWindow.webContents.send(ipcChannels.APP_NOTIFICATION, options);
+	} else {
+		Logger.warn('Window is destroyed or does not exist, skipping notification');
 	}
 };
 
