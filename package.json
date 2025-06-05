@@ -37,7 +37,7 @@
 		}
 	],
 	"engines": {
-		"node": ">= 14.x <= 18.x"
+		"node": ">=14.0.0 <=20.0.0"
 	},
 	"main": "./src/main/main.ts",
 	"scripts": {
@@ -347,10 +347,7 @@
 			"repo": "crossover"
 		}
 	},
-	"devEngines": {
-		"node": ">=14.x",
-		"npm": ">=7.x"
-	},
+
 	"electronmon": {
 		"patterns": [
 			"!**/**",
