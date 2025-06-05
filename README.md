@@ -1,3 +1,7 @@
+# CrossOver 🎯
+
+A desktop crosshair overlay application built with Electron, React, and TypeScript. This application provides customizable crosshairs for gaming and screen targeting applications.
+
 CrossOver data is stored as `config.json` in the Per-user application data directory, which by default points to:
 - `%APPDATA%` on Windows (e.g. `C:\Users\username\AppData\Roaming\CrossOver`)
 - `$XDG_CONFIG_HOME` or `~/.config` on Linux (e.g. `~/.config/CrossOver`)
@@ -16,12 +20,6 @@ Open the `config.json` file and change the `keybind` value to `""` (empty string
 }
 ```
 
-# Cait Title
-
-Based on the [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate), this boilerplate adds UI components from [Shadcn](https://ui.shadcn.com/), styling with [Tailwind CSS](https://tailwindcss.com/), persistance with [electron-store](https://github.com/sindresorhus/electron-store), and a structured [React](https://react.dev/) context that promotes a data flow from the top down: Main process -> Renderer process.
-
-<br>
-
 <div align="center">
 
 [![Build Status][github-actions-status]][github-actions-url]
@@ -29,11 +27,19 @@ Based on the [Electron React Boilerplate](https://github.com/electron-react-boil
 
 </div>
 
-## Features
+## ✨ Features
 
-- 💬 App and System-wide Notifications
-- 🏃‍♂️ Auto Updater
-- 📦 Built-in Store
+- 🎯 Customizable crosshair overlays
+- 🚀 React for the UI
+- 🖥️ Electron for cross-platform desktop app development
+- 📘 TypeScript for type-safe code
+- 🎨 TailwindCSS for styling
+- 🔌 Inter-process communication (IPC) between main and renderer processes
+- 🌍 Global context for state management
+- 🖼️ Multi-window support (main window and child window)
+- 🔔 App and System-wide Notifications
+- 🔄 Auto Updater
+- 💾 Built-in Store with electron-store
 - 🖱️ Context Menu
 - 🌙 Dark Mode
 - ❌ Error Handler
@@ -42,25 +48,55 @@ Based on the [Electron React Boilerplate](https://github.com/electron-react-boil
 - 🀱 Menu Bar for macOS, Windows, and Linux
 - 📂 Multi-Window
 - 🖥️ System Tray
+- 🎨 UI components from [Shadcn](https://ui.shadcn.com/)
 
-## Getting Started
+## 🚀 Getting Started
 
-```bash
+1. Clone this repository
 
-# Clone this repository
-git clone https://github.com/lacymorrow/crossover.git
+   ```bash
+   git clone https://github.com/lacymorrow/crossover.git
+   ```
 
-# Go into the repository
-cd crossover
+2. Go into the repository
 
-# Install dependencies
-yarn
+   ```bash
+   cd crossover
+   ```
 
-# Run the app
-yarn start
-```
+3. Install dependencies
 
-## BuiltWith
+   ```bash
+   npm install
+   ```
+
+4. Start the development server
+
+   ```bash
+   npm run start
+   ```
+
+## 📁 Project Structure
+
+- `src/main`: Contains the main process code
+- `src/renderer`: Contains the renderer process code (React components)
+- `src/config`: Contains configuration files
+- `src/utils`: Contains utility functions
+
+## 📜 Available Scripts
+
+- `npm run start`: Start the app in development mode
+- `npm run package`: Build the app for production
+- `npm run lint`: Run the linter
+- `npm run test`: Run tests
+
+## Production
+
+### Auto Update
+
+After publishing your first version, you can enable auto-update by uncommenting the `update` function contents in `src/main/auto-update.ts`.
+
+## Built With
 
 - [Electron](https://electronjs.org/)
 - [React](https://reactjs.org/)
@@ -68,7 +104,6 @@ yarn start
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Shadcn](https://ui.shadcn.com/)
 - [TypeScript](https://www.typescriptlang.org/)
-
 
 ## Development
 
@@ -96,23 +131,34 @@ npx shadcn-ui@latest add button checkbox dropdown-menu form input menubar radio-
 
 _To list components with updates: `npx shadcn-ui@latest diff`_
 
-## Electron-React-Boilerplate Docs
+### Build for production
+
+```sh
+npm run package
+```
+
+#### Important Notes
+
+- The `src/main/auto-update.ts` file is where the auto-updater is configured. Uncomment the `update` function to enable auto-update after publishing your first version.
+- The app icon will **ALWAYS** be the default Electron icon in development. You will need to build the app with `npm run package` to get a new icon.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Electron-React-Boilerplate
 
 See the Electron React Boilerplate [docs and guides here](https://electron-react-boilerplate.js.org/docs/installation)
 
+#### Tutorials
 
-### Tutorials
+- Creating multiple windows: <https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/623#issuecomment-1382717291>
 
-- Creating multiple windows: https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/623#issuecomment-1382717291
+## 📄 License
 
+This project is licensed under the CC-BY-NC-SA-4.0 License.
 
-## License
-
-MIT © [Lacy Morrow](https://github.com/lacymorrow)
-
-[github-actions-status]: https://github.com/lacymorrow/electron-shadcn-boilerplate/workflows/Build/badge.svg
-[github-actions-url]: https://github.com/lacymorrow/electron-shadcn-boilerplate/actions
-[github-tag-image]: https://img.shields.io/github/tag/electron-react-boilerplate/electron-react-boilerplate.svg?label=version
-[github-tag-url]: https://github.com/lacymorrow/electron-shadcn-boilerplate/releases/latest
-[stackoverflow-img]: https://img.shields.io/badge/stackoverflow-electron_react_boilerplate-blue.svg
-[stackoverflow-url]: https://stackoverflow.com/questions/tagged/electron-react-boilerplate
+[github-actions-status]: https://github.com/lacymorrow/crossover/workflows/Build/badge.svg
+[github-actions-url]: https://github.com/lacymorrow/crossover/actions
+[github-tag-image]: https://img.shields.io/github/tag/lacymorrow/crossover.svg?label=version
+[github-tag-url]: https://github.com/lacymorrow/crossover/releases/latest

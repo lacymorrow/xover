@@ -36,14 +36,11 @@ Todo:
 - Allow disabling of the inputs
 - Debounce Slider/color picker input
 - sass
-- Homepage
-- Documentation
 */
 
 import { app } from 'electron';
 import Logger from 'electron-log/main';
 import { $errors, $init } from '../config/strings';
-
 import ipc from './ipc';
 import { ready, startup } from './startup';
 
@@ -64,6 +61,7 @@ app
 
 // LAUNCH THE APP
 startup();
+
 
 // See the idle() function in src/main/startup.ts
 // it's called in the ipcMain.on(ipcChannels.RENDERER_READY) listener

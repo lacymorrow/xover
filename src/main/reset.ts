@@ -1,5 +1,8 @@
 import { app } from 'electron';
+import Logger from 'electron-log';
+import { $init } from '../config/strings';
 import { SettingsType } from '../config/settings';
+import { notification } from './notifications';
 import sounds from './sounds';
 import {
 	getSettings,
@@ -11,9 +14,20 @@ import {
 import { scanImages } from './utils/getImages';
 import windows from './windows';
 
+export const restartApp = () => {
+	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
+	app.quit(); // maybe the application will be closed; maybe not
+};
+
 export const resetApp = () => {
 	// Sonic announcement
 	sounds.play('RESET');
+
+	// Notification
+	notification({
+		title: $init.resetApp,
+	});
+
 	resetStore();
 };
 
@@ -58,14 +72,16 @@ export const refreshSettingsOnAppStart = () => {
 	windows.crosshairWindows = {};
 };
 
-export const restartApp = () => {
-	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
-	app.quit(); // Must be called after app.relaunch() to actually quit the app
-};
-
 export const resetSettings = () => {
+	Logger.status($init.refreshSettings);
+
 	// Sonic announcement
 	sounds.play('RESET');
+
+	// Notification
+	notification({
+		title: $init.refreshSettings,
+	});
 
 	// Rescan images
 	scanImages();

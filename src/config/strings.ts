@@ -4,7 +4,9 @@ export const $errors = {
 	invalidChannel: 'Invalid IPC channel',
 	invalidDirection: 'Invalid direction',
 	noActiveWindow: 'No active window',
+	github: 'Failed to fetch GitHub data',
 };
+
 export const $actions = {
 	centerWindow: 'Centering window',
 	moveToNextDisplay: 'Moving window to next display',
@@ -25,10 +27,6 @@ export const $autoUpdate = {
 };
 
 export const $dialog = {
-	add: {
-		title: 'Add Media',
-		buttonLabel: 'Add',
-	},
 	error: {
 		title: 'An error occurred',
 		ignore: 'Ignore',
@@ -43,7 +41,7 @@ export const $messages = {
 
 	// Network messages
 	online: 'Connected',
-	offline: 'Disconnected - Cannot fetch metadata',
+	offline: 'Disconnected - No internet connection',
 };
 
 export const $init = {
@@ -58,6 +56,7 @@ export const $init = {
 	debugging: 'Initializing debugging...',
 	commandLineFlags: 'Initializing command line flags...',
 	refreshSettings: 'Refreshing settings...',
+	resetApp: 'Resetting app...',
 	appFlags: 'Registering app flags...',
 	appListeners: 'Registering app listeners...',
 	mainIdle: 'Main process is now idle',
@@ -74,7 +73,9 @@ export const $settings = {
 	description: 'Manage your account settings and application preferences',
 	reloadToApply: 'Changes will not take effect until the app is restarted.',
 	app: {
-		githubUrl: 'https://github.com/lacymorrow/electron-hotplate',
+		githubUrl: 'https://github.com/lacymorrow/crossover',
+		repo: 'lacymorrow/crossover',
+		description: 'A boilerplate for Electron applications',
 	},
 	appearance: {
 		themeLabel: 'Theme',

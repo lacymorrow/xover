@@ -23,6 +23,7 @@ const RENDERER_READY = 'renderer-ready';
 
 const TRIGGER_APP_MENU_ITEM_BY_ID = 'trigger-app-menu-item-by-id';
 const OPEN_URL = 'open-url';
+const OPEN_CHILD_WINDOW = 'open-child-window';
 
 // CrossOver
 const OPEN_FILE = 'open-file';
@@ -59,6 +60,7 @@ export const ipcChannels = {
 
 	TRIGGER_APP_MENU_ITEM_BY_ID,
 	OPEN_URL,
+	OPEN_CHILD_WINDOW,
 
 	OPEN_FILE,
 	QUIT_APP,
@@ -73,4 +75,4 @@ export const ipcChannels = {
 	SET_CROSSHAIR,
 	SET_WINDOW_STATE,
 	OPEN_SETTINGS,
-};
+} as const;

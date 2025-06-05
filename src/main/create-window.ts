@@ -20,7 +20,7 @@ import { isObjectEmpty } from '../utils/isObjectEmpty';
 import { setupContextMenu } from './context-menu';
 import dock from './dock';
 import MenuBuilder from './menu';
-import { __resources } from './paths';
+import { __assets } from './paths';
 import {
 	deleteWindowState,
 	getActiveWindowState,
@@ -39,7 +39,7 @@ import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
-	return path.join(__resources, ...paths);
+	return path.join(__assets, ...paths);
 };
 
 const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
@@ -93,8 +93,8 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706
 	browserWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
-	browserWindow.on('unresponsive', (event: IpcMainEvent) => {
-		Logger.error(`Window unresponsive: ${event.sender}`);
+	browserWindow.on('unresponsive', () => {
+		Logger.error(`Window unresponsive: ${browserWindow.id}`);
 	});
 
 	browserWindow.webContents.on('did-fail-load', (event: any) => {
@@ -210,6 +210,14 @@ export const createCrosshairWindow = async (
 
 		...opts,
 	};
+
+	if (is.windows) {
+		options.titleBarOverlay = {
+			color: getSetting('theme') === 'dark' ? '#000000' : '#ffffff',
+			symbolColor: String(getSetting('accentColor')) || '#000000',
+			height: 34,
+		};
+	}
 
 	const window = createWindow(id, options);
 	window.setAspectRatio(APP_ASPECT_RATIO);
@@ -347,4 +355,24 @@ export const createOrReloadCrosshairWindows = async () => {
 		Logger.status('Open new crosshair', keys.length);
 		createCrosshairWindow();
 	}
+};
+
+export const createChildWindow = async () => {
+	const mainWindowBounds = windows.mainWindow?.getBounds();
+	const options: BrowserWindowConstructorOptions = {
+		frame: true,
+		x: mainWindowBounds ? mainWindowBounds.x + 60 : undefined,
+		y: mainWindowBounds ? mainWindowBounds.y + 60 : undefined,
+	};
+
+	const window = createWindow('child', options);
+
+	window.on('ready-to-show', () => {
+		window.show();
+	});
+
+	// Load the window
+	window.loadURL(resolveHtmlPath('child.html'));
+
+	return window;
 };

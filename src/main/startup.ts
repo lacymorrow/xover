@@ -42,6 +42,8 @@ export const startup = () => {
 		// App CLI flags
 		commandLineFlags.initialize();
 
+		protocol.register();
+
 		// Register app listeners, e.g. `app.on()`
 		appListeners.register();
 
@@ -65,6 +67,9 @@ export const ready = async () => {
 		await debugging.installExtensions();
 	}
 
+	// Register custom protocol like `app://`
+	protocol.initialize();
+
 	// Add remaining app listeners
 	appListeners.ready();
 
@@ -78,9 +83,6 @@ export const ready = async () => {
 
 	// Setup Tray
 	tray.initialize();
-
-	// Register custom protocol like `app://`
-	protocol.initialize();
 
 	// Auto updates
 	// eslint-disable-next-line no-new
@@ -96,7 +98,19 @@ export const idle = async () => {
 	await createSettingsWindow();
 	sounds.play('STARTUP');
 
+	// ... do something with your app
+
 	Logger.status($init.idle);
 	console.timeLog(app.name, $init.idle);
 	await scanImages();
 };
+
+process.on('uncaughtException', (error) => {
+	Logger.error('Uncaught exception:', error);
+	// Optionally, you can show an error dialog to the user here
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+	Logger.error('Unhandled rejection at:', promise, 'reason:', reason);
+	// Optionally, you can show an error dialog to the user here
+});

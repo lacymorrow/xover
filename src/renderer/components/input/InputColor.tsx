@@ -1,7 +1,7 @@
 // todo: color value is reset when pure black
 // todo: clear button cannot be inside button
 import { simpleUUID } from '@/utils/getUUID';
-import Chrome from '@uiw/react-color-chrome';
+import Colorful from '@uiw/react-color-colorful';
 import { useCallback, useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,11 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover';
 import { invertColor } from '@/utils/invertColor';
+import Chrome from '@uiw/react-color-chrome';
 import { ClearButton } from './ClearButton';
 
 export function InputColor({
+	variant = 'chrome',
 	value,
 	defaultValue,
 	onChange,
@@ -24,6 +26,7 @@ export function InputColor({
 
 	...props
 }: {
+	variant?: 'chrome' | 'colorful';
 	value?: string;
 	defaultValue?: string;
 	onChange?: (value: string) => void;
@@ -33,6 +36,7 @@ export function InputColor({
 	buttonText?: string;
 	props?: any;
 }) {
+	const Component = variant === 'chrome' ? Chrome : Colorful;
 	const color = useMemo(() => value || '', [value]);
 
 	const uuid = useMemo(simpleUUID, []);
@@ -77,24 +81,29 @@ export function InputColor({
 						</div>
 					</div>
 					<PopoverTrigger className="relative" asChild>
-						<Button
-							style={{
-								backgroundColor,
-								color: foregroundColor,
-							}}
-							{...props}
-						>
-							{buttonText || 'Select Color'}
+						<div className="relative w-full">
+							<Button
+								style={{
+									backgroundColor,
+									color: foregroundColor,
+								}}
+								className="w-full"
+								{...props}
+							>
+								{buttonText || 'Select Color'}
+							</Button>
 							{color && (
 								<ClearButton
+									className="absolute right-0 top-0"
 									onClick={handleClear}
 									style={{ color: foregroundColor }}
 								/>
 							)}
-						</Button>
+						</div>
 					</PopoverTrigger>
 					<PopoverContent className="flex items-center justify-center">
-						<Chrome
+						<Component
+							disableAlpha
 							color={color || defaultValue || '#000000'}
 							// @ts-ignore
 							placement={false}

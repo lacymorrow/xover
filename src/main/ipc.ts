@@ -4,6 +4,7 @@ import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 import { getOS } from '../utils/getOS';
 import autoUpdate from './auto-update';
+import { createChildWindow } from './create-window';
 import kb from './keyboard';
 import { notification } from './notifications';
 import { rendererPaths } from './paths';
@@ -120,6 +121,15 @@ export default {
 		// Open a URL in the default browser
 		ipcMain.on(ipcChannels.OPEN_URL, (_event: any, url: string) => {
 			shell.openExternal(url);
+		});
+
+		// Open a child window
+		ipcMain.on(ipcChannels.OPEN_CHILD_WINDOW, async () => {
+			if (!windows.childWindow || windows.childWindow.isDestroyed()) {
+				windows.childWindow = await createChildWindow();
+			} else {
+				windows.childWindow.focus();
+			}
 		});
 
 		ipcMain.on(ipcChannels.OPEN_SETTINGS, () => {

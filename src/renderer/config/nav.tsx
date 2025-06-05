@@ -1,5 +1,6 @@
-import { SettingsAbout } from '@/renderer/components/pages/settings/about/SettingsAbout';
-import { SettingsAppearance } from '@/renderer/components/pages/settings/appearance/SettingsAppearance';
+import { SettingsJson } from '@/renderer/components/views/settings/SettingsJson';
+import { SettingsAbout } from '@/renderer/components/views/settings/about/SettingsAbout';
+import { SettingsAppearance } from '@/renderer/components/views/settings/appearance/SettingsAppearance';
 import {
 	BellIcon,
 	BlendingModeIcon,
@@ -7,16 +8,17 @@ import {
 	Crosshair1Icon,
 	GearIcon,
 	IdCardIcon,
+	ImageIcon,
 	KeyboardIcon,
 	LightningBoltIcon,
 } from '@radix-ui/react-icons';
 
-import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
-import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/SettingsKeyboard';
-import { SettingsNotifications } from '@/renderer/components/pages/settings/notifications/SettingsNotifications';
-import { SettingsWindow } from '../components/pages/settings/appearance/SettingsWindow';
-import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
-import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
+import { SettingsApplication } from '@/renderer/components/views/settings/general/SettingsApplication';
+import { SettingsKeyboard } from '@/renderer/components/views/settings/keyboard/SettingsKeyboard';
+import { SettingsNotifications } from '@/renderer/components/views/settings/notifications/SettingsNotifications';
+import { SettingsWindow } from '../components/views/settings/appearance/SettingsWindow';
+import { SettingsActions } from '../components/views/settings/general/SettingsActions';
+import { SettingsAdvanced } from '../components/views/settings/general/SettingsAdvanced';
 
 export const nav = {
 	home: {
