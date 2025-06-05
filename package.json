@@ -147,7 +147,6 @@
 		"electron-store": "^8.1.0",
 		"electron-unhandled": "^4.0.1",
 		"electron-updater": "^6.1.7",
-		"iohook": "^0.9.3",
 		"is-online": "^10.0.0",
 		"lucide-react": "^0.312.0",
 		"next-themes": "^0.2.1",
@@ -347,7 +346,6 @@
 			"repo": "crossover"
 		}
 	},
-
 	"electronmon": {
 		"patterns": [
 			"!**/**",
@@ -357,20 +355,5 @@
 	},
 	"optionalDependencies": {
 		"dmg-license": "^1.0.11"
-	},
-	"iohook": {
-		"targets": [
-			"node-83",
-			"electron-87"
-		],
-		"platforms": [
-			"win32",
-			"darwin",
-			"linux"
-		],
-		"arches": [
-			"x64",
-			"ia32"
-		]
 	}
 }

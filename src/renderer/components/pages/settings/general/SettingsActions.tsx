@@ -1,7 +1,7 @@
 // todo: disable settings for disabled actions
 
 import { Separator } from '@/components/ui/separator';
-import { IOHookBehaviorType, SettingsType } from '@/config/settings';
+import { UiohookBehaviorType, SettingsType } from '@/config/settings';
 import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKeyboardBind';
 import { InputSelectForm } from '@/renderer/components/input/InputSelectForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
@@ -73,7 +73,7 @@ export function SettingsActions() {
 			<InputSelectForm
 				value={settings.tiltBehavior}
 				onChange={(value) => {
-					handleChangeSetting({ tiltBehavior: value as IOHookBehaviorType });
+					handleChangeSetting({ tiltBehavior: value as UiohookBehaviorType });
 				}}
 				label="Tilt Behavior"
 				description="Select the tilt behavior. Hold will tilt while the bind is held, press will toggle tilt on/off."

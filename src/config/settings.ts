@@ -2,8 +2,8 @@ import { CustomAcceleratorsType } from '@/types/keyboard';
 import { APP_HEIGHT, APP_WIDTH } from './config';
 
 export type ThemeType = 'system' | 'light' | 'dark';
-export type IOHookBehaviorType = 'toggle' | 'hold';
-export type IOHookInputType = 'mouse' | 'keyboard';
+export type UiohookBehaviorType = 'toggle' | 'hold';
+export type UiohookInputType = 'mouse' | 'keyboard';
 
 export type NotificationType = 'system' | 'app' | 'all';
 
@@ -28,16 +28,16 @@ export interface SettingsType {
 	commandLineFlags: string[];
 	hardwareAcceleration: boolean;
 
-	// iohook
+	// uiohook-napi
 	followMouseEnabled: boolean;
 
 	secondaryActionEnabled: boolean;
 	secondaryBind: string;
-	secondaryBehavior: IOHookBehaviorType; // toggle/hold
+	secondaryBehavior: UiohookBehaviorType; // toggle/hold
 
 	tiltActionEnabled: boolean;
 	tiltAngle: number;
-	tiltBehavior: IOHookBehaviorType; // toggle/hold
+	tiltBehavior: UiohookBehaviorType; // toggle/hold
 	tiltLeftBind: string;
 	tiltRightBind: string;
 
@@ -77,7 +77,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	commandLineFlags: [],
 	hardwareAcceleration: true,
 
-	// iohook
+	// uiohook-napi
 	followMouseEnabled: false,
 
 	secondaryActionEnabled: false,

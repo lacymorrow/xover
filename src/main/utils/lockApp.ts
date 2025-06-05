@@ -18,9 +18,9 @@ export const toggleAppLock = () => {
 	const { followMouseEnabled, isSettingsWindowOpen, isLocked } = getSettings();
 	const isLocking = !isLocked;
 	// todo
-	// iohook
+	// uiohook-napi
 	// if unlock + follow mouse = reset position
-	// unregister iohook
+	// unregister uiohook-napi
 	// enable move listener (save position)
 
 	Logger.status(`App is ${isLocking ? 'locked' : 'unlocked'}`);

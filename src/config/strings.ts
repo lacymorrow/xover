@@ -65,8 +65,8 @@ export const $init = {
 };
 
 export const $iohook = {
-	enabled: 'iohook enabled',
-	disabled: 'iohook disabled',
+	enabled: 'uiohook-napi enabled',
+	disabled: 'uiohook-napi disabled',
 };
 
 export const $settings = {

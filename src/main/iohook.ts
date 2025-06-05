@@ -9,10 +9,33 @@ import {
 } from './store-actions';
 import windows from './windows';
 
-let iohook: any | null = null;
+// Types for uiohook-napi events
+interface UiohookKeyboardEvent {
+	altKey: boolean;
+	ctrlKey: boolean;
+	metaKey: boolean;
+	shiftKey: boolean;
+	keycode: number;
+}
+
+interface UiohookMouseEvent {
+	altKey: boolean;
+	ctrlKey: boolean;
+	metaKey: boolean;
+	shiftKey: boolean;
+	x: number;
+	y: number;
+	button: number;
+	clicks: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { uIOhook } = require('uiohook-napi');
+
+let isHookActive = false;
 
 export const registerFollowMouse = () => {
-	iohook.on('mousemove', (event: any) => {
+	uIOhook.on('mousemove', (event: any) => {
 		if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 			return;
 		}
@@ -31,18 +54,29 @@ const registerToggleHoldShortcutAlt = (input: string, behavior: string) => {
 		return;
 	}
 
-	const trigger = iohookKeycodes[input as keyof typeof iohookKeycodes];
+	const trigger = parseInt(
+		iohookKeycodes[input as keyof typeof iohookKeycodes],
+		10,
+	);
 
 	if (behavior === 'toggle') {
-		iohook.registerShortcut([trigger], () =>
-			setActionStateKey('secondary', !getActionState().secondary),
-		);
+		uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('secondary', !getActionState().secondary);
+			}
+		});
 	} else if (behavior === 'hold') {
-		iohook.registerShortcut(
-			[trigger],
-			() => setActionStateKey('secondary', true), // Press
-			() => setActionStateKey('secondary', false),
-		);
+		uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('secondary', true);
+			}
+		});
+
+		uIOhook.on('keyup', (event: UiohookKeyboardEvent) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('secondary', false);
+			}
+		});
 	}
 };
 
@@ -50,20 +84,20 @@ const registerToggleHoldMouseAlt = (input: string, behavior: string) => {
 	const button = parseInt(input, 10);
 
 	if (behavior === 'toggle') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
 			if (event.button === button) {
 				setActionStateKey('secondary', !getActionState().secondary);
 			}
 		});
 	} else if (behavior === 'hold') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
 			if (event.button === button) {
 				// MACOS Mousedown fired twice for middle mouse
 				setActionStateKey('secondary', !getActionState().secondary);
 			}
 		});
 
-		iohook.on('mouseup', (event: MouseEvent) => {
+		uIOhook.on('mouseup', (event: UiohookMouseEvent) => {
 			if (event.button === button) {
 				setActionStateKey('secondary', false);
 			}
@@ -80,23 +114,34 @@ const registerToggleHoldShortcutTilt = (
 		return;
 	}
 
-	const trigger = iohookKeycodes[input as keyof typeof iohookKeycodes];
+	const trigger = parseInt(
+		iohookKeycodes[input as keyof typeof iohookKeycodes],
+		10,
+	);
 
 	if (tiltBehavior === 'toggle') {
-		iohook.registerShortcut([trigger], () => {
-			const currentTilt = getActionState().tilt;
-			if (currentTilt && currentTilt !== tiltAngle) {
-				setActionStateKey('tilt', 0);
-			} else {
-				setActionStateKey('tilt', tiltAngle);
+		uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
+			if (event.keycode === trigger) {
+				const currentTilt = getActionState().tilt;
+				if (currentTilt && currentTilt !== tiltAngle) {
+					setActionStateKey('tilt', 0);
+				} else {
+					setActionStateKey('tilt', tiltAngle);
+				}
 			}
 		});
 	} else if (tiltBehavior === 'hold') {
-		iohook.registerShortcut(
-			[trigger],
-			() => setActionStateKey('tilt', tiltAngle), // Press
-			() => setActionStateKey('tilt', 0), // Release
-		);
+		uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('tilt', tiltAngle);
+			}
+		});
+
+		uIOhook.on('keyup', (event: UiohookKeyboardEvent) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('tilt', 0);
+			}
+		});
 	}
 };
 
@@ -108,7 +153,7 @@ const registerToggleHoldMouseTilt = (
 	const button = parseInt(input, 10);
 
 	if (tiltBehavior === 'toggle') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
 			if (event.button === button) {
 				const currentTilt = getActionState().tilt;
 				if (currentTilt && currentTilt === tiltAngle) {
@@ -119,7 +164,7 @@ const registerToggleHoldMouseTilt = (
 			}
 		});
 	} else if (tiltBehavior === 'hold') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
 			if (event.button === button) {
 				const currentTilt = getActionState().tilt;
 				if (currentTilt && currentTilt === tiltAngle) {
@@ -130,7 +175,7 @@ const registerToggleHoldMouseTilt = (
 			}
 		});
 
-		iohook.on('mouseup', (event: MouseEvent) => {
+		uIOhook.on('mouseup', (event: UiohookMouseEvent) => {
 			if (event.button === button) {
 				setActionStateKey('tilt', 0);
 			}
@@ -166,9 +211,6 @@ export const startIOHook = async () => {
 	}
 
 	Logger.status($iohook.enabled);
-
-	// eslint-disable-next-line global-require
-	iohook = iohook || require('iohook');
 
 	// FOLLOW MOUSE
 	if (followMouseEnabled) {
@@ -207,9 +249,13 @@ export const startIOHook = async () => {
 		}
 	}
 
-	// iohook.useRawcode(true);
-	// iohook.start(true);
-	iohook.start();
+	// Start the uiohook-napi listener
+	try {
+		uIOhook.start();
+		isHookActive = true;
+	} catch (error) {
+		Logger.error('Failed to start uiohook-napi:', error);
+	}
 };
 
 export const stopIOHook = async () => {
@@ -218,14 +264,22 @@ export const stopIOHook = async () => {
 	setActionStateKey('secondary', false);
 	setActionStateKey('tilt', 0);
 
-	if (!iohook) {
+	if (!isHookActive) {
 		return;
 	}
 
-	iohook.unregisterAllShortcuts();
+	try {
+		// Remove all listeners
+		uIOhook.removeAllListeners('mousedown');
+		uIOhook.removeAllListeners('mouseup');
+		uIOhook.removeAllListeners('mousemove');
+		uIOhook.removeAllListeners('keydown');
+		uIOhook.removeAllListeners('keyup');
 
-	iohook.stop(true);
-	iohook.removeAllListeners('mousedown');
-	iohook.removeAllListeners('mouseup');
-	iohook.removeAllListeners('mousemove');
+		// Stop the hook
+		uIOhook.stop();
+		isHookActive = false;
+	} catch (error) {
+		Logger.error('Failed to stop uiohook-napi:', error);
+	}
 };

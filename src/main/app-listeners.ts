@@ -19,8 +19,8 @@ const register = () => {
 	app.on('will-quit', () => {
 		Logger.status($appListeners.willQuit);
 		// Unregister all shortcuts.
-		// todo: iohook
-		// iohook.unregisterAll();
+		// todo: uiohook-napi
+		// uIOhook.removeAllListeners();
 		keyboard.unregisterAll();
 	});
 

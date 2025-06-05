@@ -7,7 +7,7 @@ import {
 	DEFAULT_SETTINGS,
 	DEFAULT_WINDOW_STATE,
 	SettingsType,
-	WindowStateType
+	WindowStateType,
 } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 
@@ -181,7 +181,7 @@ const schema: Store.Schema<StoreType> = {
 				type: 'boolean',
 			},
 
-			// iohook
+			// uiohook-napi
 			followMouseEnabled: {
 				type: 'boolean',
 			},
