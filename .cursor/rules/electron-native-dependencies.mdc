@@ -3,3 +3,63 @@ description:
 globs:
 alwaysApply: false
 ---
+# Electron Native Dependencies Management
+
+## Core Principle
+Native dependencies (containing `.node` files) MUST be installed in `release/app/` directory, NOT in the root `package.json`.
+
+## Directory Structure
+```
+xover/
+├── package.json              # ❌ NO native deps here
+├── release/
+│   └── app/
+│       ├── package.json      # ✅ Native deps go here
+│       └── node_modules/     # ✅ Native modules built here
+```
+
+## Current Native Dependencies
+- [release/app/package.json](mdc:release/app/package.json) contains:
+  - `uiohook-napi@^1.5.4` - Global input hooks
+  - `@aptabase/electron@^0.3.1` - Analytics
+
+## Installation Process
+
+### ✅ Correct Method
+```bash
+# Install native dependency
+cd release/app
+npm install uiohook-napi@^1.5.4
+
+# Build/rebuild if needed
+npm run rebuild
+```
+
+### ❌ Incorrect Method
+```bash
+# This will cause webpack errors
+npm install uiohook-napi
+```
+
+## Build Configuration
+- [.erb/scripts/check-native-dep.js](mdc:.erb/scripts/check-native-dep.js) validates native deps are in correct location
+- Electron-builder automatically includes `release/app/node_modules` in final package
+- Webpack is configured to exclude native dependencies from renderer bundle
+
+## Troubleshooting
+
+### Error: "Webpack does not work with native dependencies"
+- Check if native dep was accidentally installed in root package.json
+- Move native dependency to release/app/package.json
+- Run `npm install` from release/app directory
+
+### Error: Module not found in main process
+- Ensure native dependency is listed in release/app/package.json
+- Use `require()` with relative path: `require('uiohook-napi')`
+- Check that electron-builder includes the dependency
+
+## Development Workflow
+1. Add native dependency to [release/app/package.json](mdc:release/app/package.json)
+2. Install: `cd release/app && npm install`
+3. Import in main process using require()
+4. Never import native deps in renderer process directly

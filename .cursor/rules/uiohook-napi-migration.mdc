@@ -3,3 +3,77 @@ description:
 globs:
 alwaysApply: false
 ---
+# uIOhook-napi Migration Guide
+
+## Overview
+The project has migrated from `iohook` to `uiohook-napi` for better Electron compatibility and modern Node.js support. This migration ensures compatibility with Node.js 18.18.2 + Electron 36.4.0.
+
+## Key Implementation Files
+
+### Core Hook Implementation
+- [src/main/iohook.ts](mdc:src/main/iohook.ts) - Main uiohook-napi implementation
+- [src/config/keys.ts](mdc:src/config/keys.ts) - Keycode mappings for iohook compatibility
+- [src/config/settings.ts](mdc:src/config/settings.ts) - Type definitions and configuration
+- [src/config/strings.ts](mdc:src/config/strings.ts) - String constants for logging
+
+### Package Configuration
+- [release/app/package.json](mdc:release/app/package.json) - Native dependency installation location
+- [package.json](mdc:package.json) - Main package configuration (uiohook-napi should NOT be here)
+
+## Migration Changes Made
+
+### 1. Dependency Management
+- ❌ Removed `iohook@^0.9.3` from main package.json
+- ✅ Added `uiohook-napi@^1.5.4` to release/app/package.json (correct location for native deps)
+- ✅ Removed iohook rebuild configuration
+
+### 2. API Changes
+```typescript
+// OLD (iohook)
+iohook.registerShortcut([trigger], onPress, onRelease);
+iohook.on('mousedown', handler);
+iohook.start();
+iohook.unregisterAllShortcuts();
+
+// NEW (uiohook-napi)
+uIOhook.on('keydown', (event: UiohookKeyboardEvent) => { /* */ });
+uIOhook.on('keyup', (event: UiohookKeyboardEvent) => { /* */ });
+uIOhook.on('mousedown', (event: UiohookMouseEvent) => { /* */ });
+uIOhook.start();
+uIOhook.removeAllListeners('keydown');
+```
+
+### 3. Type System Updates
+- `IOHookBehaviorType` → `UiohookBehaviorType`
+- `IOHookInputType` → `UiohookInputType`
+- Added proper TypeScript interfaces for events
+
+## Installation Rules
+
+### ✅ Correct Installation
+```bash
+cd release/app && npm install uiohook-napi@^1.5.4
+```
+
+### ❌ Incorrect Installation
+```bash
+npm install uiohook-napi  # Don't install in root package.json
+```
+
+## Usage Patterns
+
+### Event Handling
+- Use separate `keydown` and `keyup` listeners instead of registerShortcut
+- Always type event parameters with proper interfaces
+- Implement proper error handling with try-catch blocks
+
+### State Management
+- Use `isHookActive` boolean for tracking hook state
+- Properly clean up listeners in stopIOHook function
+- Handle errors gracefully during start/stop operations
+
+## Compatibility
+- ✅ Node.js 18.18.2
+- ✅ Electron 36.4.0
+- ✅ uiohook-napi 1.5.4
+- ✅ Perfect compatibility for modern Electron apps

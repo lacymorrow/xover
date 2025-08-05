@@ -3,3 +3,81 @@ description:
 globs:
 alwaysApply: false
 ---
+# Development Tools Error Handling
+
+## Electron DevTools Extensions
+
+When working with `electron-devtools-installer`, implement robust error handling to prevent non-critical failures from blocking development.
+
+### Best Practices
+
+File: [debugging.ts](mdc:src/main/debugging.ts)
+
+```javascript
+const installExtensions = async () => {
+  try {
+    const installer = require('electron-devtools-installer');
+    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+    const extensions = ['REACT_DEVELOPER_TOOLS'];
+
+    Logger.info('Installing development extensions...');
+    await installer.default(
+      extensions.map((name) => installer[name]),
+      forceDownload,
+    );
+    Logger.info('Development extensions installed successfully');
+  } catch (error) {
+    // Handle CRX format errors and other extension installation issues gracefully
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage?.includes('Invalid header: Does not start with Cr24')) {
+      Logger.warn(
+        'Chrome extension format issue - this is non-critical and app will continue normally',
+      );
+    } else {
+      Logger.warn('Failed to install development extensions:', errorMessage);
+    }
+  }
+};
+```
+
+### Error Types to Handle
+
+1. **CRX Format Errors**: "Invalid header: Does not start with Cr24"
+   - Non-critical Chrome extension download/format issues
+   - App continues to function normally
+   - Log as warning, not error
+
+2. **Network Issues**: Extension download failures
+   - Temporary network connectivity problems
+   - CDN or extension store unavailability
+   - Graceful degradation without blocking app startup
+
+3. **Permission Issues**: File system access problems
+   - Insufficient permissions to install extensions
+   - Locked or read-only directories
+   - Continue without extensions rather than crash
+
+### TypeScript Error Handling Pattern
+
+Always handle unknown error types properly:
+
+```javascript
+// ✅ Correct - Handle unknown error type
+const errorMessage = error instanceof Error ? error.message : String(error);
+
+// ❌ Avoid - Direct property access on unknown type
+error.message  // TypeScript error: 'error' is of type 'unknown'
+```
+
+### Logging Strategy
+
+- Use `Logger.info()` for successful operations
+- Use `Logger.warn()` for non-critical failures
+- Use `Logger.error()` only for critical failures that affect core functionality
+- Provide helpful context about whether issues are critical or non-critical
+
+### Development vs Production
+
+- Extension installation should only occur in development mode (`is.debug`)
+- Production builds should skip extension installation entirely
+- Reference: [startup.ts](mdc:src/main/startup.ts) for conditional loading

@@ -3,3 +3,97 @@ description:
 globs:
 alwaysApply: false
 ---
+# Input Handling Patterns
+
+## Overview
+CrossOver uses global input hooks via uiohook-napi for mouse and keyboard actions while the crosshair is active.
+
+## Core Implementation
+- [src/main/iohook.ts](mdc:src/main/iohook.ts) - Main input hook implementation
+- [src/config/keys.ts](mdc:src/config/keys.ts) - Keycode mappings and constants
+- [src/config/settings.ts](mdc:src/config/settings.ts) - Input behavior configuration
+
+## Input Action Types
+
+### 1. Follow Mouse
+- Keeps crosshair centered on mouse cursor
+- Uses `mousemove` events to update window position
+- Enabled via `followMouseEnabled` setting
+
+### 2. Secondary Actions
+- Temporary crosshair modifications when bind is active
+- Supports both keyboard keys and mouse buttons
+- Two behaviors: `toggle` (press to toggle) or `hold` (active while held)
+
+### 3. Tilt Actions
+- Rotates crosshair by specified angle
+- Separate binds for left tilt (negative angle) and right tilt (positive angle)
+- Configurable tilt angle and behavior
+
+## Event Handling Pattern
+
+### Keyboard Events
+```typescript
+// Register keydown listener
+uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
+  if (event.keycode === trigger) {
+    // Handle key press
+  }
+});
+
+// Register keyup listener for hold behavior
+uIOhook.on('keyup', (event: UiohookKeyboardEvent) => {
+  if (event.keycode === trigger) {
+    // Handle key release
+  }
+});
+```
+
+### Mouse Events
+```typescript
+// Mouse button events
+uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
+  if (event.button === button) {
+    // Handle mouse press
+  }
+});
+
+uIOhook.on('mouseup', (event: UiohookMouseEvent) => {
+  if (event.button === button) {
+    // Handle mouse release
+  }
+});
+```
+
+## Behavior Types
+
+### Toggle Behavior
+- Single press toggles action on/off
+- Subsequent presses reverse the state
+- Used for persistent state changes
+
+### Hold Behavior
+- Action active only while key/button is held
+- Automatically deactivates on release
+- Used for temporary state changes
+
+## Keycode Mapping
+- [src/config/keys.ts](mdc:src/config/keys.ts) contains `iohookKeycodes` mapping
+- Maps human-readable keys to numeric keycodes
+- Maintains compatibility with original iohook keycodes
+
+## State Management
+- Actions update global state via [src/main/store-actions.ts](mdc:src/main/store-actions.ts)
+- State changes trigger crosshair visual updates
+- State persists across hook start/stop cycles
+
+## Settings Integration
+- Input settings managed in [src/renderer/components/pages/settings/general/SettingsActions.tsx](mdc:src/renderer/components/pages/settings/general/SettingsActions.tsx)
+- Bind configuration uses [src/renderer/components/input/InputMouseKeyboardBind.tsx](mdc:src/renderer/components/input/InputMouseKeyboardBind.tsx)
+- Settings types defined in [src/config/settings.ts](mdc:src/config/settings.ts)
+
+## Security Considerations
+- Input hooks require system accessibility permissions
+- Hooks only active when crosshair window is open
+- Graceful fallback when permissions denied
+- Error handling prevents crashes from hook failures

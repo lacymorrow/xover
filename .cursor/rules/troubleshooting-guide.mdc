@@ -3,3 +3,124 @@ description:
 globs:
 alwaysApply: false
 ---
+# Troubleshooting Guide
+
+## Common Build Issues and Solutions
+
+### 1. npm Install Failures
+
+**Error**: `npm error Invalid property "node"`
+
+**Cause**: Invalid engine specifications or devEngines property in package.json
+
+**Solution**:
+1. Fix engine specification format: `">=14.0.0 <=20.0.0"` instead of `">= 14.x <= 18.x"`
+2. Remove invalid `devEngines` property entirely
+3. Reference: [package.json](mdc:package.json)
+
+### 2. Webpack Build Failures
+
+**Error**: `Cannot find module 'ajv/dist/compile/codegen'`
+
+**Cause**: Version incompatibility between ajv and ajv-keywords packages, often with Node.js 24+
+
+**Solution**:
+1. Switch to Node.js 18: `nvm use 18`
+2. Clear node_modules: `rm -rf node_modules package-lock.json`
+3. Reinstall dependencies: `npm install`
+
+### 3. Module Resolution Errors
+
+**Error**: `Cannot find module '/path/to/webpack.config.base'`
+
+**Cause**: Stricter ESM module resolution in Node.js 24+
+
+**Solution**:
+1. Use Node.js 18 for better compatibility
+2. Use `require()` for JSON imports in webpack configs:
+   ```javascript
+   // ✅ Correct
+   const { dependencies } = require('../../package.json');
+
+   // ❌ Problematic with Node.js 24+
+   import { dependencies } from '../../package.json';
+   ```
+
+### 4. Chrome Extension Errors
+
+**Error**: `Invalid header: Does not start with Cr24`
+
+**Cause**: electron-devtools-installer trying to install corrupted Chrome extension
+
+**Solution**: Implemented in [debugging.ts](mdc:src/main/debugging.ts)
+- Add comprehensive error handling
+- Log as warning, not error (non-critical issue)
+- App continues to function normally
+
+### 5. Sass Deprecation Warnings
+
+**Error**: `The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0`
+
+**Cause**: sass-loader using legacy API instead of modern API
+
+**Solution**: Configure sass-loader with modern API in webpack configs:
+```javascript
+{
+  loader: 'sass-loader',
+  options: {
+    api: 'modern',
+  },
+}
+```
+Applied in: [webpack.config.renderer.dev.ts](mdc:.erb/configs/webpack.config.renderer.dev.ts), [webpack.config.renderer.prod.ts](mdc:.erb/configs/webpack.config.renderer.prod.ts)
+
+## Environment Setup
+
+### Required Node.js Version
+- **Recommended**: Node.js 18.x
+- **Avoid**: Node.js 24+ (stricter ESM resolution)
+- **Install**: `nvm install 18 && nvm use 18`
+
+### Development Workflow
+1. Ensure Node.js 18 is active: `node -v` should show v18.x.x
+2. Install dependencies: `npm install`
+3. Build DLL: `npm run build:dll`
+4. Start development: `npm start`
+
+## Quick Fixes
+
+### Reset Development Environment
+```bash
+# Switch to Node.js 18
+nvm use 18
+
+# Clean install
+rm -rf node_modules package-lock.json
+npm install
+
+# Rebuild DLL
+npm run build:dll
+
+# Start development
+npm start
+```
+
+### Check for Common Issues
+1. Node.js version: `node -v` (should be 18.x.x)
+2. Package.json engines: No `devEngines`, valid semver in `engines`
+3. Webpack configs: Using `require()` for JSON imports
+4. Sass loader: Using `api: 'modern'` option
+
+## Prevention
+
+### Before Making Changes
+- Always use Node.js 18 for development
+- Test builds after dependency updates
+- Keep webpack configurations consistent
+
+### Code Review Checklist
+- [ ] Node.js version compatibility maintained
+- [ ] No invalid package.json properties
+- [ ] Proper error handling for development tools
+- [ ] Modern Sass API configuration
+- [ ] CommonJS imports for JSON in webpack configs

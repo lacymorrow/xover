@@ -3,3 +3,102 @@ description:
 globs:
 alwaysApply: false
 ---
+# Webpack Sass/SCSS Configuration
+
+## Modern Sass API Usage
+
+Always configure `sass-loader` to use the modern API to avoid deprecation warnings and ensure compatibility with future Dart Sass versions.
+
+### Correct Configuration Pattern
+
+```javascript
+{
+  loader: 'sass-loader',
+  options: {
+    api: 'modern',  // ✅ Use modern API
+  },
+}
+```
+
+### Avoid Legacy Configuration
+```javascript
+'sass-loader'  // ❌ Uses deprecated legacy API
+```
+
+## Webpack Configuration Files
+
+### Development Config
+File: [webpack.config.renderer.dev.ts](mdc:.erb/configs/webpack.config.renderer.dev.ts)
+
+Configure sass-loader for both module and regular SCSS files:
+
+```javascript
+// For CSS modules
+{
+  test: /\.s?(c|a)ss$/,
+  use: [
+    'style-loader',
+    {
+      loader: 'css-loader',
+      options: {
+        modules: true,
+        sourceMap: true,
+        importLoaders: 1,
+      },
+    },
+    {
+      loader: 'sass-loader',
+      options: {
+        api: 'modern',
+      },
+    },
+  ],
+  include: /\.module\.s?(c|a)ss$/,
+}
+
+// For regular SCSS files
+{
+  test: /\.s?css$/,
+  use: [
+    'style-loader',
+    'css-loader',
+    {
+      loader: 'sass-loader',
+      options: {
+        api: 'modern',
+      },
+    },
+    'postcss-loader',
+  ],
+  exclude: /\.module\.s?(c|a)ss$/,
+}
+```
+
+### Production Config
+File: [webpack.config.renderer.prod.ts](mdc:.erb/configs/webpack.config.renderer.prod.ts)
+
+Similar pattern but with `MiniCssExtractPlugin.loader` instead of `style-loader`:
+
+```javascript
+{
+  test: /\.s?(a|c)ss$/,
+  use: [
+    MiniCssExtractPlugin.loader,
+    'css-loader',
+    {
+      loader: 'sass-loader',
+      options: {
+        api: 'modern',
+      },
+    },
+    'postcss-loader',
+  ],
+  exclude: /\.module\.s?(c|a)ss$/,
+}
+```
+
+## Benefits
+- Eliminates "Deprecation The legacy JS API is deprecated" warnings
+- Future-proofed against Dart Sass 2.0.0
+- Maintains backward compatibility
+- No functional changes to CSS compilation

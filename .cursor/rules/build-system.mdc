@@ -3,3 +3,43 @@ description:
 globs:
 alwaysApply: false
 ---
+# Build System Configuration
+
+## Node.js Version Compatibility
+
+This project requires **Node.js 18.x** for optimal compatibility. Node.js 24+ introduces stricter ESM module resolution that causes issues with the current webpack and TypeScript configuration.
+
+### Key Requirements
+- Use Node.js 18.x (install via `nvm install 18 && nvm use 18`)
+- Avoid Node.js 24+ due to stricter ESM module resolution
+- Engine specification in [package.json](mdc:package.json) should use semantic version ranges like `">=14.0.0 <=20.0.0"`
+
+### Common Issues Fixed
+1. **Invalid package.json engines**: Use proper semver format instead of `">= 14.x <= 18.x"`
+2. **devEngines property**: Remove invalid `devEngines` property that causes npm failures
+3. **ESM import issues**: Use `require()` for JSON imports in webpack configs instead of ESM imports
+
+## Webpack Configuration Patterns
+
+### JSON Imports in Webpack Configs
+Always use CommonJS `require()` for JSON imports in webpack configuration files:
+
+```javascript
+// ✅ Correct
+const { dependencies } = require('../../package.json');
+
+// ❌ Avoid - causes issues with Node.js 18+
+import { dependencies } from '../../package.json';
+```
+
+### Module Resolution
+- Keep imports without file extensions for TypeScript files in webpack configs
+- Use Node.js 18 for consistent module resolution behavior
+- Reference: [webpack.config.base.ts](mdc:.erb/configs/webpack.config.base.ts), [webpack.config.renderer.dev.dll.ts](mdc:.erb/configs/webpack.config.renderer.dev.dll.ts)
+
+## Build Commands
+- `npm run build:dll` - Build development DLL
+- `npm run build` - Build main and renderer processes
+- `npm start` - Start development server
+
+Always ensure Node.js 18 is active before running build commands.

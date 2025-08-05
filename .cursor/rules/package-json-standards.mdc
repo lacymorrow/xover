@@ -3,3 +3,115 @@ description:
 globs:
 alwaysApply: false
 ---
+# Package.json Standards and Best Practices
+
+## Engine Specifications
+
+### Correct Format
+Always use semantic versioning ranges for Node.js engine specifications:
+
+```json
+{
+  "engines": {
+    "node": ">=14.0.0 <=20.0.0"
+  }
+}
+```
+
+### Avoid Invalid Formats
+```json
+{
+  "engines": {
+    "node": ">= 14.x <= 18.x"  // ❌ Invalid - causes npm errors
+  }
+}
+```
+
+## Invalid Properties
+
+### Properties to Avoid
+- `devEngines` - Not a valid npm package.json property, causes "Invalid property" errors
+- Remove entirely if present
+
+### Before (Problematic)
+```json
+{
+  "devEngines": {
+    "node": ">=14.x",
+    "npm": ">=7.x"
+  }
+}
+```
+
+### After (Fixed)
+```json
+// Remove devEngines entirely
+```
+
+## Script Organization
+
+Reference: [package.json](mdc:package.json)
+
+### Build Scripts
+- `build:dll` - Development DLL build
+- `build:main` - Main process build
+- `build:renderer` - Renderer process build
+- `build` - Combined main and renderer build
+
+### Development Scripts
+- `start` - Development server
+- `start:main` - Main process in development
+- `start:renderer` - Renderer development server
+
+### Quality Scripts
+- `lint` - ESLint checking
+- `lint:fix` - ESLint with auto-fix
+- `test` - Jest testing
+
+## Dependencies Structure
+
+### Main Dependencies
+Production dependencies that ship with the app go in `dependencies`.
+
+### Development Dependencies
+Build tools, linters, and development-only packages go in `devDependencies`:
+- webpack and related tools
+- TypeScript and type definitions
+- ESLint and prettier
+- Testing frameworks
+
+### Native Dependencies
+Native Node.js dependencies should be installed in `release/app/package.json` instead of the root package.json to avoid webpack bundling issues.
+
+## Version Management
+
+### Exact Versions for Critical Tools
+Use exact versions for build-critical tools:
+- `"electron": "12.2.3"` (exact version)
+- `"typescript": "^5.3.3"` (compatible versions)
+
+### Flexible Versions for Libraries
+Use compatible version ranges for libraries that receive regular updates:
+- `"react": "^18.2.0"`
+- `"webpack": "^5.90.1"`
+
+## Common Issues and Solutions
+
+1. **npm install failures**: Check for invalid engine specifications and devEngines
+2. **Module resolution errors**: Ensure Node.js version compatibility
+3. **Build failures**: Verify webpack dependencies are in devDependencies
+4. **Native dependency issues**: Move to release/app/package.json
+
+## Repository Information
+
+Always include complete repository information:
+```json
+{
+  "repository": "lacymorrow/crossover",
+  "homepage": "https://lacymorrow.github.io/crossover",
+  "bugs": {
+    "url": "https://github.com/lacymorrow/crossover/issues",
+    "email": "me@lacymorrow.com"
+  }
+}
+```

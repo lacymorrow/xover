@@ -3,3 +3,154 @@ description:
 globs:
 alwaysApply: false
 ---
+# TypeScript Patterns and Conventions
+
+## Type Definitions
+
+### Settings Types
+- [src/config/settings.ts](mdc:src/config/settings.ts) defines all configuration types
+- Use descriptive type names: `UiohookBehaviorType`, `UiohookInputType`
+- Export types for use across the application
+
+### Event Interface Patterns
+For native dependencies without TypeScript definitions, create local interfaces:
+
+```typescript
+// Local type definitions for uiohook-napi events
+interface UiohookKeyboardEvent {
+  altKey: boolean;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
+  keycode: number;
+}
+
+interface UiohookMouseEvent {
+  altKey: boolean;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
+  x: number;
+  y: number;
+  button: number;
+  clicks: number;
+}
+```
+
+## Native Module Import Patterns
+
+### Using require() for Native Dependencies
+When TypeScript can't find module declarations:
+
+```typescript
+// Use require with ESLint disable
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { uIOhook } = require('uiohook-napi');
+```
+
+### Type Assertions
+Use explicit type assertions for event handlers:
+
+```typescript
+uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
+  // TypeScript now knows event properties
+  if (event.keycode === trigger) {
+    // Handle event
+  }
+});
+```
+
+## State Management Types
+
+### Action State Types
+- Define state shapes explicitly in [src/config/settings.ts](mdc:src/config/settings.ts)
+- Use readonly properties where appropriate
+- Provide default values for all state
+
+```typescript
+export type ActionStateType = {
+  tilt: number;
+  secondary: boolean;
+};
+
+export const DEFAULT_ACTION_STATE: ActionStateType = {
+  tilt: 0,
+  secondary: false,
+};
+```
+
+## Generic Patterns
+
+### Settings Update Pattern
+Use Partial<T> for flexible setting updates:
+
+```typescript
+const handleChangeSetting = (setting: Partial<SettingsType>) => {
+  window.electron.setSettings(setting);
+};
+```
+
+### Type Guards and Validation
+Validate input types, especially for keycode mappings:
+
+```typescript
+if (!(input in iohookKeycodes)) {
+  return; // Type guard
+}
+
+const trigger = parseInt(
+  iohookKeycodes[input as keyof typeof iohookKeycodes],
+  10,
+);
+```
+
+## Error Handling Patterns
+
+### Try-Catch with Typed Errors
+```typescript
+try {
+  uIOhook.start();
+  isHookActive = true;
+} catch (error) {
+  Logger.error('Failed to start uiohook-napi:', error);
+}
+```
+
+## Component Props Patterns
+
+### Settings Component Props
+Define clear prop interfaces for settings components:
+
+```typescript
+interface SettingsComponentProps {
+  settings: SettingsType;
+  onChange: (setting: Partial<SettingsType>) => void;
+}
+```
+
+## Naming Conventions
+
+### Type Naming
+- Use `Type` suffix for union types: `UiohookBehaviorType`
+- Use `Interface` suffix for object interfaces: `SettingsInterface` (optional)
+- Use descriptive names that indicate purpose
+
+### Event Handler Naming
+- Use verb + noun pattern: `handleChangeSetting`, `registerToggleHold`
+- Include action type in name: `registerToggleHoldShortcut` vs `registerToggleHoldMouse`
+
+## Import/Export Patterns
+
+### Selective Imports
+Import only what you need from config files:
+
+```typescript
+import { UiohookBehaviorType, SettingsType } from '@/config/settings';
+```
+
+### Type-only Imports
+When importing only for types:
+
+```typescript
+import type { UiohookKeyboardEvent } from './types';
+```
