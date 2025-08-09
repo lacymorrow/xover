@@ -1,4 +1,5 @@
 import Logger from 'electron-log';
+import accessibility from './accessibility';
 
 import { iohookKeycodes } from '../config/keys';
 import { $iohook } from '../config/strings';
@@ -188,6 +189,16 @@ export const startIOHook = async () => {
 		return;
 	}
 
+  // macOS accessibility permissions are required for global input hooks
+  if (!accessibility.checkAccessibilityPermissions()) {
+    Logger.warn('iohook features require accessibility permissions');
+    accessibility.showAccessibilityDisabledNotification();
+    const granted = await accessibility.requestAccessibilityPermissions();
+    if (!granted) {
+      return;
+    }
+  }
+
 	const {
 		followMouseEnabled,
 		secondaryBind,
@@ -197,7 +208,15 @@ export const startIOHook = async () => {
 		tiltAngle,
 		tiltBehavior,
 		tiltLeftBind,
-		tiltRightBind,
+    tiltRightBind,
+    // new actions
+    hideOnMouseBind,
+    hideOnMouseBehavior,
+    hideOnKeyBind,
+    adsResizeEnabled,
+    adsResizeBind,
+    adsResizeBehavior,
+    adsResizeSize,
 	} = getSettings();
 
 	// Validate tilt settings
@@ -207,7 +226,7 @@ export const startIOHook = async () => {
 	}
 
 	if (!followMouseEnabled && !secondaryBind && !tiltEnabled) {
-		return;
+    // still allow other features below
 	}
 
 	Logger.status($iohook.enabled);
@@ -237,6 +256,88 @@ export const startIOHook = async () => {
 			} else if (input === 'mouse') {
 				registerToggleHoldMouseTilt(trigger, tiltAngle * -1, tiltBehavior);
 			}
+
+  // HIDE ON MOUSE
+  if (hideOnMouseBind) {
+    const [input, trigger] = hideOnMouseBind.split(':');
+    if (input === 'mouse') {
+      if (hideOnMouseBehavior === 'toggle') {
+        uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
+          if (event.button === parseInt(trigger, 10)) {
+            const hidden = getActionState().secondary;
+            setActionStateKey('secondary', !hidden);
+            if (windows.mainWindow && !windows.mainWindow.isDestroyed()) {
+              windows.mainWindow.webContents.send('set_crosshair_opacity', !hidden ? 0 : 1);
+            }
+          }
+        });
+      } else {
+        uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
+          if (event.button === parseInt(trigger, 10)) {
+            setActionStateKey('secondary', true);
+            windows.mainWindow?.webContents.send('set_crosshair_opacity', 0);
+          }
+        });
+        uIOhook.on('mouseup', (event: UiohookMouseEvent) => {
+          if (event.button === parseInt(trigger, 10)) {
+            setActionStateKey('secondary', false);
+            windows.mainWindow?.webContents.send('set_crosshair_opacity', 1);
+          }
+        });
+      }
+    }
+  }
+
+  // HIDE ON KEY (single key only)
+  if (hideOnKeyBind) {
+    const [input, trigger] = hideOnKeyBind.split(':');
+    if (input === 'keyboard') {
+      const keycode = parseInt(iohookKeycodes[trigger as keyof typeof iohookKeycodes] || '0', 10);
+      if (keycode) {
+        uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
+          if (event.keycode === keycode) {
+            setActionStateKey('secondary', true);
+            windows.mainWindow?.webContents.send('set_crosshair_opacity', 0);
+          }
+        });
+        uIOhook.on('keyup', (event: UiohookKeyboardEvent) => {
+          if (event.keycode === keycode) {
+            setActionStateKey('secondary', false);
+            windows.mainWindow?.webContents.send('set_crosshair_opacity', 1);
+          }
+        });
+      }
+    }
+  }
+
+  // ADS RESIZE (mouse bind)
+  if (adsResizeEnabled && adsResizeBind) {
+    const [input, trigger] = adsResizeBind.split(':');
+    if (input === 'mouse') {
+      const newSize = adsResizeSize;
+      if (adsResizeBehavior === 'toggle') {
+        uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
+          if (event.button === parseInt(trigger, 10)) {
+            const current = getActionState().tilt; // use action state as scratch if needed
+            const toggled = current === -999 ? 0 : -999; // hacky toggle marker
+            setActionStateKey('tilt', toggled);
+            windows.mainWindow?.webContents.send('set_crosshair_size', toggled === -999 ? newSize : undefined);
+          }
+        });
+      } else {
+        uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
+          if (event.button === parseInt(trigger, 10)) {
+            windows.mainWindow?.webContents.send('set_crosshair_size', newSize);
+          }
+        });
+        uIOhook.on('mouseup', (event: UiohookMouseEvent) => {
+          if (event.button === parseInt(trigger, 10)) {
+            windows.mainWindow?.webContents.send('set_crosshair_size');
+          }
+        });
+      }
+    }
+  }
 		}
 
 		if (tiltRightBind) {

@@ -1,5 +1,4 @@
 import { ProgressInfo, autoUpdater } from 'electron-updater';
-
 import { shell } from 'electron';
 import Logger from 'electron-log/main';
 import { $autoUpdate } from '../config/strings';
@@ -14,116 +13,82 @@ import windows from './windows';
 const FOUR_HOURS = 1000 * 60 * 60 * 4;
 
 export class AutoUpdate {
-	constructor() {
-		if (getSetting('allowAutoUpdate')) {
-			Logger.status($autoUpdate.autoUpdate);
+    constructor() {
+        if (!getSetting('allowAutoUpdate')) return;
 
-			// Configure log debugging to file
-			Logger.transports.file.level = 'silly';
-			autoUpdater.logger = Logger;
+        Logger.status($autoUpdate.autoUpdate);
+        Logger.transports.file.level = 'silly';
+        autoUpdater.logger = Logger;
 
-			autoUpdater.checkForUpdatesAndNotify();
-		}
-	}
+        // Wire events
+        autoUpdater.on('update-available', onUpdateAvailable);
+        if (!is.linux) {
+            autoUpdater.on('download-progress', onDownloadProgress);
+            autoUpdater.on('update-downloaded', onUpdateDownloaded);
+        }
+
+        // Initial check and schedule periodic checks
+        autoUpdater.checkForUpdatesAndNotify();
+        setInterval(() => {
+            autoUpdater.checkForUpdates();
+        }, FOUR_HOURS);
+    }
 }
 
 const checkForUpdates = () => {
-	Logger.status($autoUpdate.autoUpdate);
-
-	autoUpdater.checkForUpdatesAndNotify();
+    Logger.status($autoUpdate.autoUpdate);
+    autoUpdater.checkForUpdatesAndNotify();
 };
 
 const install = () => autoUpdater.quitAndInstall();
 
 const onDownloadProgress = (progressObject: ProgressInfo) => {
-	try {
-		let message = `Download speed: ${progressObject.bytesPerSecond}`;
-		message = `${message} - Downloaded ${progressObject.percent}%`;
-		message = `${message} (${progressObject.transferred}/${progressObject.total})`;
-		Logger.info(message);
-
-		// Dock progress bar
-		windows.settingsWindow?.setProgressBar(progressObject.percent / 100); // todo: fix this
-	} catch (error) {
-		Logger.error('onDownloadProgress', error);
-	}
+    try {
+        let message = `Download speed: ${progressObject.bytesPerSecond}`;
+        message = `${message} - Downloaded ${progressObject.percent}%`;
+        message = `${message} (${progressObject.transferred}/${progressObject.total})`;
+        Logger.info(message);
+        windows.settingsWindow?.setProgressBar(progressObject.percent / 100);
+    } catch (error) {
+        Logger.error('onDownloadProgress', error);
+    }
 };
 
 const onUpdateAvailable = () => {
-	try {
-		// Notify user of update
-		notification({
-			title: $autoUpdate.updateAvailable,
-			body: $autoUpdate.updateAvailableBody,
-		});
-
-		sound.play('UPDATE');
-
-		if (is.linux) {
-			dialog.openUpdateDialog(() => {
-				// AutoUpdater.downloadUpdate()
-				shell.openExternal(
-					'https://github.com/lacymorrow/crossover/releases/latest',
-				);
-			});
-		}
-	} catch (error) {
-		Logger.error(error);
-	}
+    try {
+        notification({
+            title: $autoUpdate.updateAvailable,
+            body: $autoUpdate.updateAvailableBody,
+        });
+        sound.play('UPDATE');
+        if (is.linux) {
+            dialog.openUpdateDialog(() => {
+                shell.openExternal('https://github.com/lacymorrow/crossover/releases/latest');
+            });
+        }
+    } catch (error) {
+        Logger.error(error);
+    }
 };
 
 const onUpdateDownloaded = () => {
-	try {
-		windows.settingsWindow?.setProgressBar(-1); // todo: fix this
-		dock.setBadge('!');
-		notification({
-			title: 'CrossOver has been Updated',
-			body: 'Relaunch to take effect',
-		});
-		sound.play('DONE'); // comment if we make notification silent
-	} catch (error) {
-		Logger.error(error);
-	}
+    try {
+        windows.settingsWindow?.setProgressBar(-1);
+        dock.setBadge('!');
+        notification({ title: 'CrossOver has been Updated', body: 'Relaunch to take effect' });
+        sound.play('DONE');
+    } catch (error) {
+        Logger.error(error);
+    }
 };
 
 const update = () => {
-	// We trycatch here because appx throws errors
-	try {
-
-	// Comment this before publishing your first version.
-	// It's commented out as it throws an error if there are no published versions.
-
-	// 	if (getSetting('allowAutoUpdate')) {
-	// 		Logger.info('Setting: Automatic Updates');
-
-	// 		autoUpdater.logger = Logger;
-	// 		autoUpdater.on('update-available', onUpdateAvailable);
-
-	// 		if (is.linux) {
-	// 			return;
-	// 		}
-
-	// 		autoUpdater.on('download-progress', onDownloadProgress);
-
-	// 		autoUpdater.on('update-downloaded', onUpdateDownloaded);
-
-	// 		setInterval(() => {
-	// 			autoUpdater.checkForUpdates();
-	// 		}, FOUR_HOURS);
-
-	// 		autoUpdater.checkForUpdatesAndNotify();
-	// 	}
-	
-	} catch (error) {
-		Logger.error(error);
-	}
+    try {
+        if (!getSetting('allowAutoUpdate')) return;
+        autoUpdater.checkForUpdatesAndNotify();
+    } catch (error) {
+        Logger.error(error);
+    }
 };
 
-export default {
-	checkForUpdates,
-	install,
-	onDownloadProgress,
-	onUpdateAvailable,
-	onUpdateDownloaded,
-	update,
-};
+export default { checkForUpdates, install, onDownloadProgress, onUpdateAvailable, onUpdateDownloaded, update };

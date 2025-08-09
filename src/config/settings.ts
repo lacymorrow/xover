@@ -42,6 +42,17 @@ export interface SettingsType {
 	tiltLeftBind: string;
 	tiltRightBind: string;
 
+  // Hide on inputs
+  hideOnMouseBind: string; // e.g., 'mouse:2'
+  hideOnMouseBehavior: UiohookBehaviorType; // toggle/hold
+  hideOnKeyBind: string; // e.g., 'keyboard:ALT'
+
+  // ADS resize
+  adsResizeEnabled: boolean;
+  adsResizeBind: string; // e.g., 'mouse:2'
+  adsResizeBehavior: UiohookBehaviorType; // toggle/hold
+  adsResizeSize: number; // 1-100
+
 	transitionDuration: number; // ms
 
 	isLocked: boolean;
@@ -91,6 +102,15 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	tiltBehavior: 'hold', // toggle/hold
 	tiltLeftBind: '',
 	tiltRightBind: '',
+
+  hideOnMouseBind: '',
+  hideOnMouseBehavior: 'hold',
+  hideOnKeyBind: '',
+
+  adsResizeEnabled: false,
+  adsResizeBind: '',
+  adsResizeBehavior: 'hold',
+  adsResizeSize: 50,
 
 	transitionDuration: 100, // ms
 

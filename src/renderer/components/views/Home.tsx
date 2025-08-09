@@ -6,9 +6,29 @@ import { useGlobalContext } from '@/renderer/context/global-context';
 import styles from '@/renderer/styles/CssModuleExample.module.scss';
 import { Link } from 'react-router-dom';
 import { InputComboboxForm } from '../input/InputComboboxForm';
+import { useEffect } from 'react';
 
 export function Home() {
 	const { settings, setSettings } = useGlobalContext();
+  useEffect(() => {
+    const handleSize = (_: any, size?: number) => {
+      if (typeof size === 'number') {
+        window.electron.setWindowState({ crosshairSize: size });
+      } else {
+        window.electron.ipcRenderer.send('renderer-ready');
+      }
+    };
+    const handleOpacity = (_: any, value: number) => {
+      window.electron.setWindowState({ crosshairOpacity: value ? 100 : 0 });
+    };
+
+    window.electron.ipcRenderer.on('set_crosshair_size', handleSize);
+    window.electron.ipcRenderer.on('set_crosshair_opacity', handleOpacity);
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('set_crosshair_size');
+      window.electron.ipcRenderer.removeAllListeners('set_crosshair_opacity');
+    };
+  }, []);
 
 	const handleThemeChange = (value: string) => {
 		setSettings({ theme: value as 'light' | 'dark' | 'system' });

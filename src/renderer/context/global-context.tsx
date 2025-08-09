@@ -79,6 +79,11 @@ export function GlobalContextProvider({
 	const [crosshairImages, setCrosshairImages] = React.useState<ItemType[]>([]);
 
 	useEffect(() => {
+    // Open chooser request from main
+    window.electron.ipcRenderer.on('open-chooser', async () => {
+      // Ask main to open chooser window
+      window.electron.openChooser?.();
+    });
 		// Create handler for receiving asynchronous messages from the main process
 		const synchronizeAppState = async () => {
 			console.log(ipcChannels.APP_UPDATED);
@@ -187,6 +192,7 @@ export function GlobalContextProvider({
 			window.electron.ipcRenderer.removeAllListeners(
 				ipcChannels.APP_NOTIFICATION,
 			);
+        window.electron.ipcRenderer.removeAllListeners('open-chooser');
 		};
 	}, [settings.allowSounds]);
 

@@ -15,6 +15,7 @@ import {
 	testNotificationMenuItem,
 	testSoundMenuItem,
 } from './menu-items';
+import dialog from './dialog';
 import { getSetting, setSettings } from './store-actions';
 import { is } from './util';
 
@@ -72,6 +73,16 @@ export default class MenuBuilder {
 		label: 'Settings',
 		submenu: [
 			autoUpdateMenuItem,
+      {
+        label: 'Choose Crosshair…',
+        id: 'chooseCrosshair',
+        click: () => {
+          windows.settingsWindow?.hide();
+          windows.mainWindow?.webContents.send('open-chooser');
+          // Fallback open chooser window
+          // open via IPC in case renderer listens, else main creates window directly
+        },
+      },
 			{
 				label: 'Show Dock Icon',
 				type: 'checkbox',
@@ -258,14 +269,26 @@ export default class MenuBuilder {
 			],
 		};
 
-		const subMenuView =
+    const subMenuFile: MenuItemConstructorOptions = {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Custom Image...',
+          click: () => dialog.openImageDialog(),
+          id: 'customImage',
+        },
+      ],
+    };
+
+    const subMenuView =
 			process.env.NODE_ENV === 'development' ||
 			process.env.DEBUG_PROD === 'true'
 				? subMenuViewDev
 				: subMenuViewProd;
 
-		return [
+    return [
 			subMenuAbout,
+      subMenuFile,
 			subMenuEdit,
 			subMenuView,
 			subMenuWindow,
@@ -277,26 +300,16 @@ export default class MenuBuilder {
 
 	buildDefaultTemplate() {
 		const templateDefault = [
-			{
-				label: '&File',
-				submenu: [
-					{
-						label: '&Open',
-						accelerator: 'Ctrl+O',
-						id: 'open',
-					},
-					{
-						label: '&Close',
-						accelerator: 'Ctrl+W',
-						click: () => {
-							const focusedWindow =
-								BrowserWindow.getFocusedWindow() || this.mainWindow;
-							focusedWindow.close();
-						},
-						id: 'close',
-					},
-				],
-			},
+      {
+        label: '&File',
+        submenu: [
+          {
+            label: 'Custom Image...',
+            click: () => dialog.openImageDialog(),
+            id: 'customImage',
+          },
+        ],
+      },
 			{
 				label: '&View',
 				submenu:

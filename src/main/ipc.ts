@@ -4,7 +4,7 @@ import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 import { getOS } from '../utils/getOS';
 import autoUpdate from './auto-update';
-import { createChildWindow } from './create-window';
+import { createChildWindow, createChooserWindow } from './create-window';
 import kb from './keyboard';
 import { notification } from './notifications';
 import { rendererPaths } from './paths';
@@ -123,7 +123,7 @@ export default {
 			shell.openExternal(url);
 		});
 
-		// Open a child window
+    // Open a child window
 		ipcMain.on(ipcChannels.OPEN_CHILD_WINDOW, async () => {
 			if (!windows.childWindow || windows.childWindow.isDestroyed()) {
 				windows.childWindow = await createChildWindow();
@@ -131,6 +131,15 @@ export default {
 				windows.childWindow.focus();
 			}
 		});
+
+    // Open the chooser window
+    ipcMain.on('open-chooser-window', async () => {
+      if (!windows.chooserWindow || windows.chooserWindow.isDestroyed()) {
+        windows.chooserWindow = await createChooserWindow();
+      } else {
+        windows.chooserWindow.focus();
+      }
+    });
 
 		ipcMain.on(ipcChannels.OPEN_SETTINGS, () => {
 			openSettingsWindow();

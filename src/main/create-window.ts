@@ -376,3 +376,37 @@ export const createChildWindow = async () => {
 
 	return window;
 };
+
+export const createChooserWindow = async () => {
+  if (windows.chooserWindow && !windows.chooserWindow.isDestroyed()) {
+    return windows.chooserWindow;
+  }
+
+  const mainWindowBounds = windows.mainWindow?.getBounds();
+  const options: BrowserWindowConstructorOptions = {
+    parent: windows.mainWindow ?? undefined,
+    modal: false,
+    show: false,
+    frame: true,
+    width: 800,
+    height: 560,
+    x: mainWindowBounds ? mainWindowBounds.x + 50 : undefined,
+    y: mainWindowBounds ? mainWindowBounds.y + (mainWindowBounds.height ?? 0) + 10 : undefined,
+  };
+
+  const window = createWindow('chooser', options);
+
+  window.on('ready-to-show', () => {
+    window.show();
+  });
+
+  window.on('closed', () => {
+    windows.chooserWindow = null;
+  });
+
+  // Load the window
+  window.loadURL(resolveHtmlPath('chooser.html'));
+
+  windows.chooserWindow = window;
+  return window;
+};

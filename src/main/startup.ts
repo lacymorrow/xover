@@ -18,6 +18,8 @@ import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
 import tray from './tray';
 import { debugInfo, is } from './util';
+import { AutoUpdate } from './auto-update';
+import accessibility from './accessibility';
 import { scanImages } from './utils/getImages';
 
 export const startup = () => {
@@ -34,7 +36,7 @@ export const startup = () => {
 		// Initialize the error handler
 		errorHandling.initialize();
 
-		refreshSettingsOnAppStart();
+    refreshSettingsOnAppStart();
 
 		// Enable electron debug and source map support
 		debugging.initialize();
@@ -42,7 +44,10 @@ export const startup = () => {
 		// App CLI flags
 		commandLineFlags.initialize();
 
-		protocol.register();
+    protocol.register();
+
+    // macOS accessibility permissions (non-blocking)
+    accessibility.initializeAccessibilityCheck();
 
 		// Register app listeners, e.g. `app.on()`
 		appListeners.register();
@@ -84,10 +89,9 @@ export const ready = async () => {
 	// Setup Tray
 	tray.initialize();
 
-	// Auto updates
-	// eslint-disable-next-line no-new
-	// new AutoUpdate();
-	// TODO: Uncomment this
+  // Auto updates
+  // eslint-disable-next-line no-new
+  new AutoUpdate();
 
 	// Idle
 	Logger.status($init.mainIdle);

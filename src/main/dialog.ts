@@ -1,6 +1,8 @@
-import { app, dialog as electronDialog } from 'electron';
+import { app, dialog as electronDialog, shell } from 'electron';
 import path from 'path';
 import { debugInfo, is } from './util';
+import { IMAGE_EXTENSIONS } from '../config/config';
+import { addCrosshairImage, setActiveWindowState } from './store-actions';
 
 const validButtonIndex = (result: any) =>
 	result?.response && typeof result.response === 'number'
@@ -90,9 +92,30 @@ const openUpdateDialog = async (action: Function) => {
 		});
 };
 
+const openImageDialog = async () => {
+  const result = await electronDialog.showOpenDialog({
+    title: 'Select Custom Image',
+    message: 'Choose an image file to load into CrossOver',
+    filters: [
+      {
+        name: 'Images',
+        extensions: IMAGE_EXTENSIONS.map((e) => e.replace('.', '')),
+      },
+    ],
+    properties: ['openFile', 'dontAddToRecent'],
+  });
+
+  const image = result.filePaths?.[0];
+  if (image) {
+    addCrosshairImage(image);
+    setActiveWindowState({ crosshair: image });
+  }
+};
+
 export default {
 	// openMediaDialog,
 	openAboutDialog,
 	// openAlertDialog,
 	openUpdateDialog,
+  openImageDialog,
 };

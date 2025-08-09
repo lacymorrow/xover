@@ -6,6 +6,7 @@ interface WindowsType {
 	mainWindow: WindowInstanceType;
 	childWindow: WindowInstanceType;
 	settingsWindow: WindowInstanceType;
+  chooserWindow: WindowInstanceType;
 	crosshairWindows: { [key: string]: WindowInstanceType };
 	tray: any;
 }
@@ -15,6 +16,7 @@ const windows: WindowsType = {
 	mainWindow: null,
 	childWindow: null,
 	settingsWindow: null,
+  chooserWindow: null,
 	crosshairWindows: {},
 	tray: null,
 };

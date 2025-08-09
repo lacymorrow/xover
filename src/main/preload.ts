@@ -22,6 +22,7 @@ const electronHandler = {
 	playSound: (sound: string) => ipcRenderer.send(ipcChannels.PLAY_SOUND, sound),
 	openFile: (file: string) => ipcRenderer.send(ipcChannels.OPEN_FILE, file),
 	openUrl: (url: string) => ipcRenderer.send(ipcChannels.OPEN_URL, url),
+  openChooser: () => ipcRenderer.send('open-chooser-window'),
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {
 			if (!channels.includes(channel)) {

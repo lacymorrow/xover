@@ -3,6 +3,7 @@ import path from 'path';
 import { __assets } from './paths';
 import { is } from './util';
 import windows from './windows';
+import dialog from './dialog';
 
 // mac needs dark/light versions
 const systemIcon = () => {
@@ -26,6 +27,10 @@ const initialize = () => {
 	windows.tray = new ElectronTray(getIconPath());
 
 	const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Custom Image...',
+      click: () => dialog.openImageDialog(),
+    },
 		{
 			label: 'Settings...',
 			accelerator: 'Command+R',
