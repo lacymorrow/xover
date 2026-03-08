@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { app, shell } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import EXIT_CODES from '../config/exit-codes';
 import { is } from './util';
 import { $appListeners, $errors, $init } from '../config/strings';

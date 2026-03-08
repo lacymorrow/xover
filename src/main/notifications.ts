@@ -1,5 +1,5 @@
 import { Notification } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import { ipcChannels } from '../config/ipc-channels';
 import { NotificationOptions } from '../types/notification';
 import { getSetting } from './store-actions';

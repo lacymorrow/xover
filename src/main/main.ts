@@ -41,7 +41,7 @@ Todo:
 */
 
 import { app } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import { $errors, $init } from '../config/strings';
 
 import ipc from './ipc';

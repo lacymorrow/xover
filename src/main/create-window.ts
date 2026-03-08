@@ -6,7 +6,7 @@ import {
 	app,
 	shell,
 } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import path from 'path';
 import {
 	APP_ASPECT_RATIO,
