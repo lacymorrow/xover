@@ -1,6 +1,7 @@
 import Logger from 'electron-log';
+import { uIOhook } from 'uiohook-napi';
 
-import { iohookKeycodes } from '../config/keys';
+import { uiohookKeycodes } from '../config/keys';
 import { $iohook } from '../config/strings';
 import {
 	getActionState,
@@ -9,10 +10,8 @@ import {
 } from './store-actions';
 import windows from './windows';
 
-let iohook: any | null = null;
-
 export const registerFollowMouse = () => {
-	iohook.on('mousemove', (event: any) => {
+	uIOhook.on('mousemove', (event) => {
 		if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 			return;
 		}
@@ -27,22 +26,29 @@ export const registerFollowMouse = () => {
 };
 
 const registerToggleHoldShortcutAlt = (input: string, behavior: string) => {
-	if (!(input in iohookKeycodes)) {
+	if (!(input in uiohookKeycodes)) {
 		return;
 	}
 
-	const trigger = iohookKeycodes[input as keyof typeof iohookKeycodes];
+	const trigger = uiohookKeycodes[input as keyof typeof uiohookKeycodes];
 
 	if (behavior === 'toggle') {
-		iohook.registerShortcut([trigger], () =>
-			setActionStateKey('secondary', !getActionState().secondary),
-		);
+		uIOhook.on('keydown', (event) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('secondary', !getActionState().secondary);
+			}
+		});
 	} else if (behavior === 'hold') {
-		iohook.registerShortcut(
-			[trigger],
-			() => setActionStateKey('secondary', true), // Press
-			() => setActionStateKey('secondary', false),
-		);
+		uIOhook.on('keydown', (event) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('secondary', true); // Press
+			}
+		});
+		uIOhook.on('keyup', (event) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('secondary', false); // Release
+			}
+		});
 	}
 };
 
@@ -50,20 +56,20 @@ const registerToggleHoldMouseAlt = (input: string, behavior: string) => {
 	const button = parseInt(input, 10);
 
 	if (behavior === 'toggle') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
 				setActionStateKey('secondary', !getActionState().secondary);
 			}
 		});
 	} else if (behavior === 'hold') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
 				// MACOS Mousedown fired twice for middle mouse
 				setActionStateKey('secondary', !getActionState().secondary);
 			}
 		});
 
-		iohook.on('mouseup', (event: MouseEvent) => {
+		uIOhook.on('mouseup', (event) => {
 			if (event.button === button) {
 				setActionStateKey('secondary', false);
 			}
@@ -76,27 +82,34 @@ const registerToggleHoldShortcutTilt = (
 	tiltAngle: number,
 	tiltBehavior: string,
 ) => {
-	if (!(input in iohookKeycodes)) {
+	if (!(input in uiohookKeycodes)) {
 		return;
 	}
 
-	const trigger = iohookKeycodes[input as keyof typeof iohookKeycodes];
+	const trigger = uiohookKeycodes[input as keyof typeof uiohookKeycodes];
 
 	if (tiltBehavior === 'toggle') {
-		iohook.registerShortcut([trigger], () => {
-			const currentTilt = getActionState().tilt;
-			if (currentTilt && currentTilt !== tiltAngle) {
-				setActionStateKey('tilt', 0);
-			} else {
-				setActionStateKey('tilt', tiltAngle);
+		uIOhook.on('keydown', (event) => {
+			if (event.keycode === trigger) {
+				const currentTilt = getActionState().tilt;
+				if (currentTilt && currentTilt !== tiltAngle) {
+					setActionStateKey('tilt', 0);
+				} else {
+					setActionStateKey('tilt', tiltAngle);
+				}
 			}
 		});
 	} else if (tiltBehavior === 'hold') {
-		iohook.registerShortcut(
-			[trigger],
-			() => setActionStateKey('tilt', tiltAngle), // Press
-			() => setActionStateKey('tilt', 0), // Release
-		);
+		uIOhook.on('keydown', (event) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('tilt', tiltAngle); // Press
+			}
+		});
+		uIOhook.on('keyup', (event) => {
+			if (event.keycode === trigger) {
+				setActionStateKey('tilt', 0); // Release
+			}
+		});
 	}
 };
 
@@ -108,7 +121,7 @@ const registerToggleHoldMouseTilt = (
 	const button = parseInt(input, 10);
 
 	if (tiltBehavior === 'toggle') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
 				const currentTilt = getActionState().tilt;
 				if (currentTilt && currentTilt === tiltAngle) {
@@ -119,7 +132,7 @@ const registerToggleHoldMouseTilt = (
 			}
 		});
 	} else if (tiltBehavior === 'hold') {
-		iohook.on('mousedown', (event: MouseEvent) => {
+		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
 				const currentTilt = getActionState().tilt;
 				if (currentTilt && currentTilt === tiltAngle) {
@@ -130,7 +143,7 @@ const registerToggleHoldMouseTilt = (
 			}
 		});
 
-		iohook.on('mouseup', (event: MouseEvent) => {
+		uIOhook.on('mouseup', (event) => {
 			if (event.button === button) {
 				setActionStateKey('tilt', 0);
 			}
@@ -166,9 +179,6 @@ export const startIOHook = async () => {
 	}
 
 	Logger.status($iohook.enabled);
-
-	// eslint-disable-next-line global-require
-	iohook = iohook || require('iohook');
 
 	// FOLLOW MOUSE
 	if (followMouseEnabled) {
@@ -207,9 +217,7 @@ export const startIOHook = async () => {
 		}
 	}
 
-	// iohook.useRawcode(true);
-	// iohook.start(true);
-	iohook.start();
+	uIOhook.start();
 };
 
 export const stopIOHook = async () => {
@@ -218,14 +226,6 @@ export const stopIOHook = async () => {
 	setActionStateKey('secondary', false);
 	setActionStateKey('tilt', 0);
 
-	if (!iohook) {
-		return;
-	}
-
-	iohook.unregisterAllShortcuts();
-
-	iohook.stop(true);
-	iohook.removeAllListeners('mousedown');
-	iohook.removeAllListeners('mouseup');
-	iohook.removeAllListeners('mousemove');
+	uIOhook.stop();
+	uIOhook.removeAllListeners();
 };

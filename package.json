@@ -37,7 +37,7 @@
 		}
 	],
 	"engines": {
-		"node": ">= 14.x <= 18.x"
+		"node": ">= 18.x"
 	},
 	"main": "./src/main/main.ts",
 	"scripts": {
@@ -147,7 +147,6 @@
 		"electron-store": "^8.1.0",
 		"electron-unhandled": "^4.0.1",
 		"electron-updater": "^6.1.7",
-		"iohook": "^0.9.3",
 		"is-online": "^10.0.0",
 		"lucide-react": "^0.312.0",
 		"next-themes": "^0.2.1",
@@ -195,8 +194,8 @@
 		"css-loader": "^6.9.1",
 		"css-minimizer-webpack-plugin": "^6.0.0",
 		"detect-port": "^1.5.1",
-		"electron": "12.2.3",
-		"electron-builder": "^24.9.1",
+		"electron": "^40.0.0",
+		"electron-builder": "^25.0.0",
 		"electron-devtools-installer": "^3.2.0",
 		"electronmon": "^2.0.2",
 		"eslint": "^8.56.0",
@@ -348,7 +347,7 @@
 		}
 	},
 	"devEngines": {
-		"node": ">=14.x",
+		"node": ">=18.x",
 		"npm": ">=7.x"
 	},
 	"electronmon": {
@@ -360,20 +359,5 @@
 	},
 	"optionalDependencies": {
 		"dmg-license": "^1.0.11"
-	},
-	"iohook": {
-		"targets": [
-			"node-83",
-			"electron-87"
-		],
-		"platforms": [
-			"win32",
-			"darwin",
-			"linux"
-		],
-		"arches": [
-			"x64",
-			"ia32"
-		]
 	}
 }

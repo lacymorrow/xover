@@ -2,6 +2,7 @@
 import { app, shell } from 'electron';
 import Logger from 'electron-log/main';
 import EXIT_CODES from '../config/exit-codes';
+import { is } from './util';
 import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
 import keyboard from './keyboard';
@@ -34,7 +35,9 @@ const register = () => {
 		Logger.status($appListeners.beforeQuit);
 
 		// TODO: BUG - Dock persists after app quits on macOS
-		app.dock.hide();
+		if (is.macos) {
+			app.dock.hide();
+		}
 
 		app.releaseSingleInstanceLock();
 		process.exit(EXIT_CODES.SUCCESS);
