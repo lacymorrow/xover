@@ -151,6 +151,83 @@ const registerToggleHoldMouseTilt = (
 	}
 };
 
+const registerHideOnMouse = (button: number, behavior: string) => {
+	if (behavior === 'toggle') {
+		uIOhook.on('mousedown', (event) => {
+			if (event.button === button) {
+				setActionStateKey('hidden', !getActionState().hidden);
+			}
+		});
+	} else {
+		// hold
+		uIOhook.on('mousedown', (event) => {
+			if (event.button === button) {
+				setActionStateKey('hidden', true);
+			}
+		});
+		uIOhook.on('mouseup', (event) => {
+			if (event.button === button) {
+				setActionStateKey('hidden', false);
+			}
+		});
+	}
+};
+
+const registerHideOnKey = (bind: string) => {
+	const [input, trigger] = bind.split(':');
+
+	if (input === 'keyboard') {
+		if (!(trigger in uiohookKeycodes)) {
+			return;
+		}
+		const keycode = uiohookKeycodes[trigger as keyof typeof uiohookKeycodes];
+		uIOhook.on('keydown', (event) => {
+			if (event.keycode === keycode) {
+				setActionStateKey('hidden', true);
+			}
+		});
+		uIOhook.on('keyup', (event) => {
+			if (event.keycode === keycode) {
+				setActionStateKey('hidden', false);
+			}
+		});
+	} else if (input === 'mouse') {
+		const button = parseInt(trigger, 10);
+		uIOhook.on('mousedown', (event) => {
+			if (event.button === button) {
+				setActionStateKey('hidden', true);
+			}
+		});
+		uIOhook.on('mouseup', (event) => {
+			if (event.button === button) {
+				setActionStateKey('hidden', false);
+			}
+		});
+	}
+};
+
+const registerADSResize = (button: number, behavior: string) => {
+	if (behavior === 'toggle') {
+		uIOhook.on('mousedown', (event) => {
+			if (event.button === button) {
+				setActionStateKey('adsActive', !getActionState().adsActive);
+			}
+		});
+	} else {
+		// hold
+		uIOhook.on('mousedown', (event) => {
+			if (event.button === button) {
+				setActionStateKey('adsActive', true);
+			}
+		});
+		uIOhook.on('mouseup', (event) => {
+			if (event.button === button) {
+				setActionStateKey('adsActive', false);
+			}
+		});
+	}
+};
+
 export const startIOHook = async () => {
 	if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 		return;
@@ -161,6 +238,14 @@ export const startIOHook = async () => {
 		secondaryBind,
 		secondaryBehavior,
 		secondaryActionEnabled,
+		hideOnMouseEnabled,
+		hideOnMouseButton,
+		hideOnMouseBehavior,
+		hideOnKeyEnabled,
+		hideOnKeyBind,
+		adsResizeEnabled,
+		adsResizeButton,
+		adsResizeBehavior,
 		tiltActionEnabled,
 		tiltAngle,
 		tiltBehavior,
@@ -174,7 +259,15 @@ export const startIOHook = async () => {
 		tiltEnabled = true;
 	}
 
-	if (!followMouseEnabled && !secondaryBind && !tiltEnabled) {
+	const needsHook =
+		followMouseEnabled ||
+		secondaryBind ||
+		tiltEnabled ||
+		hideOnMouseEnabled ||
+		(hideOnKeyEnabled && hideOnKeyBind) ||
+		adsResizeEnabled;
+
+	if (!needsHook) {
 		return;
 	}
 
@@ -193,6 +286,21 @@ export const startIOHook = async () => {
 		} else if (input === 'mouse') {
 			registerToggleHoldMouseAlt(trigger, secondaryBehavior);
 		}
+	}
+
+	// HIDE ON MOUSE
+	if (hideOnMouseEnabled) {
+		registerHideOnMouse(hideOnMouseButton, hideOnMouseBehavior);
+	}
+
+	// HIDE ON KEY
+	if (hideOnKeyEnabled && hideOnKeyBind) {
+		registerHideOnKey(hideOnKeyBind);
+	}
+
+	// ADS RESIZE
+	if (adsResizeEnabled) {
+		registerADSResize(adsResizeButton, adsResizeBehavior);
 	}
 
 	// TILT
@@ -224,6 +332,8 @@ export const stopIOHook = async () => {
 	Logger.status($iohook.disabled);
 
 	setActionStateKey('secondary', false);
+	setActionStateKey('hidden', false);
+	setActionStateKey('adsActive', false);
 	setActionStateKey('tilt', 0);
 
 	uIOhook.stop();

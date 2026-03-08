@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 export default function CrosshairApp() {
 	const { settings, windowState } = useGlobalContext();
-	const { tilt } = useActionStateContext();
+	const { tilt, hidden, adsActive } = useActionStateContext();
 
 	useEffect(() => {
 		// Add/remove class to lock/unlock app
@@ -16,14 +16,19 @@ export default function CrosshairApp() {
 			'is-locked',
 		);
 
-		// Properties to apply to renderer every sync
+		// Determine effective opacity and scale based on action state
+		const effectiveOpacity = hidden ? 0 : windowState.crosshairOpacity / 100;
+		const effectiveScale = adsActive
+			? settings.adsResizeSize / 100
+			: windowState.crosshairSize / 100;
 
+		// Properties to apply to renderer every sync
 		const properties = {
 			'--app-bg-color': windowState.backgroundColor,
 			'--app-foreground-color': windowState.foregroundColor,
 			'--app-opacity': !windowState.backgroundColor ? 0.8 : 1, // Background is transparent even if it's not set
-			'--crosshair-opacity': windowState.crosshairOpacity / 100,
-			'--crosshair-scale': windowState.crosshairSize / 100,
+			'--crosshair-opacity': effectiveOpacity,
+			'--crosshair-scale': effectiveScale,
 			'--crosshair-rotation': `${windowState.crosshairRotation}deg`,
 			'--reticle-scale': windowState.reticleSize / 100,
 			'--reticle-color': windowState.reticleColor,
@@ -39,7 +44,7 @@ export default function CrosshairApp() {
 		Object.entries(properties).forEach(([key, value]) => {
 			document.documentElement.style.setProperty(key, String(value));
 		});
-	}, [settings, windowState]);
+	}, [settings, windowState, hidden, adsActive]);
 
 	useEffect(() => {
 		// Tilt

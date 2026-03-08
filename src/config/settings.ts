@@ -35,6 +35,18 @@ export interface SettingsType {
 	secondaryBind: string;
 	secondaryBehavior: IOHookBehaviorType; // toggle/hold
 
+	hideOnMouseEnabled: boolean;
+	hideOnMouseButton: number; // 1=left, 2=right, 3=middle
+	hideOnMouseBehavior: IOHookBehaviorType; // toggle/hold
+
+	hideOnKeyEnabled: boolean;
+	hideOnKeyBind: string; // e.g. "keyboard:Alt"
+
+	adsResizeEnabled: boolean;
+	adsResizeButton: number; // mouse button
+	adsResizeBehavior: IOHookBehaviorType; // toggle/hold
+	adsResizeSize: number; // percentage scale when ADS active
+
 	tiltActionEnabled: boolean;
 	tiltAngle: number;
 	tiltBehavior: IOHookBehaviorType; // toggle/hold
@@ -83,6 +95,18 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	secondaryActionEnabled: false,
 	secondaryBind: '',
 	secondaryBehavior: 'hold', // toggle/hold
+
+	hideOnMouseEnabled: false,
+	hideOnMouseButton: 2, // right click
+	hideOnMouseBehavior: 'hold',
+
+	hideOnKeyEnabled: false,
+	hideOnKeyBind: '',
+
+	adsResizeEnabled: false,
+	adsResizeButton: 2, // right click
+	adsResizeBehavior: 'hold',
+	adsResizeSize: 50, // percentage scale
 
 	tiltActionEnabled: false,
 	tiltAngle: 15,
@@ -187,11 +211,15 @@ export const DEFAULT_WINDOW_STATE = {
 export type ActionStateType = {
 	tilt: number;
 	secondary: boolean;
+	hidden: boolean;
+	adsActive: boolean;
 };
 
 export const DEFAULT_ACTION_STATE: ActionStateType = {
 	tilt: 0,
 	secondary: false,
+	hidden: false,
+	adsActive: false,
 };
 
 // see src/main/keyboard.ts

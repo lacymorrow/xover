@@ -17,6 +17,7 @@ import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
 import tray from './tray';
+import { AutoUpdate } from './auto-update';
 import { debugInfo, is } from './util';
 import { scanImages } from './utils/getImages';
 
@@ -84,8 +85,7 @@ export const ready = async () => {
 
 	// Auto updates
 	// eslint-disable-next-line no-new
-	// new AutoUpdate();
-	// TODO: Uncomment this
+	new AutoUpdate();
 
 	// Idle
 	Logger.status($init.mainIdle);
