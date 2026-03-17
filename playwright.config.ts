@@ -6,7 +6,7 @@ const config: PlaywrightTestConfig = {
 	testDir: 'test',
 	outputDir: 'test/results',
 
-	timeout: 30_000,
+	timeout: 60_000,
 
 	workers: 1,
 

@@ -2,6 +2,7 @@ import { _electron as electron, ElectronApplication, Page } from 'playwright';
 
 let electronApp: ElectronApplication;
 
+export const PRODUCT_NAME = 'CrossOver';
 export const SETTINGS_WINDOW = 'Settings - CrossOver';
 
 export const delays = {
@@ -93,6 +94,20 @@ export const getBounds = async ({
 		windowName,
 	);
 
+/**
+ * Get all window titles (filtered to non-empty, non-DevTools).
+ */
+export const getWindowTitles = async (
+	app: ElectronApplication,
+): Promise<string[]> => {
+	const windows = app.windows();
+	const titles = await Promise.all(windows.map(async (w) => w.title()));
+	return titles.filter((t) => Boolean(t) && t !== 'DevTools');
+};
+
+/**
+ * Inject a visual mouse pointer into the page for debugging.
+ */
 export const visualMouse = async (mainPage: Page): Promise<void> => {
 	await mainPage.addScriptTag({
 		content: `(() => {

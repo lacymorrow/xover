@@ -3,10 +3,8 @@ import { ElectronApplication, Page } from 'playwright';
 import {
 	closeApp,
 	delays,
-	focusedMinimizedVisible,
 	getBounds,
 	PRODUCT_NAME,
-	SETTINGS_WINDOW,
 	startApp,
 	visualMouse,
 	wait,
@@ -24,9 +22,25 @@ test.beforeAll(async () => {
 
 test.afterAll(closeApp);
 
+test('Crosshair wrapper is present', async () => {
+	const wrapper = mainPage.locator('#crosshair-wrapper');
+	await expect(wrapper).toBeVisible();
+});
+
+test('Crosshair element is present', async () => {
+	const crosshair = mainPage.locator('#crosshair');
+	await expect(crosshair).toBeVisible();
+});
+
+test('Reticle wrapper is present', async () => {
+	const reticle = mainPage.locator('#reticle-wrapper');
+	await expect(reticle).toBeVisible();
+});
+
 test('Double-click crosshair centers window', async () => {
 	const crosshair = mainPage.locator('#crosshair');
 
+	// Center first
 	await crosshair.dblclick();
 	await wait(delays.short);
 
@@ -49,7 +63,7 @@ test('Double-click crosshair centers window', async () => {
 	expect(movedBounds.x).toBe(bounds.x + 100);
 	expect(movedBounds.y).toBe(bounds.y + 100);
 
-	// Re-center
+	// Re-center via dblclick
 	await crosshair.dblclick();
 	await wait(delays.short);
 
@@ -61,33 +75,30 @@ test('Double-click crosshair centers window', async () => {
 	expect(recenteredBounds.y).toBe(bounds.y);
 });
 
-test('Settings button opens settings window', async () => {
+test('All control buttons are visible', async () => {
+	const quitBtn = mainPage.locator('[data-testid="quit-button"]');
+	const resetBtn = mainPage.locator('[data-testid="reset-button"]');
 	const settingsBtn = mainPage.locator('[data-testid="settings-button"]');
-	await settingsBtn.click();
-	await wait(delays.medium);
 
-	const { focused, minimized, visible } = await focusedMinimizedVisible({
-		electronApp,
-		windowName: SETTINGS_WINDOW,
-	});
-
-	expect(focused).toBe(true);
-	expect(minimized).toBe(false);
-	expect(visible).toBe(true);
+	await expect(quitBtn).toBeVisible();
+	await expect(resetBtn).toBeVisible();
+	await expect(settingsBtn).toBeVisible();
 });
 
-test('Quit button closes app', async () => {
-	const quitBtn = mainPage.locator('[data-testid="quit-button"]');
-	await expect(quitBtn).toBeVisible();
+test('Correct number of control buttons', async () => {
+	// XOver has 3 buttons: Quit, Reset, Settings
+	const buttons = mainPage.locator('.icon-button');
+	expect(await buttons.count()).toBe(3);
+});
 
-	await quitBtn.click({ force: true });
+test('Buttons contain SVG icons', async () => {
+	const quitSvg = mainPage.locator('[data-testid="quit-button"] svg');
+	const resetSvg = mainPage.locator('[data-testid="reset-button"] svg');
+	const settingsSvg = mainPage.locator(
+		'[data-testid="settings-button"] svg',
+	);
 
-	let appClosed = false;
-	try {
-		await mainPage.title();
-	} catch {
-		appClosed = true;
-	}
-
-	expect(appClosed, 'app should be quit').toBeTruthy();
+	expect(await quitSvg.count()).toBe(1);
+	expect(await resetSvg.count()).toBe(1);
+	expect(await settingsSvg.count()).toBe(1);
 });

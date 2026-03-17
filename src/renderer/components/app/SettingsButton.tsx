@@ -49,7 +49,7 @@ export function SettingsButton() {
 	);
 
 	return (
-		<IconButton onClick={handleClick}>
+		<IconButton onClick={handleClick} data-testid="settings-button">
 			<GearIcon />
 		</IconButton>
 	);

@@ -9,7 +9,7 @@ export function QuitButton() {
 	}, []);
 
 	return (
-		<IconButton onClick={handleClick}>
+		<IconButton onClick={handleClick} data-testid="quit-button">
 			<CrossCircledIcon />
 		</IconButton>
 	);
