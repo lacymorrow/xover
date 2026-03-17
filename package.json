@@ -65,7 +65,8 @@
 		"sh:copyexe": "cp dist/CrossOver-[!Portable]*.exe dist/CrossOver.exe",
 		"sh:replacespaces": "find dist/ -name 'CrossOver*' -maxdepth 1 -exec bash -c ' mv \"$0\" \"${0// /-}\" ' {} \\;",
 		"snap:login:export": "snapcraft export-login --snaps crossover --channels edge,stable -",
-		"snap:release": "snapcraft upload --release=stable dist/*.snap"
+		"snap:release": "snapcraft upload --release=stable dist/*.snap",
+		"test:e2e": "npx playwright test"
 	},
 	"browserslist": [],
 	"prettier": {
@@ -170,6 +171,7 @@
 		"@electron/notarize": "^2.2.0",
 		"@electron/rebuild": "^3.5.0",
 		"@hookform/resolvers": "^3.3.4",
+		"@playwright/test": "^1.58.2",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
 		"@svgr/webpack": "^8.1.0",
 		"@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
