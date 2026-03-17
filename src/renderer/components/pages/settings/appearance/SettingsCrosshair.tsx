@@ -1,15 +1,15 @@
 import { Separator } from '@/components/ui/separator';
 import { CrosshairWindowStateType } from '@/config/settings';
 import { InputColor } from '@/renderer/components/input/InputColor';
-import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useMemo } from 'react';
+import { CrosshairGallery } from './CrosshairGallery';
 import { SettingsReticle } from './SettingsReticle';
 
 export function SettingsCrosshair() {
-	const { crosshairImages, windowState } = useGlobalContext();
+	const { windowState } = useGlobalContext();
 
 	const isSvgSelected = useMemo(() => {
 		return windowState.crosshair?.toLowerCase().endsWith('.svg') ?? false;
@@ -47,16 +47,7 @@ export function SettingsCrosshair() {
 					handleChangeSetting({ foregroundColor: value });
 				}}
 			/>
-			<InputComboboxForm
-				value={windowState.crosshair}
-				onChange={(value) => {
-					handleChangeSetting({ crosshair: value });
-				}}
-				label="Crosshair"
-				details="Select the crosshair style."
-				items={crosshairImages}
-				className="w-[350px] h-60"
-			/>
+			<CrosshairGallery />
 			<InputSlider
 				value={windowState.crosshairSize}
 				onChange={(value) => {
@@ -87,21 +78,15 @@ export function SettingsCrosshair() {
 				min={-180}
 				max={180}
 			/>
-			<SettingsReticle />
-			<Separator />
-			<InputSwitch
-				label="Resizable"
-				details="Allow the Crosshair window to be resized."
-				value={windowState.resizable}
-				onChange={(value) => {
-					handleChangeSetting({ resizable: value });
-				}}
-				card
-			/>
-		</div>
-	);
-}
-> {
+			{isSvgSelected && (
+				<>
+					<Separator />
+					<h4 className="text-md font-medium">SVG Customization</h4>
+					<InputColor
+						value={windowState.fillColor}
+						label="Fill Color"
+						details="The fill color applied to the SVG crosshair."
+						onChange={(value) => {
 							handleChangeSetting({ fillColor: value });
 						}}
 					/>

@@ -60,6 +60,7 @@ export interface SettingsType {
 	// temporary
 	currentTilt: number;
 	isHidden: boolean;
+	settingsCloseOnBlur: boolean;
 	isSettingsWindowOpen: boolean;
 	resetOnAppStart: boolean; // for debugging, reset via cli
 	hadFirstRun: boolean;
@@ -125,6 +126,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	// temporary
 	currentTilt: 0,
 	isHidden: false,
+	settingsCloseOnBlur: false,
 	isSettingsWindowOpen: false,
 	resetOnAppStart: false, // for debugging, reset via cli
 	hadFirstRun: false,
