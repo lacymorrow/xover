@@ -64,6 +64,10 @@ export interface SettingsType {
 	resetOnAppStart: boolean; // for debugging, reset via cli
 	hadFirstRun: boolean;
 
+	// accessibility (macOS)
+	accessibilitySkipped: boolean;
+	needsAccessibilityCheck: boolean;
+
 	// vibrancy: 'none' | 'sidebar' | 'full';
 }
 
@@ -124,6 +128,10 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	isSettingsWindowOpen: false,
 	resetOnAppStart: false, // for debugging, reset via cli
 	hadFirstRun: false,
+
+	// accessibility (macOS)
+	accessibilitySkipped: false,
+	needsAccessibilityCheck: false,
 
 	// experimentalFeatures
 };
@@ -240,6 +248,7 @@ export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
 	moveDown: `${accelerator}+Down`,
 	moveLeft: `${accelerator}+Left`,
 	moveRight: `${accelerator}+Right`,
+	closeAll: `${accelerator}+W`,
 	// profile1: `${accelerator}+1`,
 	// profile2: `${accelerator}+2`,
 	// profile3: `${accelerator}+3`,

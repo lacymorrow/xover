@@ -17,6 +17,7 @@ import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
 import tray from './tray';
+import { initializeAccessibilityCheck } from './accessibility';
 import { AutoUpdate } from './auto-update';
 import { debugInfo, is } from './util';
 import { scanImages } from './utils/getImages';
@@ -68,6 +69,9 @@ export const ready = async () => {
 
 	// Add remaining app listeners
 	appListeners.ready();
+
+	// macOS accessibility permission check (before iohook init)
+	await initializeAccessibilityCheck();
 
 	// Setup keyboard shortcuts
 	kb.registerKeyboardShortcuts();

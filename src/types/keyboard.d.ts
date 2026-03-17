@@ -12,6 +12,7 @@ export interface CustomAcceleratorsType {
 	duplicateWindow?: string;
 	changeDisplay?: string;
 	focusNextWindow?: string;
+	closeAll?: string;
 }
 
 export interface KeyboardShortcut {
