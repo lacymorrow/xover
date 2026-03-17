@@ -5,11 +5,15 @@ import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { SettingsReticle } from './SettingsReticle';
 
 export function SettingsCrosshair() {
 	const { crosshairImages, windowState } = useGlobalContext();
+
+	const isSvgSelected = useMemo(() => {
+		return windowState.crosshair?.toLowerCase().endsWith('.svg') ?? false;
+	}, [windowState.crosshair]);
 
 	const handleChangeSetting = useCallback(
 		(setting: Partial<CrosshairWindowStateType>) => {
@@ -83,6 +87,44 @@ export function SettingsCrosshair() {
 				min={-180}
 				max={180}
 			/>
+			<SettingsReticle />
+			<Separator />
+			<InputSwitch
+				label="Resizable"
+				details="Allow the Crosshair window to be resized."
+				value={windowState.resizable}
+				onChange={(value) => {
+					handleChangeSetting({ resizable: value });
+				}}
+				card
+			/>
+		</div>
+	);
+}
+> {
+							handleChangeSetting({ fillColor: value });
+						}}
+					/>
+					<InputColor
+						value={windowState.strokeColor}
+						label="Stroke Color"
+						details="The stroke (outline) color applied to the SVG crosshair."
+						onChange={(value) => {
+							handleChangeSetting({ strokeColor: value });
+						}}
+					/>
+					<InputSlider
+						value={windowState.strokeWidth}
+						onChange={(value) => {
+							handleChangeSetting({ strokeWidth: value });
+						}}
+						label="Stroke Width"
+						details="Adjust the stroke width of the SVG crosshair."
+						min={0}
+						max={10}
+					/>
+				</>
+			)}
 			<SettingsReticle />
 			<Separator />
 			<InputSwitch

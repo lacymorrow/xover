@@ -134,6 +134,16 @@ body {
 		var(--transition-timing, ease-in-out);
 }
 
+#crosshair svg {
+	will-change: transform;
+	transform: rotate(var(--crosshair-rotation, 0deg));
+	transition: transform var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
+	fill: var(--svg-fill-color, inherit);
+	stroke: var(--svg-stroke-color, inherit);
+	stroke-width: var(--svg-stroke-width, inherit);
+}
+
 #reticle-wrapper {
 	will-change: transform, color;
 	color: var(--reticle-color, hsl(var(--foreground)));

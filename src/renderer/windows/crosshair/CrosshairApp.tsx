@@ -34,9 +34,9 @@ export default function CrosshairApp() {
 			'--reticle-color': windowState.reticleColor,
 			'--reticle-rotation': `${windowState.reticleRotation}deg`,
 
-			// '--svg-fill-color': windowState.fillColor,
-			// '--svg-stroke-color': windowState.strokeColor,
-			// '--svg-stroke-width': windowState.strokeWidth,
+			'--svg-fill-color': windowState.fillColor,
+			'--svg-stroke-color': windowState.strokeColor,
+			'--svg-stroke-width': String(windowState.strokeWidth),
 			'--transition-duration': `${settings.transitionDuration}ms`,
 		};
 

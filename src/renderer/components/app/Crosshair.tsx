@@ -7,13 +7,37 @@ import '@/renderer/styles/crosshair.scss';
 import crosshair from '@/static/crosshairs/Actual/leupold-dot.png';
 
 import { reticles } from '@/renderer/config/reticles';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { QuitButton } from './QuitButton';
 import { ResetButton } from './ResetButton';
 import { SettingsButton } from './SettingsButton';
 
 export function Crosshair() {
 	const { windowState } = useGlobalContext();
+	const [svgContent, setSvgContent] = useState<string | null>(null);
+
+	const isSvg = useMemo(() => {
+		return windowState.crosshair?.toLowerCase().endsWith('.svg') ?? false;
+	}, [windowState.crosshair]);
+
+	// Fetch SVG content for inline rendering
+	useEffect(() => {
+		if (!isSvg || !windowState.crosshair) {
+			setSvgContent(null);
+			return;
+		}
+
+		fetch(`file://${windowState.crosshair}`)
+			.then((res) => res.text())
+			.then((text) => {
+				// Strip XML declaration and doctype, keep only the <svg> element
+				const svgMatch = text.match(/<svg[\s\S]*<\/svg>/i);
+				setSvgContent(svgMatch ? svgMatch[0] : null);
+			})
+			.catch(() => {
+				setSvgContent(null);
+			});
+	}, [isSvg, windowState.crosshair]);
 
 	const Reticle = useMemo(() => {
 		return reticles.find((r) => r.value === windowState.reticle)?.Icon;
@@ -50,15 +74,21 @@ export function Crosshair() {
 
 			<div id="crosshair-wrapper" className="relative">
 				<div id="crosshair">
-					<img
-						src={
-							windowState.crosshair
-								? `file://${windowState.crosshair}`
-								: crosshair
-						}
-						alt=""
-						onError={handleError}
-					/>
+					{isSvg && svgContent ? (
+						<div
+							dangerouslySetInnerHTML={{ __html: svgContent }}
+						/>
+					) : (
+						<img
+							src={
+								windowState.crosshair
+									? `file://${windowState.crosshair}`
+									: crosshair
+							}
+							alt=""
+							onError={handleError}
+						/>
+					)}
 				</div>
 				<div
 					id="reticle-wrapper"
