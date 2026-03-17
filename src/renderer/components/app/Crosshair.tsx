@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
+import { SIZE_MODES } from '@/config/config';
 import { ipcChannels } from '@/config/ipc-channels';
+import { CrosshairWindowStateType } from '@/config/settings';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
 import crosshair from '@/static/crosshairs/Actual/leupold-dot.png';
@@ -15,6 +17,9 @@ import { SettingsButton } from './SettingsButton';
 export function Crosshair() {
 	const { windowState } = useGlobalContext();
 	const [svgContent, setSvgContent] = useState<string | null>(null);
+
+	const sizeMode = (windowState.sizeMode ?? 'normal') as CrosshairWindowStateType['sizeMode'];
+	const showControls = SIZE_MODES[sizeMode]?.showControls ?? true;
 
 	const isSvg = useMemo(() => {
 		return windowState.crosshair?.toLowerCase().endsWith('.svg') ?? false;
@@ -69,7 +74,7 @@ export function Crosshair() {
 			onClick={handleClick}
 		>
 			<div className="controls">
-				<QuitButton />
+				{showControls && <QuitButton />}
 			</div>
 
 			<div id="crosshair-wrapper" className="relative">
@@ -99,8 +104,12 @@ export function Crosshair() {
 			</div>
 
 			<div className="controls">
-				<ResetButton />
-				<SettingsButton />
+				{showControls && (
+					<>
+						<ResetButton />
+						<SettingsButton />
+					</>
+				)}
 			</div>
 		</div>
 	);

@@ -1,15 +1,27 @@
 import { Separator } from '@/components/ui/separator';
-import { CrosshairWindowStateType } from '@/config/settings';
+import { AppSizeModeType, CrosshairWindowStateType } from '@/config/settings';
 import { InputColor } from '@/renderer/components/input/InputColor';
+import { InputRadioGroup } from '@/renderer/components/input/InputRadioGroup';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
-import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useMemo } from 'react';
 import { CrosshairGallery } from './CrosshairGallery';
 import { SettingsReticle } from './SettingsReticle';
 
+const APP_SIZE_MODE_ITEMS = [
+	{ value: 'normal', label: 'Normal' },
+	{ value: 'resizable', label: 'Resizable' },
+	{ value: 'fullscreen', label: 'Fullscreen' },
+];
+
+const WINDOW_SIZE_MODE_ITEMS = [
+	{ value: 'compact', label: 'Compact' },
+	{ value: 'normal', label: 'Normal' },
+	{ value: 'large', label: 'Large' },
+];
+
 export function SettingsCrosshair() {
-	const { windowState } = useGlobalContext();
+	const { windowState, settings, setSettings } = useGlobalContext();
 
 	const isSvgSelected = useMemo(() => {
 		return windowState.crosshair?.toLowerCase().endsWith('.svg') ?? false;
@@ -112,12 +124,23 @@ export function SettingsCrosshair() {
 			)}
 			<SettingsReticle />
 			<Separator />
-			<InputSwitch
-				label="Resizable"
-				details="Allow the Crosshair window to be resized."
-				value={windowState.resizable}
+			<InputRadioGroup
+				label="Window Size Mode"
+				details="Normal: fixed size. Resizable: drag to resize. Fullscreen: fills the entire screen."
+				items={APP_SIZE_MODE_ITEMS}
+				value={settings.appSizeMode}
 				onChange={(value) => {
-					handleChangeSetting({ resizable: value });
+					setSettings({ appSizeMode: value as AppSizeModeType });
+				}}
+				card
+			/>
+			<InputRadioGroup
+				label="Crosshair Size"
+				details="Compact: minimal, no controls. Normal: default size with controls. Large: bigger window with controls."
+				items={WINDOW_SIZE_MODE_ITEMS}
+				value={windowState.sizeMode ?? 'normal'}
+				onChange={(value) => {
+					handleChangeSetting({ sizeMode: value as CrosshairWindowStateType['sizeMode'] });
 				}}
 				card
 			/>
