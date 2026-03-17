@@ -8,6 +8,7 @@ import {
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { Link } from 'react-router-dom';
 import { SettingsCrosshair } from './SettingsCrosshair';
+import { SettingsSecondaryCrosshair } from './SettingsSecondaryCrosshair';
 
 export function SettingsWindow() {
 	const { settings } = useGlobalContext();
@@ -51,7 +52,7 @@ export function SettingsWindow() {
 						<SettingsCrosshair />
 					</TabsContent>
 					<TabsContent value="secondary">
-						Change your secondary here.
+						<SettingsSecondaryCrosshair />
 					</TabsContent>
 				</Tabs>
 			</div>

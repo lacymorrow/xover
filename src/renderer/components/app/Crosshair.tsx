@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
 import { ipcChannels } from '@/config/ipc-channels';
+import { useActionStateContext } from '@/renderer/context/action-state-context';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
 import crosshair from '@/static/crosshairs/Actual/leupold-dot.png';
@@ -14,20 +15,36 @@ import { SettingsButton } from './SettingsButton';
 
 export function Crosshair() {
 	const { windowState } = useGlobalContext();
+	const { secondary } = useActionStateContext();
 	const [svgContent, setSvgContent] = useState<string | null>(null);
 
+	// Resolve active crosshair and reticle based on secondary state
+	const activeCrosshair = useMemo(() => {
+		if (secondary && windowState.crosshairSecondary) {
+			return windowState.crosshairSecondary;
+		}
+		return windowState.crosshair;
+	}, [secondary, windowState.crosshair, windowState.crosshairSecondary]);
+
+	const activeReticle = useMemo(() => {
+		if (secondary) {
+			return windowState.reticleSecondary;
+		}
+		return windowState.reticle;
+	}, [secondary, windowState.reticle, windowState.reticleSecondary]);
+
 	const isSvg = useMemo(() => {
-		return windowState.crosshair?.toLowerCase().endsWith('.svg') ?? false;
-	}, [windowState.crosshair]);
+		return activeCrosshair?.toLowerCase().endsWith('.svg') ?? false;
+	}, [activeCrosshair]);
 
 	// Fetch SVG content for inline rendering
 	useEffect(() => {
-		if (!isSvg || !windowState.crosshair) {
+		if (!isSvg || !activeCrosshair) {
 			setSvgContent(null);
 			return;
 		}
 
-		fetch(`file://${windowState.crosshair}`)
+		fetch(`file://${activeCrosshair}`)
 			.then((res) => res.text())
 			.then((text) => {
 				// Strip XML declaration and doctype, keep only the <svg> element
@@ -37,11 +54,11 @@ export function Crosshair() {
 			.catch(() => {
 				setSvgContent(null);
 			});
-	}, [isSvg, windowState.crosshair]);
+	}, [isSvg, activeCrosshair]);
 
 	const Reticle = useMemo(() => {
-		return reticles.find((r) => r.value === windowState.reticle)?.Icon;
-	}, [windowState.reticle]);
+		return reticles.find((r) => r.value === activeReticle)?.Icon;
+	}, [activeReticle]);
 
 	const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
 		switch (e.detail) {
@@ -81,8 +98,8 @@ export function Crosshair() {
 					) : (
 						<img
 							src={
-								windowState.crosshair
-									? `file://${windowState.crosshair}`
+								activeCrosshair
+									? `file://${activeCrosshair}`
 									: crosshair
 							}
 							alt=""

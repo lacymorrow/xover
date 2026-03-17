@@ -18,7 +18,12 @@ interface GroupedImages {
 	[folder: string]: { label: string; value: string; filename: string }[];
 }
 
-export function CrosshairGallery() {
+interface CrosshairGalleryProps {
+	/** Which window state key to set when selecting a crosshair. Defaults to 'crosshair'. */
+	stateKey?: 'crosshair' | 'crosshairSecondary';
+}
+
+export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryProps) {
 	const { crosshairImages, windowState } = useGlobalContext();
 	const [search, setSearch] = useState('');
 	const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
@@ -26,9 +31,11 @@ export function CrosshairGallery() {
 	);
 	const [isDragOver, setIsDragOver] = useState(false);
 
+	const selectedValue = stateKey === 'crosshairSecondary' ? windowState.crosshairSecondary : windowState.crosshair;
+
 	const handleSelect = useCallback((value: string) => {
-		window.electron.setWindowState({ crosshair: value });
-	}, []);
+		window.electron.setWindowState({ [stateKey]: value });
+	}, [stateKey]);
 
 	// Group images by folder
 	const grouped = useMemo(() => {
@@ -179,7 +186,7 @@ export function CrosshairGallery() {
 								<div className="grid grid-cols-5 gap-1.5 p-1">
 									{images.map((img) => {
 										const isSelected =
-											windowState.crosshair === img.value;
+											selectedValue === img.value;
 										return (
 											<button
 												key={img.value}
