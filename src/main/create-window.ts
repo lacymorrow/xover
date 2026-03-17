@@ -319,11 +319,13 @@ export const createSettingsWindow = async () => {
 		window.show();
 	});
 
-	// // Hide window when clicked away
-	// window.on('blur', () => {
-	// 	window.hide();
-	// 	setSettings({ isSettingsWindowOpen: false });
-	// });
+	// Hide window when clicked away (configurable)
+	window.on('blur', () => {
+		if (getSetting('settingsCloseOnBlur')) {
+			window.hide();
+			setSettings({ isSettingsWindowOpen: false });
+		}
+	});
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));

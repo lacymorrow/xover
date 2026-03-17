@@ -91,6 +91,17 @@ export function SettingsApplication() {
 					card
 				/>
 			)}
+			<InputSwitch
+				value={settings.settingsCloseOnBlur}
+				onChange={() => {
+					handleChangeSetting({
+						settingsCloseOnBlur: !settings.settingsCloseOnBlur,
+					});
+				}}
+				label="Close settings on blur"
+				description="Automatically hide the settings window when it loses focus."
+				card
+			/>
 			<Separator />
 			<InputSwitch
 				value={settings.allowAnalytics}
