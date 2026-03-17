@@ -4,6 +4,7 @@ import { APP_HEIGHT, APP_WIDTH } from './config';
 export type ThemeType = 'system' | 'light' | 'dark';
 export type IOHookBehaviorType = 'toggle' | 'hold';
 export type IOHookInputType = 'mouse' | 'keyboard';
+export type AppSizeModeType = 'normal' | 'resizable' | 'fullscreen';
 
 export type NotificationType = 'system' | 'app' | 'all';
 
@@ -55,6 +56,7 @@ export interface SettingsType {
 
 	transitionDuration: number; // ms
 
+	appSizeMode: AppSizeModeType;
 	isLocked: boolean;
 
 	// temporary
@@ -121,6 +123,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	transitionDuration: 100, // ms
 
+	appSizeMode: 'normal',
 	isLocked: false,
 
 	// temporary
@@ -149,6 +152,7 @@ export type WindowStateType = {
 export interface CrosshairWindowStateType extends WindowStateType {
 	// isMaximized: boolean;
 	resizable: boolean;
+	sizeMode: 'compact' | 'normal' | 'large';
 
 	backgroundColor: string;
 	foregroundColor: string;
@@ -184,6 +188,7 @@ export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	height: APP_HEIGHT,
 
 	resizable: false,
+	sizeMode: 'normal',
 
 	backgroundColor: '',
 	foregroundColor: '',

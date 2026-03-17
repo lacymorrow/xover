@@ -1,5 +1,6 @@
 import Logger from 'electron-log';
 import { $init } from '../config/strings';
+import { installCrashHandlers } from './crash-report';
 import logger from './logger';
 import { debugInfo } from './util';
 
@@ -24,6 +25,9 @@ const initialize = async () => {
 
 	// unhandledRejection : This will catch any thrown errors, or non fatal errors you have successfully handled via throw.
 	// uncaughtException : This only catches fatal errors or errors that would crash your node instance
+
+	// Install crash report dialog for uncaughtException and render-process-gone
+	installCrashHandlers();
 
 	return logger.catchErrors();
 

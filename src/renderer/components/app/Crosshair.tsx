@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
+import { SIZE_MODES } from '@/config/config';
 import { ipcChannels } from '@/config/ipc-channels';
+import { CrosshairWindowStateType } from '@/config/settings';
 import { useActionStateContext } from '@/renderer/context/action-state-context';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
@@ -17,6 +19,9 @@ export function Crosshair() {
 	const { windowState } = useGlobalContext();
 	const { secondary } = useActionStateContext();
 	const [svgContent, setSvgContent] = useState<string | null>(null);
+
+	const sizeMode = (windowState.sizeMode ?? 'normal') as CrosshairWindowStateType['sizeMode'];
+	const showControls = SIZE_MODES[sizeMode]?.showControls ?? true;
 
 	// Resolve active crosshair and reticle based on secondary state
 	const activeCrosshair = useMemo(() => {
@@ -86,7 +91,7 @@ export function Crosshair() {
 			onClick={handleClick}
 		>
 			<div className="controls">
-				<QuitButton />
+				{showControls && <QuitButton />}
 			</div>
 
 			<div id="crosshair-wrapper" className="relative">
@@ -116,8 +121,12 @@ export function Crosshair() {
 			</div>
 
 			<div className="controls">
-				<ResetButton />
-				<SettingsButton />
+				{showControls && (
+					<>
+						<ResetButton />
+						<SettingsButton />
+					</>
+				)}
 			</div>
 		</div>
 	);
