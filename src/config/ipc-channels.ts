@@ -38,6 +38,7 @@ const FOCUS_WINDOW_MAIN = 'focus-main-window';
 const SET_CROSSHAIR = 'set-crosshair';
 const SET_WINDOW_STATE = 'set-window-state';
 const OPEN_SETTINGS = 'open-settings';
+const CLOSE_ALL_WINDOWS = 'close-all-windows';
 
 export const ipcChannels = {
 	// main -> renderer
@@ -73,4 +74,5 @@ export const ipcChannels = {
 	SET_CROSSHAIR,
 	SET_WINDOW_STATE,
 	OPEN_SETTINGS,
+	CLOSE_ALL_WINDOWS,
 };

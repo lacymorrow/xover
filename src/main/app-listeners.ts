@@ -1,9 +1,11 @@
 /* eslint-disable promise/always-return */
 import { app, shell } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import EXIT_CODES from '../config/exit-codes';
+import { is } from './util';
 import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
+import { stopIOHook } from './iohook';
 import keyboard from './keyboard';
 import { windowClosed } from './utils/window-closed';
 import { getNextCrosshairWindow } from './utils/window-utils';
@@ -18,9 +20,8 @@ const register = () => {
 
 	app.on('will-quit', () => {
 		Logger.status($appListeners.willQuit);
-		// Unregister all shortcuts.
-		// todo: iohook
-		// iohook.unregisterAll();
+		// Unregister all shortcuts
+		stopIOHook();
 		keyboard.unregisterAll();
 	});
 
@@ -34,7 +35,9 @@ const register = () => {
 		Logger.status($appListeners.beforeQuit);
 
 		// TODO: BUG - Dock persists after app quits on macOS
-		app.dock.hide();
+		if (is.macos) {
+			app.dock.hide();
+		}
 
 		app.releaseSingleInstanceLock();
 		process.exit(EXIT_CODES.SUCCESS);

@@ -11,6 +11,8 @@ import { ActionStateType } from '@/config/settings';
 
 export const ActionStateContext = React.createContext<ActionStateType>({
 	secondary: false,
+	hidden: false,
+	adsActive: false,
 	tilt: 0,
 });
 
@@ -19,8 +21,9 @@ export function ActionStateContextProvider({
 }: {
 	children?: React.ReactNode;
 }) {
-	// todo: these dont need to be in state (or context?)
 	const [secondary, setSecondary] = React.useState<boolean>(false);
+	const [hidden, setHidden] = React.useState<boolean>(false);
+	const [adsActive, setAdsActive] = React.useState<boolean>(false);
 	const [tilt, setTilt] = React.useState<number>(0);
 
 	useEffect(() => {
@@ -35,6 +38,14 @@ export function ActionStateContextProvider({
 					} else {
 						window.document.documentElement.classList.remove('secondary');
 					}
+				}
+
+				if (key === 'hidden') {
+					setHidden(value as boolean);
+				}
+
+				if (key === 'adsActive') {
+					setAdsActive(value as boolean);
 				}
 
 				// Update the state based on the key and value received
@@ -56,9 +67,11 @@ export function ActionStateContextProvider({
 	const value = useMemo(() => {
 		return {
 			secondary,
+			hidden,
+			adsActive,
 			tilt,
 		};
-	}, [secondary, tilt]);
+	}, [secondary, hidden, adsActive, tilt]);
 
 	return (
 		<ActionStateContext.Provider value={value}>

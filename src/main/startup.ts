@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import { $init } from '../config/strings';
 import analytics from './analytics';
 import appListeners from './app-listeners';
@@ -17,6 +17,8 @@ import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
 import tray from './tray';
+import { initializeAccessibilityCheck } from './accessibility';
+import { AutoUpdate } from './auto-update';
 import { debugInfo, is } from './util';
 import { scanImages } from './utils/getImages';
 
@@ -68,6 +70,9 @@ export const ready = async () => {
 	// Add remaining app listeners
 	appListeners.ready();
 
+	// macOS accessibility permission check (before iohook init)
+	await initializeAccessibilityCheck();
+
 	// Setup keyboard shortcuts
 	kb.registerKeyboardShortcuts();
 
@@ -84,8 +89,7 @@ export const ready = async () => {
 
 	// Auto updates
 	// eslint-disable-next-line no-new
-	// new AutoUpdate();
-	// TODO: Uncomment this
+	new AutoUpdate();
 
 	// Idle
 	Logger.status($init.mainIdle);

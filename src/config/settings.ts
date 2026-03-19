@@ -4,6 +4,7 @@ import { APP_HEIGHT, APP_WIDTH } from './config';
 export type ThemeType = 'system' | 'light' | 'dark';
 export type IOHookBehaviorType = 'toggle' | 'hold';
 export type IOHookInputType = 'mouse' | 'keyboard';
+export type AppSizeModeType = 'normal' | 'resizable' | 'fullscreen';
 
 export type NotificationType = 'system' | 'app' | 'all';
 
@@ -35,6 +36,18 @@ export interface SettingsType {
 	secondaryBind: string;
 	secondaryBehavior: IOHookBehaviorType; // toggle/hold
 
+	hideOnMouseEnabled: boolean;
+	hideOnMouseButton: number; // 1=left, 2=right, 3=middle
+	hideOnMouseBehavior: IOHookBehaviorType; // toggle/hold
+
+	hideOnKeyEnabled: boolean;
+	hideOnKeyBind: string; // e.g. "keyboard:Alt"
+
+	adsResizeEnabled: boolean;
+	adsResizeButton: number; // mouse button
+	adsResizeBehavior: IOHookBehaviorType; // toggle/hold
+	adsResizeSize: number; // percentage scale when ADS active
+
 	tiltActionEnabled: boolean;
 	tiltAngle: number;
 	tiltBehavior: IOHookBehaviorType; // toggle/hold
@@ -43,14 +56,20 @@ export interface SettingsType {
 
 	transitionDuration: number; // ms
 
+	appSizeMode: AppSizeModeType;
 	isLocked: boolean;
 
 	// temporary
 	currentTilt: number;
 	isHidden: boolean;
+	settingsCloseOnBlur: boolean;
 	isSettingsWindowOpen: boolean;
 	resetOnAppStart: boolean; // for debugging, reset via cli
 	hadFirstRun: boolean;
+
+	// accessibility (macOS)
+	accessibilitySkipped: boolean;
+	needsAccessibilityCheck: boolean;
 
 	// vibrancy: 'none' | 'sidebar' | 'full';
 }
@@ -84,6 +103,18 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	secondaryBind: '',
 	secondaryBehavior: 'hold', // toggle/hold
 
+	hideOnMouseEnabled: false,
+	hideOnMouseButton: 2, // right click
+	hideOnMouseBehavior: 'hold',
+
+	hideOnKeyEnabled: false,
+	hideOnKeyBind: '',
+
+	adsResizeEnabled: false,
+	adsResizeButton: 2, // right click
+	adsResizeBehavior: 'hold',
+	adsResizeSize: 50, // percentage scale
+
 	tiltActionEnabled: false,
 	tiltAngle: 15,
 	tiltBehavior: 'hold', // toggle/hold
@@ -92,14 +123,20 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	transitionDuration: 100, // ms
 
+	appSizeMode: 'normal',
 	isLocked: false,
 
 	// temporary
 	currentTilt: 0,
 	isHidden: false,
+	settingsCloseOnBlur: false,
 	isSettingsWindowOpen: false,
 	resetOnAppStart: false, // for debugging, reset via cli
 	hadFirstRun: false,
+
+	// accessibility (macOS)
+	accessibilitySkipped: false,
+	needsAccessibilityCheck: false,
 
 	// experimentalFeatures
 };
@@ -115,6 +152,7 @@ export type WindowStateType = {
 export interface CrosshairWindowStateType extends WindowStateType {
 	// isMaximized: boolean;
 	resizable: boolean;
+	sizeMode: 'compact' | 'normal' | 'large';
 
 	backgroundColor: string;
 	foregroundColor: string;
@@ -150,6 +188,7 @@ export const DEFAULT_CROSSHAIR_WINDOW_STATE: CrosshairWindowStateType = {
 	height: APP_HEIGHT,
 
 	resizable: false,
+	sizeMode: 'normal',
 
 	backgroundColor: '',
 	foregroundColor: '',
@@ -187,11 +226,15 @@ export const DEFAULT_WINDOW_STATE = {
 export type ActionStateType = {
 	tilt: number;
 	secondary: boolean;
+	hidden: boolean;
+	adsActive: boolean;
 };
 
 export const DEFAULT_ACTION_STATE: ActionStateType = {
 	tilt: 0,
 	secondary: false,
+	hidden: false,
+	adsActive: false,
 };
 
 // see src/main/keyboard.ts
@@ -212,6 +255,7 @@ export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
 	moveDown: `${accelerator}+Down`,
 	moveLeft: `${accelerator}+Left`,
 	moveRight: `${accelerator}+Right`,
+	closeAll: `${accelerator}+W`,
 	// profile1: `${accelerator}+1`,
 	// profile2: `${accelerator}+2`,
 	// profile3: `${accelerator}+3`,

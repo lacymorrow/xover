@@ -9,10 +9,20 @@ if (
 ) {
 	const electronRebuildCmd =
 		'../../node_modules/.bin/electron-rebuild --force --types prod,dev,optional --module-dir .';
+	// Fall back to @electron/rebuild if electron-rebuild binary doesn't exist
+	const altCmd =
+		'npx --no @electron/rebuild --force --types prod,dev,optional --module-dir .';
+	const baseCmd = fs.existsSync(
+		process.platform === 'win32'
+			? '../../node_modules/.bin/electron-rebuild.cmd'
+			: '../../node_modules/.bin/electron-rebuild',
+	)
+		? electronRebuildCmd
+		: altCmd;
 	const cmd =
 		process.platform === 'win32'
-			? electronRebuildCmd.replace(/\//g, '\\')
-			: electronRebuildCmd;
+			? baseCmd.replace(/\//g, '\\')
+			: baseCmd;
 	execSync(cmd, {
 		cwd: webpackPaths.appPath,
 		stdio: 'inherit',

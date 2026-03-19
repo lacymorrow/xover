@@ -1,23 +1,69 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
+import { SIZE_MODES } from '@/config/config';
 import { ipcChannels } from '@/config/ipc-channels';
+import { CrosshairWindowStateType } from '@/config/settings';
+import { useActionStateContext } from '@/renderer/context/action-state-context';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
 import crosshair from '@/static/crosshairs/Actual/leupold-dot.png';
 
 import { reticles } from '@/renderer/config/reticles';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { QuitButton } from './QuitButton';
 import { ResetButton } from './ResetButton';
 import { SettingsButton } from './SettingsButton';
 
 export function Crosshair() {
 	const { windowState } = useGlobalContext();
+	const { secondary } = useActionStateContext();
+	const [svgContent, setSvgContent] = useState<string | null>(null);
+
+	const sizeMode = (windowState.sizeMode ?? 'normal') as CrosshairWindowStateType['sizeMode'];
+	const showControls = SIZE_MODES[sizeMode]?.showControls ?? true;
+
+	// Resolve active crosshair and reticle based on secondary state
+	const activeCrosshair = useMemo(() => {
+		if (secondary && windowState.crosshairSecondary) {
+			return windowState.crosshairSecondary;
+		}
+		return windowState.crosshair;
+	}, [secondary, windowState.crosshair, windowState.crosshairSecondary]);
+
+	const activeReticle = useMemo(() => {
+		if (secondary) {
+			return windowState.reticleSecondary;
+		}
+		return windowState.reticle;
+	}, [secondary, windowState.reticle, windowState.reticleSecondary]);
+
+	const isSvg = useMemo(() => {
+		return activeCrosshair?.toLowerCase().endsWith('.svg') ?? false;
+	}, [activeCrosshair]);
+
+	// Fetch SVG content for inline rendering
+	useEffect(() => {
+		if (!isSvg || !activeCrosshair) {
+			setSvgContent(null);
+			return;
+		}
+
+		fetch(`file://${activeCrosshair}`)
+			.then((res) => res.text())
+			.then((text) => {
+				// Strip XML declaration and doctype, keep only the <svg> element
+				const svgMatch = text.match(/<svg[\s\S]*<\/svg>/i);
+				setSvgContent(svgMatch ? svgMatch[0] : null);
+			})
+			.catch(() => {
+				setSvgContent(null);
+			});
+	}, [isSvg, activeCrosshair]);
 
 	const Reticle = useMemo(() => {
-		return reticles.find((r) => r.value === windowState.reticle)?.Icon;
-	}, [windowState.reticle]);
+		return reticles.find((r) => r.value === activeReticle)?.Icon;
+	}, [activeReticle]);
 
 	const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
 		switch (e.detail) {
@@ -45,20 +91,26 @@ export function Crosshair() {
 			onClick={handleClick}
 		>
 			<div className="controls">
-				<QuitButton />
+				{showControls && <QuitButton />}
 			</div>
 
 			<div id="crosshair-wrapper" className="relative">
 				<div id="crosshair">
-					<img
-						src={
-							windowState.crosshair
-								? `file://${windowState.crosshair}`
-								: crosshair
-						}
-						alt=""
-						onError={handleError}
-					/>
+					{isSvg && svgContent ? (
+						<div
+							dangerouslySetInnerHTML={{ __html: svgContent }}
+						/>
+					) : (
+						<img
+							src={
+								activeCrosshair
+									? `file://${activeCrosshair}`
+									: crosshair
+							}
+							alt=""
+							onError={handleError}
+						/>
+					)}
 				</div>
 				<div
 					id="reticle-wrapper"
@@ -69,8 +121,12 @@ export function Crosshair() {
 			</div>
 
 			<div className="controls">
-				<ResetButton />
-				<SettingsButton />
+				{showControls && (
+					<>
+						<ResetButton />
+						<SettingsButton />
+					</>
+				)}
 			</div>
 		</div>
 	);

@@ -124,7 +124,24 @@ body {
 
 .secondary #crosshair {
 	opacity: var(--crosshair-opacity-alt, 1);
-	transform: scale(var(--crosshair-scale, 1)) rotate(var(--tilt-angle, 0deg));
+	transform: scale(var(--crosshair-scale-alt, 1)) rotate(var(--tilt-angle, 0deg));
+}
+
+.secondary #crosshair img {
+	transform: rotate(var(--crosshair-rotation-alt, 0deg));
+}
+
+.secondary #crosshair svg {
+	transform: rotate(var(--crosshair-rotation-alt, 0deg));
+}
+
+.secondary #reticle-wrapper {
+	color: var(--reticle-color-alt, hsl(var(--foreground)));
+}
+
+.secondary #reticle {
+	transform: scale(var(--reticle-scale-alt, 0.3))
+		rotate(var(--reticle-rotation-alt, 0deg));
 }
 
 #crosshair img {
@@ -132,6 +149,16 @@ body {
 	transform: rotate(var(--crosshair-rotation, 0deg));
 	transition: transform var(--transition-duration, 100ms)
 		var(--transition-timing, ease-in-out);
+}
+
+#crosshair svg {
+	will-change: transform;
+	transform: rotate(var(--crosshair-rotation, 0deg));
+	transition: transform var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
+	fill: var(--svg-fill-color, inherit);
+	stroke: var(--svg-stroke-color, inherit);
+	stroke-width: var(--svg-stroke-width, inherit);
 }
 
 #reticle-wrapper {

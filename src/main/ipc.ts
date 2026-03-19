@@ -182,5 +182,14 @@ export default {
 		ipcMain.on(ipcChannels.FOCUS_WINDOW_MAIN, () => {
 			focusNextWindow();
 		});
+
+		ipcMain.on(ipcChannels.CLOSE_ALL_WINDOWS, () => {
+			for (const id of Object.keys(windows.crosshairWindows)) {
+				const win = windows.crosshairWindows[id];
+				if (win && !win.isDestroyed()) {
+					win.close();
+				}
+			}
+		});
 	},
 };

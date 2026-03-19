@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import { $init } from '../config/strings';
 import { is } from './util';
 

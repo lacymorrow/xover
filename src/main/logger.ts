@@ -1,5 +1,5 @@
 import { app, dialog } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import path from 'path';
 import { packageJsonFields } from '../config/config';
 import { $dialog, $init } from '../config/strings';
@@ -64,6 +64,16 @@ const catchErrors = () => {
 const initialize = () => {
 	// initialize  the logger for any renderer process
 	Logger.initialize({ preload: true });
+
+	// Suppress EPIPE errors when console stream closes during shutdown
+	Logger.transports.console.writeFn = (...args: unknown[]) => {
+		try {
+			// eslint-disable-next-line no-console
+			console.log(...args);
+		} catch {
+			// Stream closed — ignore
+		}
+	};
 
 	// Add custom log level to display app status messages
 	Logger.addLevel('status', 0);

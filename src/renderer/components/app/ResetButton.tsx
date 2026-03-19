@@ -7,7 +7,7 @@ export function ResetButton() {
 		window.electron.ipcRenderer.send(ipcChannels.RESET_APP);
 	};
 	return (
-		<IconButton onClick={handleClick}>
+		<IconButton onClick={handleClick} data-testid="reset-button">
 			<ReloadIcon />
 		</IconButton>
 	);

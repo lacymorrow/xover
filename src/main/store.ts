@@ -195,6 +195,35 @@ const schema: Store.Schema<StoreType> = {
 				type: 'string',
 				enum: ['toggle', 'hold'],
 			},
+			hideOnMouseEnabled: {
+				type: 'boolean',
+			},
+			hideOnMouseButton: {
+				type: 'number',
+			},
+			hideOnMouseBehavior: {
+				type: 'string',
+				enum: ['toggle', 'hold'],
+			},
+			hideOnKeyEnabled: {
+				type: 'boolean',
+			},
+			hideOnKeyBind: {
+				type: 'string',
+			},
+			adsResizeEnabled: {
+				type: 'boolean',
+			},
+			adsResizeButton: {
+				type: 'number',
+			},
+			adsResizeBehavior: {
+				type: 'string',
+				enum: ['toggle', 'hold'],
+			},
+			adsResizeSize: {
+				type: 'number',
+			},
 			tiltActionEnabled: {
 				type: 'boolean',
 			},

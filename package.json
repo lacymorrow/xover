@@ -37,7 +37,7 @@
 		}
 	],
 	"engines": {
-		"node": ">= 14.x <= 18.x"
+		"node": ">= 18.x"
 	},
 	"main": "./src/main/main.ts",
 	"scripts": {
@@ -55,7 +55,7 @@
 		"package:windows": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -w --publish never && npm run build:dll",
 		"rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
 		"start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
-		"start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
+		"start:main": "cross-env NODE_ENV=development NODE_OPTIONS='--import tsx' electronmon .",
 		"start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
 		"start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
 		"test": "jest",
@@ -65,7 +65,8 @@
 		"sh:copyexe": "cp dist/CrossOver-[!Portable]*.exe dist/CrossOver.exe",
 		"sh:replacespaces": "find dist/ -name 'CrossOver*' -maxdepth 1 -exec bash -c ' mv \"$0\" \"${0// /-}\" ' {} \\;",
 		"snap:login:export": "snapcraft export-login --snaps crossover --channels edge,stable -",
-		"snap:release": "snapcraft upload --release=stable dist/*.snap"
+		"snap:release": "snapcraft upload --release=stable dist/*.snap",
+		"test:e2e": "npx playwright test"
 	},
 	"browserslist": [],
 	"prettier": {
@@ -147,7 +148,6 @@
 		"electron-store": "^8.1.0",
 		"electron-unhandled": "^4.0.1",
 		"electron-updater": "^6.1.7",
-		"iohook": "^0.9.3",
 		"is-online": "^10.0.0",
 		"lucide-react": "^0.312.0",
 		"next-themes": "^0.2.1",
@@ -171,6 +171,7 @@
 		"@electron/notarize": "^2.2.0",
 		"@electron/rebuild": "^3.5.0",
 		"@hookform/resolvers": "^3.3.4",
+		"@playwright/test": "^1.58.2",
 		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
 		"@svgr/webpack": "^8.1.0",
 		"@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
@@ -195,8 +196,8 @@
 		"css-loader": "^6.9.1",
 		"css-minimizer-webpack-plugin": "^6.0.0",
 		"detect-port": "^1.5.1",
-		"electron": "12.2.3",
-		"electron-builder": "^24.9.1",
+		"electron": "^40.0.0",
+		"electron-builder": "^25.0.0",
 		"electron-devtools-installer": "^3.2.0",
 		"electronmon": "^2.0.2",
 		"eslint": "^8.56.0",
@@ -233,6 +234,7 @@
 		"ts-loader": "^9.5.1",
 		"ts-node": "^10.9.2",
 		"tsconfig-paths-webpack-plugin": "^4.1.0",
+		"tsx": "^4.21.0",
 		"typescript": "^5.3.3",
 		"url-loader": "^4.1.1",
 		"webpack": "^5.90.1",
@@ -348,8 +350,14 @@
 		}
 	},
 	"devEngines": {
-		"node": ">=14.x",
-		"npm": ">=7.x"
+		"runtime": {
+			"name": "node",
+			"version": ">=18.x"
+		},
+		"packageManager": {
+			"name": "npm",
+			"version": ">=7.x"
+		}
 	},
 	"electronmon": {
 		"patterns": [
@@ -360,20 +368,5 @@
 	},
 	"optionalDependencies": {
 		"dmg-license": "^1.0.11"
-	},
-	"iohook": {
-		"targets": [
-			"node-83",
-			"electron-87"
-		],
-		"platforms": [
-			"win32",
-			"darwin",
-			"linux"
-		],
-		"arches": [
-			"x64",
-			"ia32"
-		]
 	}
 }

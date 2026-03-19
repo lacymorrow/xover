@@ -1,6 +1,6 @@
-import { app } from 'electron';
+import { app, screen } from 'electron';
 import Logger from 'electron-log';
-import { APP_MESSAGES_MAX } from '../config/config';
+import { APP_ASPECT_RATIO, APP_HEIGHT, APP_MESSAGES_MAX, APP_WIDTH, SIZE_MODES } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
 import {
 	ActionStateType,
@@ -34,6 +34,33 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 		if (keys.includes('startOnLogin')) {
 			app.setLoginItemSettings({
 				openAtLogin: changedSettings.startOnLogin,
+			});
+		}
+
+		if (keys.includes('appSizeMode')) {
+			const mode = changedSettings.appSizeMode!;
+			Object.entries(windows.crosshairWindows).forEach(([_id, win]) => {
+				if (!win || win.isDestroyed()) return;
+
+				if (mode === 'fullscreen') {
+					const display = screen.getPrimaryDisplay();
+					const { width, height } = display.bounds;
+					win.setResizable(true); // must be resizable to setBounds
+					win.setBounds({ x: 0, y: 0, width, height });
+					win.setResizable(false);
+				} else if (mode === 'resizable') {
+					win.setResizable(true);
+					win.setMinimumSize(APP_WIDTH, APP_HEIGHT);
+					win.setAspectRatio(APP_ASPECT_RATIO);
+				} else {
+					// normal
+					win.setResizable(true); // must be resizable to setBounds
+					const [currentX, currentY] = win.getPosition();
+					win.setBounds({ x: currentX, y: currentY, width: APP_WIDTH, height: APP_HEIGHT });
+					win.setResizable(false);
+					win.setMinimumSize(APP_WIDTH, APP_HEIGHT);
+					win.setAspectRatio(APP_ASPECT_RATIO);
+				}
 			});
 		}
 	}
@@ -128,6 +155,17 @@ export const setWindowState = (
 	store.set(`windows.${w}`, { ...getWindowState(w), ...state });
 	if (state?.resizable !== undefined && windows.crosshairWindows[w]) {
 		windows.crosshairWindows[w]?.setResizable(state.resizable);
+	}
+
+	// Handle per-window sizeMode change (compact/normal/large)
+	if (state?.sizeMode && windows.crosshairWindows[w]) {
+		const win = windows.crosshairWindows[w]!;
+		const sizeConfig = SIZE_MODES[state.sizeMode] ?? SIZE_MODES.normal;
+		win.setResizable(true);
+		const [currentX, currentY] = win.getPosition();
+		win.setBounds({ x: currentX, y: currentY, width: sizeConfig.width, height: sizeConfig.height });
+		win.setMinimumSize(sizeConfig.width, sizeConfig.height);
+		win.setResizable(false);
 	}
 
 	synchronizeApp();

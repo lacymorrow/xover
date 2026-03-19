@@ -4,20 +4,23 @@ import {
 	BrowserWindowConstructorOptions,
 	IpcMainEvent,
 	app,
+	screen,
 	shell,
 } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import path from 'path';
 import {
 	APP_ASPECT_RATIO,
 	APP_FRAME,
 	APP_HEIGHT,
 	APP_WIDTH,
+	SIZE_MODES,
 } from '../config/config';
 import { DEFAULT_CROSSHAIR_WINDOW_STATE } from '../config/settings';
 import { getUUID } from '../utils/getUUID';
 import { isObjectEmpty } from '../utils/isObjectEmpty';
 import { setupContextMenu } from './context-menu';
+import { wireRenderProcessGone } from './crash-report';
 import dock from './dock';
 import MenuBuilder from './menu';
 import { __resources } from './paths';
@@ -82,9 +85,8 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 		preload: app.isPackaged
 			? path.join(__dirname, 'preload.js')
 			: path.join(__dirname, '../../.erb/dll/preload.js'),
-		// Todo: secure
-		// contextIsolation: true, // Ensure context isolation
-		// nodeIntegration: false, // Disable Node.js integration
+		contextIsolation: true,
+		nodeIntegration: false,
 	};
 
 	const browserWindow = new BrowserWindow(options);
@@ -145,6 +147,9 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 		});
 	}
 
+	// Wire crash dialog for renderer process crashes
+	wireRenderProcessGone(browserWindow);
+
 	// Create application menu
 	const menuBuilder = new MenuBuilder(browserWindow);
 	menuBuilder.buildMenu();
@@ -165,49 +170,73 @@ export const createCrosshairWindow = async (
 		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
 	}
 
-	const { isLocked, showTaskbarIcon } = getSettings();
+	const { isLocked, showTaskbarIcon, appSizeMode } = getSettings();
+
+	// Per-window size mode (compact/normal/large)
+	const windowSizeMode = state?.sizeMode ?? 'normal';
+	const sizeConfig = SIZE_MODES[windowSizeMode] ?? SIZE_MODES.normal;
+
+	// Compute size-mode-specific options
+	let sizeModeOpts: Partial<BrowserWindowConstructorOptions> = {};
+	if (appSizeMode === 'fullscreen') {
+		const display = screen.getPrimaryDisplay();
+		const { width: screenWidth, height: screenHeight } = display.bounds;
+		sizeModeOpts = {
+			x: 0,
+			y: 0,
+			width: screenWidth,
+			height: screenHeight,
+			resizable: false,
+		};
+	} else if (appSizeMode === 'resizable') {
+		sizeModeOpts = {
+			width: state?.width ?? sizeConfig.width,
+			height: state?.height ?? sizeConfig.height,
+			minWidth: sizeConfig.width,
+			minHeight: sizeConfig.height,
+			resizable: true,
+			...(state?.x ? { x: state.x } : {}),
+			...(state?.y ? { y: state.y } : {}),
+		};
+	} else {
+		// normal: fixed size using per-window sizeMode dimensions
+		sizeModeOpts = {
+			width: sizeConfig.width,
+			height: sizeConfig.height,
+			minWidth: sizeConfig.width,
+			minHeight: sizeConfig.height,
+			resizable: false,
+			...(state?.x ? { x: state.x } : {}),
+			...(state?.y ? { y: state.y } : {}),
+		};
+	}
+
 	const options: BrowserWindowConstructorOptions = {
-		acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
+		acceptFirstMouse: true,
 		alwaysOnTop: true,
 		frame: false,
 		hasShadow: false,
 		maximizable: false,
 		minimizable: false,
-		// resizable: state?.resizable ? state.resizable : false,
-		resizable: false,
 		closable: true,
 		fullscreenable: false,
 		focusable: !isLocked,
 		movable: !isLocked,
 
 		show: false,
-		skipTaskbar: !showTaskbarIcon, // Whether to show the window in taskbar. Default is false.
-		titleBarStyle: 'default', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
-		// https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
-		// https://www.electronjs.org/docs/latest/tutorial/window-customization
-		// titleBarOverlay: true,
-		// 	 titleBarOverlay: {
-		//   color: '#2f3241',
-		//   symbolColor: '#74b1be',
-		//   height: 60
-		// }
-		// trafficLightPosition: { x: 10, y: 9 },
+		skipTaskbar: !showTaskbarIcon,
+		titleBarStyle: 'default',
 
-		transparent: true, // Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.
-		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
-		// vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
+		transparent: true,
+		backgroundColor: '#00000000',
 
-		width: state?.width ? state?.width : APP_WIDTH,
-		minWidth: APP_WIDTH,
-		height: state?.height ? state?.height : APP_HEIGHT,
-		minHeight: APP_HEIGHT,
-		...(state?.x ? { x: state.x } : {}),
-		...(state?.y ? { y: state.y } : {}),
+		minWidth: sizeConfig.width,
+		minHeight: sizeConfig.height,
 
 		// Conditionally enable features based on the platform
-		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
 		...(is.windows ? { type: 'toolbar' } : {}),
 
+		...sizeModeOpts,
 		...opts,
 	};
 
@@ -320,11 +349,13 @@ export const createSettingsWindow = async () => {
 		window.show();
 	});
 
-	// // Hide window when clicked away
-	// window.on('blur', () => {
-	// 	window.hide();
-	// 	setSettings({ isSettingsWindowOpen: false });
-	// });
+	// Hide window when clicked away (configurable)
+	window.on('blur', () => {
+		if (getSetting('settingsCloseOnBlur')) {
+			window.hide();
+			setSettings({ isSettingsWindowOpen: false });
+		}
+	});
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));

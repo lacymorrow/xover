@@ -41,11 +41,29 @@ Todo:
 */
 
 import { app } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import { $errors, $init } from '../config/strings';
 
 import ipc from './ipc';
+import windows from './windows';
 import { ready, startup } from './startup';
+
+// Single instance lock
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+	app.quit();
+} else {
+	app.on('second-instance', () => {
+		// Focus existing window when a second instance is launched
+		if (windows.mainWindow) {
+			if (windows.mainWindow.isMinimized()) {
+				windows.mainWindow.restore();
+			}
+			windows.mainWindow.focus();
+		}
+	});
+}
 
 // Initialize the timer
 console.time(app.name);
