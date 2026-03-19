@@ -1,14 +1,76 @@
+import { IMAGE_EXTENSIONS } from '@/config/config';
 import { cn } from '@/lib/utils';
 import { Crosshair } from '@/renderer/components/app/Crosshair';
 import { useActionStateContext } from '@/renderer/context/action-state-context';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import '@/renderer/styles/crosshair.scss';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function CrosshairApp() {
 	const { settings, windowState } = useGlobalContext();
 	const { tilt, hidden, adsActive, secondary } = useActionStateContext();
+	const [isDragActive, setIsDragActive] = useState(false);
+
+	// Drag-and-drop custom crosshair onto overlay window
+	useEffect(() => {
+		let dragCounter = 0;
+
+		const handleDragEnter = (e: DragEvent) => {
+			e.preventDefault();
+			dragCounter++;
+			setIsDragActive(true);
+		};
+
+		const handleDragOver = (e: DragEvent) => {
+			e.preventDefault();
+		};
+
+		const handleDragLeave = (e: DragEvent) => {
+			e.preventDefault();
+			dragCounter--;
+			if (dragCounter === 0) {
+				setIsDragActive(false);
+			}
+		};
+
+		const handleDrop = (e: DragEvent) => {
+			e.preventDefault();
+			dragCounter = 0;
+			setIsDragActive(false);
+
+			const file = e.dataTransfer?.files[0];
+			if (!file) return;
+
+			const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+			if (!IMAGE_EXTENSIONS.includes(ext)) return;
+
+			const filePath = window.electron.getPathForFile(file);
+			if (filePath) {
+				window.electron.openFile(filePath);
+			}
+		};
+
+		const handleDragEnd = (e: DragEvent) => {
+			e.preventDefault();
+			dragCounter = 0;
+			setIsDragActive(false);
+		};
+
+		document.addEventListener('dragenter', handleDragEnter);
+		document.addEventListener('dragover', handleDragOver);
+		document.addEventListener('dragleave', handleDragLeave);
+		document.addEventListener('drop', handleDrop, true);
+		document.addEventListener('dragend', handleDragEnd);
+
+		return () => {
+			document.removeEventListener('dragenter', handleDragEnter);
+			document.removeEventListener('dragover', handleDragOver);
+			document.removeEventListener('dragleave', handleDragLeave);
+			document.removeEventListener('drop', handleDrop, true);
+			document.removeEventListener('dragend', handleDragEnd);
+		};
+	}, []);
 
 	useEffect(() => {
 		// Add/remove class to lock/unlock app
@@ -94,6 +156,13 @@ export default function CrosshairApp() {
 			<div id="background" />
 
 			<Crosshair />
+
+			{/* Drop indicator overlay */}
+			{isDragActive && (
+				<div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+					<div className="absolute inset-1 rounded-lg border-2 border-dashed border-white/60 bg-black/30" />
+				</div>
+			)}
 		</div>
 	);
 }

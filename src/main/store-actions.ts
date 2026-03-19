@@ -1,5 +1,6 @@
 import { app, screen } from 'electron';
 import Logger from 'electron-log';
+import path from 'path';
 import { APP_ASPECT_RATIO, APP_HEIGHT, APP_MESSAGES_MAX, APP_WIDTH, SIZE_MODES } from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
 import {
@@ -10,7 +11,6 @@ import {
 } from '../config/settings';
 import { $messages } from '../config/strings';
 import store, { AppMessageType } from './store';
-import tray from './tray';
 import { forEachWindow } from './utils/window-utils';
 import windows from './windows';
 
@@ -20,10 +20,22 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 		const keys = Object.keys(changedSettings);
 
 		if (keys.includes('showDockIcon')) {
-			app.dock[changedSettings.showDockIcon ? 'show' : 'hide']();
+			if (changedSettings.showDockIcon) {
+				app.dock?.show();
+			} else {
+				app.dock?.hide();
+				// macOS hides all windows when dock icon is hidden; re-show them
+				setTimeout(() => {
+					forEachWindow((win) => {
+						win.showInactive();
+					});
+				}, 100);
+			}
 		}
 
 		if (keys.includes('showTrayIcon')) {
+			// Lazy require to break circular dependency: store-actions → tray → store-actions
+			const tray = require('./tray').default;
 			if (changedSettings.showTrayIcon) {
 				tray.initialize();
 			} else {
@@ -127,9 +139,16 @@ export const setCrosshairImages = (images: string[]) => {
 };
 
 export const addCrosshairImage = (image: string) => {
+	// Only store absolute paths
+	if (!path.isAbsolute(image)) {
+		Logger.warn(`Ignoring non-absolute crosshair path: ${image}`);
+		return;
+	}
 	const images = getCrosshairImages();
-	images.push(image);
-	setCrosshairImages(images);
+	if (!images.includes(image)) {
+		images.push(image);
+		setCrosshairImages(images);
+	}
 };
 
 export const getActiveWindow = () => {
@@ -199,7 +218,9 @@ export const setActionStateKey = (key: keyof ActionStateType, state: any) => {
 	// Danger, no type checking - use with caution
 
 	store.set(`actionState.${key}`, state); // todo: action state doesn't need to be stored
-	windows?.mainWindow?.webContents.send(ipcChannels.ACTION_STATE, key, state);
+	forEachWindow((win) => {
+		win.webContents.send(ipcChannels.ACTION_STATE, key, state);
+	});
 };
 
 export const resetStoreSettings = () => {

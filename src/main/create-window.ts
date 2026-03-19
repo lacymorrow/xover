@@ -2,7 +2,6 @@
 import {
 	BrowserWindow,
 	BrowserWindowConstructorOptions,
-	IpcMainEvent,
 	app,
 	screen,
 	shell,
@@ -95,8 +94,8 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706
 	browserWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
-	browserWindow.on('unresponsive', (event: IpcMainEvent) => {
-		Logger.error(`Window unresponsive: ${event.sender}`);
+	browserWindow.on('unresponsive', () => {
+		Logger.error('Window unresponsive');
 	});
 
 	browserWindow.webContents.on('did-fail-load', (event: any) => {
@@ -314,8 +313,6 @@ export const createSettingsWindow = async () => {
 	const state = getWindowState('settings');
 
 	const options: BrowserWindowConstructorOptions = {
-		alwaysOnTop: true,
-
 		title: `Settings - ${app.name}`,
 		titleBarStyle: 'hidden',
 		trafficLightPosition: { x: 19, y: 20 },

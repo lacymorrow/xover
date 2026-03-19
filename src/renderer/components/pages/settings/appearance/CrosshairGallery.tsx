@@ -3,16 +3,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { ChevronDown, ChevronRight, ImagePlus } from 'lucide-react';
-import React, { useCallback, useMemo, useState } from 'react';
-
-const IMAGE_EXTENSIONS = [
-	'image/png',
-	'image/jpeg',
-	'image/svg+xml',
-	'image/gif',
-	'image/webp',
-	'image/bmp',
-];
+import { useCallback, useMemo, useState } from 'react';
 
 interface GroupedImages {
 	[folder: string]: { label: string; value: string; filename: string }[];
@@ -29,7 +20,6 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 	const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
 		new Set(),
 	);
-	const [isDragOver, setIsDragOver] = useState(false);
 
 	const selectedValue = stateKey === 'crosshairSecondary' ? windowState.crosshairSecondary : windowState.crosshair;
 
@@ -37,10 +27,14 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 		window.electron.setWindowState({ [stateKey]: value });
 	}, [stateKey]);
 
-	// Group images by folder
+	// Group images by folder, deduplicating by value (full path)
 	const grouped = useMemo(() => {
 		const groups: GroupedImages = {};
+		const seen = new Set<string>();
 		for (const img of crosshairImages) {
+			if (seen.has(img.value)) continue;
+			seen.add(img.value);
+
 			const parts = img.value.replace(/\\/g, '/').split('/');
 			const filename = parts.pop() ?? '';
 			// Find the folder name (parent of file)
@@ -85,40 +79,28 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 		});
 	}, []);
 
-	// Drag and drop handlers
-	const handleDragOver = useCallback((e: React.DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setIsDragOver(true);
-	}, []);
-
-	const handleDragLeave = useCallback((e: React.DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setIsDragOver(false);
-	}, []);
-
-	const handleDrop = useCallback((e: React.DragEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setIsDragOver(false);
-
-		const files = Array.from(e.dataTransfer.files);
-		for (const file of files) {
-			if (IMAGE_EXTENSIONS.includes(file.type)) {
-				// Electron File objects have a .path property
-				const filePath = (file as any).path;
-				if (filePath) {
-					window.electron.ipcRenderer.send('open-file', filePath);
-				}
-			}
-		}
-	}, []);
-
 	const sortedFolders = useMemo(
 		() => Object.keys(filteredGroups).sort(),
 		[filteredGroups],
 	);
+
+	const handleClickBrowse = useCallback(() => {
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = 'image/png,image/jpeg,image/svg+xml,image/gif,image/webp,image/bmp';
+		input.multiple = true;
+		input.onchange = () => {
+			if (input.files) {
+				for (const file of Array.from(input.files)) {
+					const filePath = window.electron.getPathForFile(file);
+					if (filePath) {
+						window.electron.openFile(filePath);
+					}
+				}
+			}
+		};
+		input.click();
+	}, []);
 
 	return (
 		<div className="space-y-3">
@@ -129,28 +111,21 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 				</p>
 			</div>
 
+			<button
+				type="button"
+				onClick={handleClickBrowse}
+				className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed p-3 text-sm text-muted-foreground transition-colors cursor-pointer border-muted-foreground/25 hover:border-muted-foreground/50 hover:text-foreground"
+			>
+				<ImagePlus className="h-4 w-4" />
+				<span>Add custom crosshair</span>
+			</button>
+
 			<Input
 				placeholder="Search crosshairs..."
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
 				className="h-8"
 			/>
-
-			{/* Drop zone */}
-			<div
-				onDragOver={handleDragOver}
-				onDragLeave={handleDragLeave}
-				onDrop={handleDrop}
-				className={cn(
-					'flex items-center justify-center gap-2 rounded-lg border-2 border-dashed p-3 text-sm text-muted-foreground transition-colors cursor-pointer',
-					isDragOver
-						? 'border-primary bg-primary/10 text-primary'
-						: 'border-muted-foreground/25 hover:border-muted-foreground/50',
-				)}
-			>
-				<ImagePlus className="h-4 w-4" />
-				<span>Drop custom crosshair images here</span>
-			</div>
 
 			<ScrollArea className="h-[320px] rounded-md border p-2">
 				{sortedFolders.length === 0 && (

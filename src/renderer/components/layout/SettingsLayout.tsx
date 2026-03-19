@@ -23,7 +23,10 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 			});
 		}
 		if (acceptedFiles.length) {
-			window.electron.openFile(acceptedFiles[0].path);
+			const filePath = window.electron.getPathForFile(acceptedFiles[0]);
+			if (filePath) {
+				window.electron.openFile(filePath);
+			}
 		}
 	}, []);
 
@@ -31,6 +34,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 		onDrop,
 		noClick: true,
 		noKeyboard: true,
+		noDragEventsBubbling: true,
 		accept: {
 			'image/png': IMAGE_EXTENSIONS,
 		},

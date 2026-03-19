@@ -102,7 +102,9 @@ const registerToggleHoldShortcutTilt = (
 	} else if (tiltBehavior === 'hold') {
 		uIOhook.on('keydown', (event) => {
 			if (event.keycode === trigger) {
-				setActionStateKey('tilt', tiltAngle); // Press
+				if (getActionState().tilt !== tiltAngle) {
+					setActionStateKey('tilt', tiltAngle); // Press
+				}
 			}
 		});
 		uIOhook.on('keyup', (event) => {
@@ -134,10 +136,7 @@ const registerToggleHoldMouseTilt = (
 	} else if (tiltBehavior === 'hold') {
 		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
-				const currentTilt = getActionState().tilt;
-				if (currentTilt && currentTilt === tiltAngle) {
-					setActionStateKey('tilt', 0);
-				} else {
+				if (getActionState().tilt !== tiltAngle) {
 					setActionStateKey('tilt', tiltAngle);
 				}
 			}

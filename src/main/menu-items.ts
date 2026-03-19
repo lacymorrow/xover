@@ -14,13 +14,13 @@ export const aboutMenuItem: any = {
 	accelerator: 'CommandOrControl+Z',
 };
 
-export const autoUpdateMenuItem: any = {
+export const getAutoUpdateMenuItem = (): any => ({
 	label: 'Auto Update',
 	type: 'checkbox',
 	id: 'allowAutoUpdate',
 	enabled: false,
-	checked: !!getSetting('allowAutoUpdate'),
-};
+	checked: () => !!getSetting('allowAutoUpdate'),
+});
 
 export const testNotificationMenuItem: any = {
 	label: 'Test Notification',
