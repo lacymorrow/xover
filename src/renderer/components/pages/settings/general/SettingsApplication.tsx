@@ -14,9 +14,9 @@ export function SettingsApplication() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Application Settings</h3>
+				<h3 className="text-lg font-medium">App</h3>
 				<p className="text-sm text-muted-foreground">
-					Select your application preferences.
+					Launch behavior, system integration, and privacy.
 				</p>
 			</div>
 			<Separator />
@@ -34,8 +34,8 @@ export function SettingsApplication() {
 				onChange={() => {
 					handleChangeSetting({ startLocked: !settings.startLocked });
 				}}
-				label="Allow start locked"
-				description="Allow the app in a locked state, if it was locked when it was closed."
+				label="Resume locked on launch"
+				description="Start the app locked if it was locked when last closed."
 				card
 			/>
 			{(app.isMac || app.isDev) && (
@@ -98,8 +98,8 @@ export function SettingsApplication() {
 						settingsCloseOnBlur: !settings.settingsCloseOnBlur,
 					});
 				}}
-				label="Close settings on blur"
-				description="Automatically hide the settings window when it loses focus."
+				label="Auto-hide settings window"
+				description="Close the settings window when it loses focus."
 				card
 			/>
 			<Separator />
@@ -108,7 +108,7 @@ export function SettingsApplication() {
 				onChange={() => {
 					handleChangeSetting({ allowAnalytics: !settings.allowAnalytics });
 				}}
-				label="Enable telemetry"
+				label="Anonymous usage analytics"
 				description="Help improve the app by sending anonymous usage data."
 			/>
 		</div>

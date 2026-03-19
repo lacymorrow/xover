@@ -43,7 +43,7 @@ export function SettingsWindow() {
 							<TooltipContent>
 								<p>
 									Enable <b>Secondary Crosshair</b> in the{' '}
-									<Link to="actions">Actions</Link> panel.
+									<Link to="bindings">Bindings</Link> tab.
 								</p>
 							</TooltipContent>
 						</Tooltip>

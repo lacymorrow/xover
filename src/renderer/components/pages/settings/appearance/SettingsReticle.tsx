@@ -19,7 +19,7 @@ export function SettingsReticle() {
 			<div>
 				<h3 className="text-lg font-medium">Reticle</h3>
 				<p className="text-sm text-muted-foreground">
-					Adjust the crosshair size, color, and opacity.
+					Adjust the reticle style, size, rotation, and color.
 				</p>
 			</div>
 			<Separator />
@@ -29,7 +29,7 @@ export function SettingsReticle() {
 					handleChangeSetting({ reticle: value });
 				}}
 				label="Reticle Style"
-				details="Select the crosshair style."
+				details="Select the reticle shape."
 				items={reticleItems}
 				className="w-[250px] h-60 h"
 			/>
