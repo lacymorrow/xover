@@ -64,8 +64,7 @@ const registerToggleHoldMouseAlt = (input: string, behavior: string) => {
 	} else if (behavior === 'hold') {
 		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
-				// MACOS Mousedown fired twice for middle mouse
-				setActionStateKey('secondary', !getActionState().secondary);
+				setActionStateKey('secondary', true);
 			}
 		});
 
