@@ -6,6 +6,7 @@ import { $settings } from '@/config/strings';
 import { InputCheckboxGroup } from '@/renderer/components/input/InputCheckboxGroup';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { useGlobalContext } from '@/renderer/context/global-context';
+import { useState } from 'react';
 
 // if (flagDisableGpu) {
 // 	app.commandLine.appendSwitch('disable-gpu');
@@ -30,9 +31,16 @@ import { useGlobalContext } from '@/renderer/context/global-context';
 // Force using integrated GPU when there are multiple GPUs available.
 export function SettingsAdvanced() {
 	const { app, settings } = useGlobalContext();
+	const [updateStatus, setUpdateStatus] = useState<string | null>(null);
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		window.electron.setSettings(setting);
+	};
+
+	const handleCheckUpdate = () => {
+		setUpdateStatus('Checking for updates...');
+		window.electron.ipcRenderer.send(ipcChannels.UPDATE_APP);
+		setTimeout(() => setUpdateStatus(null), 5000);
 	};
 
 	return (
@@ -133,13 +141,14 @@ export function SettingsAdvanced() {
 				</Button>
 
 				<Button
-					onClick={() => {
-						window.electron.ipcRenderer.send(ipcChannels.UPDATE_APP);
-						window.electron.playSound('DONE');
-					}}
+					onClick={handleCheckUpdate}
+					disabled={updateStatus !== null}
 				>
-					Check for updates
+					{updateStatus ?? 'Check for updates'}
 				</Button>
+				{updateStatus && (
+					<p className="text-sm text-muted-foreground">{updateStatus}</p>
+				)}
 				<Button
 					variant="destructive"
 					onClick={() => {

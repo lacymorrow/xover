@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { DIRECTORY_SCAN_DEPTH, IMAGE_EXTENSIONS } from '../../config/config';
 import { __crosshairs } from '../paths';
-import { getCrosshairImages, setCrosshairImages } from '../store-actions';
+import { getCrosshairImages, getWindowStates, setCrosshairImages, setWindowState } from '../store-actions';
 
 const isValidImage = (filePath: string) => {
 	return IMAGE_EXTENSIONS.indexOf(path.extname(filePath)) !== -1;
@@ -58,15 +58,38 @@ export const scanImages = async () => {
 			// Clear the list of images
 			setCrosshairImages([]);
 
-			// Add custom images to the list
+			// Add custom images to the list (only absolute paths that exist)
 			currentImages.forEach((image) => {
-				if (images.indexOf(image) === -1 && isValidImage(image)) {
+				if (
+					images.indexOf(image) === -1 &&
+					isValidImage(image) &&
+					path.isAbsolute(image) &&
+					fs.existsSync(image)
+				) {
 					images.push(image);
 				}
 			});
 
 			// Save the list of images
 			setCrosshairImages(images);
+
+			// Clean up invalid crosshair paths in window states
+			const windowStates = getWindowStates();
+			for (const [id, state] of Object.entries(windowStates)) {
+				if (!state || typeof state !== 'object') continue;
+				const s = state as any;
+				const updates: Record<string, undefined> = {};
+				if (s.crosshair && !path.isAbsolute(s.crosshair)) {
+					updates.crosshair = undefined;
+				}
+				if (s.crosshairSecondary && !path.isAbsolute(s.crosshairSecondary)) {
+					updates.crosshairSecondary = undefined;
+				}
+				if (Object.keys(updates).length > 0) {
+					Logger.warn(`Cleaning invalid crosshair paths in window ${id}:`, updates);
+					setWindowState(id, updates as any);
+				}
+			}
 		})
 		.catch((error) => {
 			Logger.error(error);

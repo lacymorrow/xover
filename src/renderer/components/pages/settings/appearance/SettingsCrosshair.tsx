@@ -1,27 +1,14 @@
 import { Separator } from '@/components/ui/separator';
-import { AppSizeModeType, CrosshairWindowStateType } from '@/config/settings';
-import { InputColor } from '@/renderer/components/input/InputColor';
-import { InputRadioGroup } from '@/renderer/components/input/InputRadioGroup';
+import { CrosshairWindowStateType } from '@/config/settings';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useMemo } from 'react';
 import { CrosshairGallery } from './CrosshairGallery';
 import { SettingsReticle } from './SettingsReticle';
-
-const APP_SIZE_MODE_ITEMS = [
-	{ value: 'normal', label: 'Normal' },
-	{ value: 'resizable', label: 'Resizable' },
-	{ value: 'fullscreen', label: 'Fullscreen' },
-];
-
-const WINDOW_SIZE_MODE_ITEMS = [
-	{ value: 'compact', label: 'Compact' },
-	{ value: 'normal', label: 'Normal' },
-	{ value: 'large', label: 'Large' },
-];
+import { InputColor } from '@/renderer/components/input/InputColor';
 
 export function SettingsCrosshair() {
-	const { windowState, settings, setSettings } = useGlobalContext();
+	const { windowState } = useGlobalContext();
 
 	const isSvgSelected = useMemo(() => {
 		return windowState.crosshair?.toLowerCase().endsWith('.svg') ?? false;
@@ -43,22 +30,6 @@ export function SettingsCrosshair() {
 				</p>
 			</div>
 			<Separator />
-			<InputColor
-				value={windowState.backgroundColor}
-				label="Background Color"
-				details="The background color of the Crosshair application window."
-				onChange={(value) => {
-					handleChangeSetting({ backgroundColor: value });
-				}}
-			/>
-			<InputColor
-				value={windowState.foregroundColor}
-				label="Accent Color"
-				details="Highlight color used for buttons, links, and other interactive elements."
-				onChange={(value) => {
-					handleChangeSetting({ foregroundColor: value });
-				}}
-			/>
 			<CrosshairGallery />
 			<InputSlider
 				value={windowState.crosshairSize}
@@ -123,27 +94,6 @@ export function SettingsCrosshair() {
 				</>
 			)}
 			<SettingsReticle />
-			<Separator />
-			<InputRadioGroup
-				label="Window Size Mode"
-				details="Normal: fixed size. Resizable: drag to resize. Fullscreen: fills the entire screen."
-				items={APP_SIZE_MODE_ITEMS}
-				value={settings.appSizeMode}
-				onChange={(value) => {
-					setSettings({ appSizeMode: value as AppSizeModeType });
-				}}
-				card
-			/>
-			<InputRadioGroup
-				label="Crosshair Size"
-				details="Compact: minimal, no controls. Normal: default size with controls. Large: bigger window with controls."
-				items={WINDOW_SIZE_MODE_ITEMS}
-				value={windowState.sizeMode ?? 'normal'}
-				onChange={(value) => {
-					handleChangeSetting({ sizeMode: value as CrosshairWindowStateType['sizeMode'] });
-				}}
-				card
-			/>
 		</div>
 	);
 }

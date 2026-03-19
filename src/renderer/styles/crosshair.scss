@@ -101,6 +101,9 @@ body {
 	flex-direction: column;
 	justify-content: space-between;
 	align-items: center;
+
+	/* Exclude controls from drag region so buttons are clickable */
+	-webkit-app-region: no-drag;
 }
 
 /* Crosshair Window */
@@ -149,6 +152,9 @@ body {
 	transform: rotate(var(--crosshair-rotation, 0deg));
 	transition: transform var(--transition-duration, 100ms)
 		var(--transition-timing, ease-in-out);
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
 }
 
 #crosshair svg {

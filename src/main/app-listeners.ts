@@ -36,7 +36,7 @@ const register = () => {
 
 		// TODO: BUG - Dock persists after app quits on macOS
 		if (is.macos) {
-			app.dock.hide();
+			app.dock?.hide();
 		}
 
 		app.releaseSingleInstanceLock();

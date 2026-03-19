@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer, IpcRendererEvent, webUtils } from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
 import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { $errors } from '../config/strings';
@@ -9,6 +9,8 @@ const channels = Object.values(ipcChannels);
 
 const electronHandler = {
 	os: getOS(),
+	/** Get the absolute file path from a dropped/selected File object (Electron 40+) */
+	getPathForFile: (file: File) => webUtils.getPathForFile(file),
 	setSettings: (settings: Partial<SettingsType>) =>
 		ipcRenderer.send(ipcChannels.SET_SETTINGS, settings),
 	setWindowState: (state: Partial<CrosshairWindowStateType>) =>

@@ -1,6 +1,5 @@
 // todo: menubar ellipsis on overflow
 import { MainLayout } from '@/renderer/components/layout/MainLayout';
-import { Home } from '@/renderer/components/pages/Home';
 import {
 	Route,
 	RouterProvider,
@@ -17,32 +16,6 @@ export default function App() {
 	const index =
 		settingsNavItems.find((item) => item.index) || settingsNavItems[0];
 
-	const routes = (
-		<Route path="/" element={<MainLayout />}>
-			<Route path="settings" element={<SettingsLayout />}>
-				{settingsNavItems.map((item) => {
-					/* Dynamically add routes for settings */
-					return (
-						<Route
-							key={item.title}
-							path={item.href}
-							element={<>{item.element}</>}
-						/>
-					);
-				})}
-
-				{index && (
-					<>
-						<Route index path="*" element={<>{index.element}</>} />
-					</>
-				)}
-			</Route>
-
-			<Route index element={<Home />} />
-			<Route path="*" element={<Home />} />
-		</Route>
-	);
-
 	const crosshairRoutes = (
 		<Route
 			path="/"
@@ -52,22 +25,11 @@ export default function App() {
 				</MainLayout>
 			}
 		>
-			{settingsNavItems.map((item) => {
-				/* Dynamically add routes for settings */
-				return (
-					<Route
-						key={item.title}
-						path={item.href}
-						element={<>{item.element}</>}
-					/>
-				);
-			})}
-
-			{index && (
-				<>
-					<Route index path="*" element={<>{index.element}</>} />
-				</>
-			)}
+			{settingsNavItems.map((item) => (
+				<Route key={item.title} path={item.href} element={<>{item.element}</>} />
+			))}
+			{index && <Route index element={<>{index.element}</>} />}
+			{index && <Route path="*" element={<>{index.element}</>} />}
 		</Route>
 	);
 

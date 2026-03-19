@@ -10,13 +10,14 @@ import { packageJsonFields } from '../config/config';
 import dock from './dock';
 import {
 	aboutMenuItem,
-	autoUpdateMenuItem,
+	getAutoUpdateMenuItem,
 	quitMenuItem,
 	testNotificationMenuItem,
 	testSoundMenuItem,
 } from './menu-items';
 import { getSetting, setSettings } from './store-actions';
 import { is } from './util';
+import { openSettingsWindow } from './utils/settingsWindow';
 
 // import { bugs, homepage } from '../../package.json';
 const { bugs, homepage } = packageJsonFields;
@@ -71,7 +72,7 @@ export default class MenuBuilder {
 	subMenuSettings: MenuItemConstructorOptions = {
 		label: 'Settings',
 		submenu: [
-			autoUpdateMenuItem,
+			getAutoUpdateMenuItem(),
 			{
 				label: 'Show Dock Icon',
 				type: 'checkbox',
@@ -94,7 +95,7 @@ export default class MenuBuilder {
 				label: 'Quit on Close',
 				type: 'checkbox',
 				id: 'quitOnWindowClose',
-				checked: getSetting('quitOnWindowClose'),
+				checked: () => getSetting('quitOnWindowClose'),
 				click: () => {
 					setSettings({
 						quitOnWindowClose: !getSetting('quitOnWindowClose'),
@@ -130,6 +131,15 @@ export default class MenuBuilder {
 			label: app.name,
 			submenu: [
 				aboutMenuItem,
+				{ type: 'separator' },
+				{
+					id: 'preferences',
+					label: `Settings\u2026`,
+					accelerator: 'Command+,',
+					click: () => {
+						openSettingsWindow();
+					},
+				},
 				{ type: 'separator' },
 				{
 					label: 'Services',
@@ -285,6 +295,16 @@ export default class MenuBuilder {
 						accelerator: 'Ctrl+O',
 						id: 'open',
 					},
+					{ type: 'separator' as const },
+					{
+						label: '&Settings',
+						accelerator: 'Ctrl+,',
+						id: 'preferences',
+						click: () => {
+							openSettingsWindow();
+						},
+					},
+					{ type: 'separator' as const },
 					{
 						label: '&Close',
 						accelerator: 'Ctrl+W',
@@ -356,6 +376,6 @@ export default class MenuBuilder {
 export const setupDockMenu = () => {
 	if (!is.macos) return;
 	const dockMenu = Menu.buildFromTemplate([aboutMenuItem, quitMenuItem]);
-	app.dock.setMenu(dockMenu);
+	app.dock?.setMenu(dockMenu);
 	dock.initialize();
 };
