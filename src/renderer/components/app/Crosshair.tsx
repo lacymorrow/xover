@@ -58,7 +58,16 @@ export function Crosshair() {
 			.then((text) => {
 				// Strip XML declaration and doctype, keep only the <svg> element
 				const svgMatch = text.match(/<svg[\s\S]*<\/svg>/i);
-				setSvgContent(svgMatch ? svgMatch[0] : null);
+				if (!svgMatch) {
+					setSvgContent(null);
+					return;
+				}
+				// Sanitize: strip script tags, event handlers, and data URIs
+				const sanitized = svgMatch[0]
+					.replace(/<script[\s\S]*?<\/script>/gi, '')
+					.replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
+					.replace(/href\s*=\s*["']javascript:[^"']*["']/gi, '');
+				setSvgContent(sanitized);
 			})
 			.catch(() => {
 				setSvgContent(null);
