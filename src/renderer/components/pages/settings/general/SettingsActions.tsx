@@ -18,15 +18,10 @@ export function SettingsActions() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">
-					Mouse and Keyboard Actions (Beta)
-				</h3>
+				<h3 className="text-lg font-medium">Input Bindings</h3>
 				<p className="text-sm text-muted-foreground">
-					These actions use native hooks to control the mouse and keyboard. The
-					hooks are not loaded until the action is enabled and the crosshair is
-					activated.
-					<br />
-					Use with caution.
+					Bind mouse and keyboard inputs to crosshair actions. Hooks are loaded
+					when a binding is enabled and the crosshair is active.
 				</p>
 			</div>
 			<Separator />
@@ -42,33 +37,40 @@ export function SettingsActions() {
 			/>
 			<Separator />
 
-			{/* Hide on Mouse Button */}
+			{/* Hide on Action */}
 			<InputSwitch
-				value={settings.hideOnMouseEnabled}
+				value={settings.hideOnMouseEnabled || settings.hideOnKeyEnabled}
 				onChange={() => {
+					const newEnabled = !(settings.hideOnMouseEnabled || settings.hideOnKeyEnabled);
 					handleChangeSetting({
-						hideOnMouseEnabled: !settings.hideOnMouseEnabled,
+						hideOnMouseEnabled: newEnabled,
+						hideOnKeyEnabled: newEnabled,
 					});
 				}}
-				label="Hide on Mouse Button"
-				description="Hide the crosshair when a mouse button is pressed (ADS hide)."
+				label="Auto-Hide"
+				description="Hide the crosshair on input (key or mouse button press)."
 			/>
-			{settings.hideOnMouseEnabled && (
+			{(settings.hideOnMouseEnabled || settings.hideOnKeyEnabled) && (
 				<>
-					<InputSelectForm
-						value={String(settings.hideOnMouseButton)}
+					<InputMouseKeyboardBind
+						value={settings.hideOnKeyBind || `mouse:${settings.hideOnMouseButton}`}
 						onChange={(value) => {
-							handleChangeSetting({
-								hideOnMouseButton: parseInt(value, 10),
-							});
+							const [input, trigger] = value.split(':');
+							if (input === 'mouse') {
+								handleChangeSetting({
+									hideOnMouseEnabled: true,
+									hideOnKeyEnabled: false,
+									hideOnMouseButton: parseInt(trigger, 10),
+								});
+							} else {
+								handleChangeSetting({
+									hideOnMouseEnabled: false,
+									hideOnKeyEnabled: true,
+									hideOnKeyBind: value,
+								});
+							}
 						}}
-						label="Mouse Button"
-						description="Which mouse button triggers the hide."
-						items={[
-							{ label: 'Left Click', value: '1' },
-							{ label: 'Right Click', value: '2' },
-							{ label: 'Middle Click', value: '3' },
-						]}
+						label="Hide bind"
 					/>
 					<InputSelectForm
 						value={settings.hideOnMouseBehavior}
@@ -78,35 +80,13 @@ export function SettingsActions() {
 							});
 						}}
 						label="Hide Behavior"
-						description="Hold hides while button is held, toggle flips on each click."
+						description="Hold hides while pressed, toggle flips on each press."
 						items={[
 							{ label: 'Hold to hide', value: 'hold' },
 							{ label: 'Press to toggle', value: 'toggle' },
 						]}
 					/>
 				</>
-			)}
-			<Separator />
-
-			{/* Hide on Keypress */}
-			<InputSwitch
-				value={settings.hideOnKeyEnabled}
-				onChange={() => {
-					handleChangeSetting({
-						hideOnKeyEnabled: !settings.hideOnKeyEnabled,
-					});
-				}}
-				label="Hide on Keypress"
-				description="Hide the crosshair while a key is held down."
-			/>
-			{settings.hideOnKeyEnabled && (
-				<InputMouseKeyboardBind
-					value={settings.hideOnKeyBind}
-					onChange={(value) => {
-						handleChangeSetting({ hideOnKeyBind: value });
-					}}
-					label="Hide key bind"
-				/>
 			)}
 			<Separator />
 
@@ -118,25 +98,20 @@ export function SettingsActions() {
 						adsResizeEnabled: !settings.adsResizeEnabled,
 					});
 				}}
-				label="Resize on ADS"
-				description="Change the crosshair size when aiming down sights (mouse button press)."
+				label="ADS Zoom"
+				description="Resize the crosshair when aiming down sights."
 			/>
 			{settings.adsResizeEnabled && (
 				<>
-					<InputSelectForm
-						value={String(settings.adsResizeButton)}
+					<InputMouseKeyboardBind
+						value={`mouse:${settings.adsResizeButton}`}
 						onChange={(value) => {
+							const [_input, trigger] = value.split(':');
 							handleChangeSetting({
-								adsResizeButton: parseInt(value, 10),
+								adsResizeButton: parseInt(trigger, 10),
 							});
 						}}
-						label="ADS Button"
-						description="Which mouse button triggers the resize."
-						items={[
-							{ label: 'Left Click', value: '1' },
-							{ label: 'Right Click', value: '2' },
-							{ label: 'Middle Click', value: '3' },
-						]}
+						label="ADS bind"
 					/>
 					<InputSelectForm
 						value={settings.adsResizeBehavior}
@@ -146,7 +121,7 @@ export function SettingsActions() {
 							});
 						}}
 						label="ADS Behavior"
-						description="Hold resizes while button is held, toggle flips on each click."
+						description="Hold resizes while pressed, toggle flips on each press."
 						items={[
 							{ label: 'Hold to resize', value: 'hold' },
 							{ label: 'Press to toggle', value: 'toggle' },
@@ -174,9 +149,9 @@ export function SettingsActions() {
 						secondaryActionEnabled: !settings.secondaryActionEnabled,
 					});
 				}}
-				label="Enable Secondary Action"
-				description="Enable a secondary action to be performed when the secondary bind is active."
-				details="You can show, hide, resize, or change the crosshair when the secondary bind is active."
+				label="Secondary Crosshair"
+				description="Switch to a second crosshair when the bind is active."
+				details="Configure the secondary crosshair appearance in the Crosshair tab."
 			/>
 			{settings.secondaryActionEnabled && (
 				<InputMouseKeyboardBind
@@ -250,7 +225,7 @@ export function SettingsActions() {
 					handleChangeSetting({ transitionDuration: value });
 				}}
 				label="Transition duration"
-				details="The duration of the transition when the crosshair moves."
+				details="Animation speed for tilt, secondary swap, and other binding transitions (ms)."
 				min={0}
 				max={1000}
 			/>

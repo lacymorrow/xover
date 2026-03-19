@@ -31,13 +31,6 @@ export const nav = {
 
 export const settingsNavItems = [
 	{
-		title: 'General',
-		href: 'general',
-		element: <SettingsApplication />,
-		icon: GearIcon,
-		index: true,
-	},
-	{
 		title: 'Crosshair',
 		href: 'crosshair',
 		element: <SettingsWindow />,
@@ -45,8 +38,8 @@ export const settingsNavItems = [
 		index: true,
 	},
 	{
-		title: 'Actions',
-		href: 'actions',
+		title: 'Bindings',
+		href: 'bindings',
 		element: <SettingsActions />,
 		icon: LightningBoltIcon,
 	},
@@ -56,7 +49,12 @@ export const settingsNavItems = [
 		element: <SettingsAppearance />,
 		icon: BlendingModeIcon,
 	},
-
+	{
+		title: 'App',
+		href: 'app',
+		element: <SettingsApplication />,
+		icon: GearIcon,
+	},
 	{
 		title: 'Notifications',
 		href: 'notifications',

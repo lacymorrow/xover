@@ -25,10 +25,14 @@ export function Crosshair() {
 
 	// Resolve active crosshair and reticle based on secondary state
 	const activeCrosshair = useMemo(() => {
-		if (secondary && windowState.crosshairSecondary) {
-			return windowState.crosshairSecondary;
+		const value = secondary && windowState.crosshairSecondary
+			? windowState.crosshairSecondary
+			: windowState.crosshair;
+		// Ignore relative paths (invalid stored values)
+		if (value && !value.startsWith('/') && !/^[A-Z]:\\/i.test(value)) {
+			return undefined;
 		}
-		return windowState.crosshair;
+		return value;
 	}, [secondary, windowState.crosshair, windowState.crosshairSecondary]);
 
 	const activeReticle = useMemo(() => {
@@ -54,7 +58,16 @@ export function Crosshair() {
 			.then((text) => {
 				// Strip XML declaration and doctype, keep only the <svg> element
 				const svgMatch = text.match(/<svg[\s\S]*<\/svg>/i);
-				setSvgContent(svgMatch ? svgMatch[0] : null);
+				if (!svgMatch) {
+					setSvgContent(null);
+					return;
+				}
+				// Sanitize: strip script tags, event handlers, and data URIs
+				const sanitized = svgMatch[0]
+					.replace(/<script[\s\S]*?<\/script>/gi, '')
+					.replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
+					.replace(/href\s*=\s*["']javascript:[^"']*["']/gi, '');
+				setSvgContent(sanitized);
 			})
 			.catch(() => {
 				setSvgContent(null);
@@ -65,17 +78,13 @@ export function Crosshair() {
 		return reticles.find((r) => r.value === activeReticle)?.Icon;
 	}, [activeReticle]);
 
-	const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-		switch (e.detail) {
-			case 2:
-				// Double click
-				// Center app on screen
-				window.electron.ipcRenderer.send(ipcChannels.CENTER_WINDOW);
-				break;
-
-			default:
-				break;
-		}
+	// Use native dblclick event since -webkit-app-region: drag swallows regular clicks
+	useEffect(() => {
+		const handleDblClick = () => {
+			window.electron.ipcRenderer.send(ipcChannels.CENTER_WINDOW);
+		};
+		document.addEventListener('dblclick', handleDblClick);
+		return () => document.removeEventListener('dblclick', handleDblClick);
 	}, []);
 
 	const handleError = useCallback(
@@ -88,7 +97,6 @@ export function Crosshair() {
 	return (
 		<div
 			className="w-full h-full grid grid-cols-[1fr_auto_1fr]"
-			onClick={handleClick}
 		>
 			<div className="controls">
 				{showControls && <QuitButton />}

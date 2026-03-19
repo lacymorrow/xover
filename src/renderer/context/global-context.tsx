@@ -110,19 +110,21 @@ export function GlobalContextProvider({
 			window.electron.ipcRenderer
 				.invoke(ipcChannels.GET_CROSSHAIR_IMAGES)
 				.then((res) => {
-					const images = res.map((img: any) => {
-						return {
-							label: (
-								<div className="flex gap-2 justify-between items-center">
-									<div className="w-6 h-6">
-										<img src={`file://${img}`} alt="" />
+					const images = res
+						.filter((img: string) => img.startsWith('/') || img.startsWith('\\') || /^[A-Z]:\\/i.test(img))
+						.map((img: any) => {
+							return {
+								label: (
+									<div className="flex gap-2 justify-between items-center">
+										<div className="w-6 h-6">
+											<img src={`file://${img}`} alt="" />
+										</div>
+										{img.split('/').pop()}
 									</div>
-									{img.split('/').pop()}
-								</div>
-							),
-							value: img,
-						};
-					});
+								),
+								value: img,
+							};
+						});
 					setCrosshairImages(images);
 				})
 				.catch(console.error);
