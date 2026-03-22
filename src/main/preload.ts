@@ -24,6 +24,11 @@ const electronHandler = {
 	playSound: (sound: string) => ipcRenderer.send(ipcChannels.PLAY_SOUND, sound),
 	openFile: (file: string) => ipcRenderer.send(ipcChannels.OPEN_FILE, file),
 	openUrl: (url: string) => ipcRenderer.send(ipcChannels.OPEN_URL, url),
+	activateLicense: (key: string) =>
+		ipcRenderer.invoke(ipcChannels.ACTIVATE_LICENSE, key),
+	deactivateLicense: () => ipcRenderer.invoke(ipcChannels.DEACTIVATE_LICENSE),
+	checkLicense: () => ipcRenderer.invoke(ipcChannels.CHECK_LICENSE),
+	getLicenseStatus: () => ipcRenderer.invoke(ipcChannels.GET_LICENSE_STATUS),
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {
 			if (!channels.includes(channel)) {

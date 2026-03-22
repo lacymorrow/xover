@@ -1,4 +1,5 @@
 import Store from 'electron-store';
+import { DEFAULT_LICENSE_STATUS, LicenseStatus } from '../config/license';
 import {
 	ActionStateType,
 	CrosshairWindowStateType,
@@ -26,6 +27,7 @@ export interface StoreType {
 	};
 	activeWindow: string;
 	actionState: ActionStateType;
+	license: LicenseStatus;
 }
 
 export type WindowNamesType = 'settings' | 'crosshairs';
@@ -105,6 +107,16 @@ const schema: Store.Schema<StoreType> = {
 	appMessageLog: {
 		type: 'array',
 		default: [],
+	},
+	license: {
+		type: 'object',
+		properties: {
+			isPremium: { type: 'boolean' },
+			licenseKey: { type: 'string' },
+			activationId: { type: 'string' },
+			lastValidated: { type: 'number' },
+		},
+		default: DEFAULT_LICENSE_STATUS,
 	},
 	settings: {
 		type: 'object',

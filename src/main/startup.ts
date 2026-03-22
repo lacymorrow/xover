@@ -19,6 +19,7 @@ import sounds from './sounds';
 import tray from './tray';
 import { initializeAccessibilityCheck } from './accessibility';
 import { AutoUpdate } from './auto-update';
+import { checkLicense } from './license';
 import { debugInfo, is } from './util';
 import { scanImages } from './utils/getImages';
 
@@ -90,6 +91,11 @@ export const ready = async () => {
 	// Auto updates
 	// eslint-disable-next-line no-new
 	new AutoUpdate();
+
+	// Re-validate license if cache is stale
+	checkLicense().catch((error) => {
+		Logger.error('License check on startup failed:', error);
+	});
 
 	// Idle
 	Logger.status($init.mainIdle);

@@ -6,6 +6,12 @@ import { CustomAcceleratorsType } from '../types/keyboard';
 import { getPlatformInfo } from '../utils/platform';
 import autoUpdate from './auto-update';
 import kb from './keyboard';
+import {
+	activateLicense,
+	checkLicense,
+	deactivateLicense,
+	getLicenseStatus,
+} from './license';
 import { notification } from './notifications';
 import { rendererPaths } from './paths';
 import sounds from './sounds';
@@ -185,6 +191,14 @@ export default {
 		ipcMain.on(ipcChannels.FOCUS_WINDOW_MAIN, () => {
 			focusNextWindow();
 		});
+
+		// License
+		ipcMain.handle(ipcChannels.ACTIVATE_LICENSE, (_event, key: string) =>
+			activateLicense(key),
+		);
+		ipcMain.handle(ipcChannels.DEACTIVATE_LICENSE, () => deactivateLicense());
+		ipcMain.handle(ipcChannels.CHECK_LICENSE, () => checkLicense());
+		ipcMain.handle(ipcChannels.GET_LICENSE_STATUS, () => getLicenseStatus());
 
 		ipcMain.on(ipcChannels.CLOSE_ALL_WINDOWS, () => {
 			for (const id of Object.keys(windows.crosshairWindows)) {

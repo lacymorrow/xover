@@ -9,6 +9,7 @@ import {
 	IdCardIcon,
 	KeyboardIcon,
 	LightningBoltIcon,
+	LockClosedIcon,
 } from '@radix-ui/react-icons';
 
 import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
@@ -17,6 +18,7 @@ import { SettingsNotifications } from '@/renderer/components/pages/settings/noti
 import { SettingsWindow } from '../components/pages/settings/appearance/SettingsWindow';
 import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
 import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
+import { SettingsLicense } from '../components/pages/settings/license/SettingsLicense';
 
 export const nav = {
 	home: {
@@ -72,6 +74,12 @@ export const settingsNavItems = [
 		href: 'advanced',
 		element: <SettingsAdvanced />,
 		icon: Component1Icon,
+	},
+	{
+		title: 'License',
+		href: 'license',
+		element: <SettingsLicense />,
+		icon: LockClosedIcon,
 	},
 	{
 		title: 'About',

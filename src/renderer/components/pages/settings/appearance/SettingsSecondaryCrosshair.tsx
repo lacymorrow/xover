@@ -3,6 +3,7 @@ import { CrosshairWindowStateType } from '@/config/settings';
 import { InputColor } from '@/renderer/components/input/InputColor';
 import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
+import { PremiumGate } from '@/renderer/components/ui/PremiumGate';
 import { reticleItems } from '@/renderer/config/reticles';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useMemo } from 'react';
@@ -31,6 +32,7 @@ export function SettingsSecondaryCrosshair() {
 				</p>
 			</div>
 			<Separator />
+			<PremiumGate>
 			<CrosshairGallery stateKey="crosshairSecondary" />
 			<InputSlider
 				value={windowState.crosshairSizeSecondary}
@@ -117,6 +119,7 @@ export function SettingsSecondaryCrosshair() {
 					handleChangeSetting({ reticleColorSecondary: value });
 				}}
 			/>
+			</PremiumGate>
 		</div>
 	);
 }

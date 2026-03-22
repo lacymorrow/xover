@@ -40,6 +40,12 @@ const SET_WINDOW_STATE = 'set-window-state';
 const OPEN_SETTINGS = 'open-settings';
 const CLOSE_ALL_WINDOWS = 'close-all-windows';
 
+// License
+const ACTIVATE_LICENSE = 'activate-license';
+const DEACTIVATE_LICENSE = 'deactivate-license';
+const CHECK_LICENSE = 'check-license';
+const GET_LICENSE_STATUS = 'get-license-status';
+
 export const ipcChannels = {
 	// main -> renderer
 	APP_NOTIFICATION,
@@ -75,4 +81,10 @@ export const ipcChannels = {
 	SET_WINDOW_STATE,
 	OPEN_SETTINGS,
 	CLOSE_ALL_WINDOWS,
+
+	// License
+	ACTIVATE_LICENSE,
+	DEACTIVATE_LICENSE,
+	CHECK_LICENSE,
+	GET_LICENSE_STATUS,
 };
