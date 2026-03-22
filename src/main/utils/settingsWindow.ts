@@ -1,14 +1,27 @@
-import kb from '../keyboard';
+import { globalShortcut } from 'electron';
+import Logger from 'electron-log';
 import { getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
 import { focusNextWindow } from './window-utils';
+
+const unregisterEscapeKey = () => {
+	globalShortcut.unregister('Escape');
+};
+
+const registerEscapeKey = () => {
+	globalShortcut.register('Escape', () => {
+		Logger.info('Escape key pressed');
+		// eslint-disable-next-line no-use-before-define
+		closeSettingsWindow();
+	});
+};
 
 export const closeSettingsWindow = () => {
 	const { isSettingsWindowOpen } = getSettings();
 
 	if (isSettingsWindowOpen) {
 		windows.settingsWindow?.hide();
-		kb.unregisterEscapeKey();
+		unregisterEscapeKey();
 		focusNextWindow();
 		setSettings({ isSettingsWindowOpen: false });
 	}
@@ -29,7 +42,7 @@ export const openSettingsWindow = () => {
 	// If the settings window is not open, show it
 	if (!isSettingsWindowOpen) {
 		windows.settingsWindow.show();
-		kb.registerEscapeKey();
+		registerEscapeKey();
 		setSettings({ isSettingsWindowOpen: true });
 		return;
 	}

@@ -16,8 +16,6 @@ import {
 	moveWindow,
 } from './utils/window-utils';
 
-const APP_UPDATED = 'app-updated';
-
 export const keyboardShortcuts: KeyboardShortcut[] = [
 	/* Default accelerators */
 
@@ -164,8 +162,6 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 
 // eslint-disable-next-line no-undef
 interface ShortcutType extends Electron.GlobalShortcut {
-	registerEscapeKey: () => void;
-	unregisterEscapeKey: () => void;
 	registerKeyboardShortcuts: () => void;
 	setKeybind: (
 		keybinds: keyof CustomAcceleratorsType,
@@ -213,23 +209,6 @@ const registerKeyboardShortcuts = () => {
 	});
 };
 
-const unregisterEscapeKey = () => {
-	globalShortcut.unregister('Escape');
-};
-
-const registerEscapeKey = () => {
-	// Register escape key
-	globalShortcut.register('Escape', () => {
-		Logger.info('Escape key pressed');
-		windows.settingsWindow?.hide();
-		store.set('settings', {
-			...store.get('settings'),
-			isSettingsWindowOpen: false,
-		});
-		unregisterEscapeKey();
-	});
-};
-
 const kb: ShortcutType = {
 	registerKeyboardShortcuts,
 
@@ -270,9 +249,6 @@ const kb: ShortcutType = {
 		// Sync with renderer
 		windows.settingsWindow?.webContents.send('app-updated'); // TODO: ipcChannels.APP_UPDATED, we hard-coded this to prevent circular imports
 	},
-
-	registerEscapeKey,
-	unregisterEscapeKey,
 
 	// Inherit all methods from Electron's globalShortcut
 	...globalShortcut,
