@@ -77,7 +77,7 @@ body {
 			var(--transition-timing, ease-in-out),
 		opacity var(--transition-duration, 100ms)
 			var(--transition-timing, ease-in-out);
-	border-radius: 12px;
+	border-radius: var(--window-border-radius, 10px);
 
 	position: absolute;
 	top: 0;

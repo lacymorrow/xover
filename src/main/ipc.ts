@@ -1,8 +1,9 @@
 import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron';
+import os from 'os';
 import { ipcChannels } from '../config/ipc-channels';
 import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
-import { getOS } from '../utils/getOS';
+import { getPlatformInfo } from '../utils/platform';
 import autoUpdate from './auto-update';
 import kb from './keyboard';
 import { notification } from './notifications';
@@ -42,14 +43,16 @@ export default {
 
 		// This is called ONCE, don't use it for anything that changes
 		ipcMain.handle(ipcChannels.GET_APP_INFO, () => {
-			const os = getOS();
+			const platform = getPlatformInfo(os.release());
 			return {
 				name: app.getName(),
 				version: app.getVersion(),
-				os,
-				isMac: os === 'mac',
-				isWindows: os === 'windows',
-				isLinux: os === 'linux',
+				os: platform.os,
+				osVersion: platform.osVersion,
+				platform,
+				isMac: platform.isMac,
+				isWindows: platform.isWindows,
+				isLinux: platform.isLinux,
 				isDev: is.debug,
 				paths: rendererPaths,
 			};

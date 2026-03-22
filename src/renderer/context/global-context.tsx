@@ -17,6 +17,7 @@ import {
 import { play, preload } from '@/renderer/lib/sounds';
 import { AppInfoType } from '@/types/app';
 import { CustomAcceleratorsType } from '@/types/keyboard';
+import { getNativeWindowBorderRadius } from '@/utils/platform';
 import { MenuItemConstructorOptions } from 'electron/renderer';
 import { toast } from 'sonner';
 
@@ -162,6 +163,16 @@ export function GlobalContextProvider({
 			.invoke(ipcChannels.GET_APP_INFO)
 			.then((info) => {
 				setAppInfo(info);
+
+				// Set native window border radius based on OS and version
+				if (info.platform) {
+					const root = window.document.documentElement;
+					root.style.setProperty(
+						'--window-border-radius',
+						getNativeWindowBorderRadius(info.platform),
+					);
+				}
+
 				return info;
 			})
 			.then(({ paths }) => {
