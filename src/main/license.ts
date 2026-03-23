@@ -14,11 +14,14 @@ import store from './store';
 interface PolarValidateResponse {
 	status: string;
 	message?: string;
+	license_key_id?: string;
 }
 
 interface PolarActivateResponse {
 	id?: string;
 	message?: string;
+	detail?: string;
+	error?: string;
 }
 
 function getDeviceId(): string {
@@ -36,6 +39,12 @@ async function polarFetch<T = Record<string, unknown>>(
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(body),
 	});
+
+	if (!response.ok) {
+		const text = await response.text();
+		throw new Error(`Polar API ${endpoint} returned ${response.status}: ${text}`);
+	}
+
 	return response.json() as Promise<T>;
 }
 
@@ -49,13 +58,12 @@ export async function activateLicense(
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const deviceId = getDeviceId();
-		const validateBody = {
+
+		// Step 1: Validate the license key
+		const validateResult = await polarFetch<PolarValidateResponse>('validate', {
 			key,
 			organization_id: POLAR_ORGANIZATION_ID,
-			activation_meta: { device_id: deviceId },
-		};
-
-		const validateResult = await polarFetch<PolarValidateResponse>('validate', validateBody);
+		});
 
 		if (validateResult.status !== 'granted') {
 			return {
@@ -64,20 +72,30 @@ export async function activateLicense(
 			};
 		}
 
-		// Activate the key to get an activation ID
-		const activateResult = await polarFetch<PolarActivateResponse>('activate', validateBody);
+		// Step 2: Try to activate (requires "activations" enabled on the Polar benefit).
+		// If activations aren't enabled, Polar returns 403 and we fall back to
+		// validate-only mode (still premium, just no activation ID).
+		let activationId = '';
+		try {
+			const activateResult = await polarFetch<PolarActivateResponse>('activate', {
+				key,
+				organization_id: POLAR_ORGANIZATION_ID,
+				label: deviceId,
+			});
 
-		if (!activateResult.id) {
-			return {
-				success: false,
-				error: activateResult.message || 'Failed to activate license.',
-			};
+			if (activateResult.id) {
+				activationId = activateResult.id;
+			}
+		} catch (activateError: unknown) {
+			// 403 means activations not enabled on this benefit, which is fine.
+			// The key validated successfully, so we still grant premium.
+			Logger.warn('License activation endpoint failed (activations may not be enabled):', activateError);
 		}
 
 		const licenseStatus: LicenseStatus = {
 			isPremium: true,
 			licenseKey: key,
-			activationId: activateResult.id,
+			activationId,
 			lastValidated: Date.now(),
 		};
 
@@ -101,16 +119,19 @@ export async function deactivateLicense(): Promise<{
 	try {
 		const license = store.get('license');
 
-		if (!license.licenseKey || !license.activationId) {
+		if (!license.licenseKey) {
 			store.set('license', DEFAULT_LICENSE_STATUS);
 			return { success: true };
 		}
 
-		await polarFetch('deactivate', {
-			key: license.licenseKey,
-			organization_id: POLAR_ORGANIZATION_ID,
-			activation_id: license.activationId,
-		});
+		// Only call deactivate if we have an activation ID
+		if (license.activationId) {
+			await polarFetch('deactivate', {
+				key: license.licenseKey,
+				organization_id: POLAR_ORGANIZATION_ID,
+				activation_id: license.activationId,
+			});
+		}
 
 		store.set('license', DEFAULT_LICENSE_STATUS);
 		Logger.info('License deactivated successfully');
@@ -141,12 +162,15 @@ export async function checkLicense(): Promise<LicenseStatus> {
 	}
 
 	try {
-		const deviceId = getDeviceId();
-		const validateResult = await polarFetch<PolarValidateResponse>('validate', {
+		const validateBody: Record<string, unknown> = {
 			key: license.licenseKey,
 			organization_id: POLAR_ORGANIZATION_ID,
-			activation_meta: { device_id: deviceId },
-		});
+		};
+		// Include activation_id if we have one (for activation-based validation)
+		if (license.activationId) {
+			validateBody.activation_id = license.activationId;
+		}
+		const validateResult = await polarFetch<PolarValidateResponse>('validate', validateBody);
 
 		if (validateResult.status === 'granted') {
 			const updated: LicenseStatus = {
