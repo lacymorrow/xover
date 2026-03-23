@@ -1,4 +1,5 @@
 import { POLAR_CHECKOUT_URL } from '@/config/license';
+import { PremiumBadge } from '@/renderer/components/ui/PremiumBadge';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import React from 'react';
 
@@ -21,7 +22,7 @@ export function PremiumGate({ children, fallback }: PremiumGateProps) {
 	return (
 		<div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
 			<div className="space-y-2">
-				<h3 className="text-lg font-medium">Premium Feature</h3>
+				<h3 className="text-lg font-medium">Premium Feature <PremiumBadge /></h3>
 				<p className="text-sm text-muted-foreground">
 					This feature is available with a premium license.
 				</p>

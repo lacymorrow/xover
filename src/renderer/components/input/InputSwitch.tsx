@@ -15,7 +15,7 @@ export function InputSwitch({
 }: {
 	value?: boolean;
 	onChange?: (value: boolean) => void;
-	label?: string;
+	label?: React.ReactNode;
 	description?: string;
 	details?: string;
 	content?: React.ReactNode;
