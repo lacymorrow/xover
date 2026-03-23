@@ -30,7 +30,7 @@ export const PREMIUM_FEATURES = {
 // Create a Checkout Link in Polar dashboard (Products → Checkout Links → New Link)
 // and paste the URL here. Falls back to the Polar storefront.
 export const POLAR_CHECKOUT_URL =
-	process.env.POLAR_CHECKOUT_URL ?? 'https://polar.sh';
+	process.env.POLAR_CHECKOUT_URL ?? 'https://buy.polar.sh/polar_cl_eiLwCY59yKuXs9KHr1oEQTdQCOwpDbQvjSwl92xwYBl';
 
 // Cache validation for 24 hours
 export const LICENSE_CACHE_DURATION = 24 * 60 * 60 * 1000;
