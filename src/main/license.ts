@@ -5,6 +5,7 @@ import os from 'os';
 import {
 	DEFAULT_LICENSE_STATUS,
 	LICENSE_CACHE_DURATION,
+	LICENSE_GRACE_PERIOD,
 	LicenseStatus,
 	POLAR_API_URL,
 	POLAR_ORGANIZATION_ID,
@@ -57,6 +58,18 @@ async function polarFetch<T = Record<string, unknown>>(
 function getErrorMessage(error: unknown): string {
 	if (error instanceof Error) return error.message;
 	return String(error);
+}
+
+function isNetworkError(error: unknown): boolean {
+	const msg = getErrorMessage(error).toLowerCase();
+	return (
+		msg.includes('fetch failed') ||
+		msg.includes('network') ||
+		msg.includes('enotfound') ||
+		msg.includes('econnrefused') ||
+		msg.includes('etimedout') ||
+		msg.includes('err_internet_disconnected')
+	);
 }
 
 export async function activateLicense(
@@ -114,7 +127,9 @@ export async function activateLicense(
 		const msg = getErrorMessage(error);
 		// Turn raw API errors into user-friendly messages
 		let friendlyError = 'Failed to activate license.';
-		if (msg.includes('404') || msg.includes('ResourceNotFound')) {
+		if (isNetworkError(error)) {
+			friendlyError = 'No internet connection. Please connect to the internet to activate your license.';
+		} else if (msg.includes('404') || msg.includes('ResourceNotFound')) {
 			friendlyError = 'Invalid license key. Please check the key and try again.';
 		} else if (msg.includes('422') || msg.includes('ValidationError')) {
 			friendlyError = 'Invalid license key format.';
@@ -204,8 +219,16 @@ export async function checkLicense(): Promise<LicenseStatus> {
 		return DEFAULT_LICENSE_STATUS;
 	} catch (error: unknown) {
 		Logger.error('License check failed:', error);
-		// On network error, keep current status but don't update timestamp
-		return license;
+		// On network error, keep premium alive within the grace period (7 days from last successful validation).
+		// After the grace period expires, revoke premium so stolen keys can't persist forever offline.
+		const sinceLastValidation = Date.now() - license.lastValidated;
+		if (sinceLastValidation < LICENSE_GRACE_PERIOD) {
+			Logger.info(`License check failed but within grace period (${Math.round(sinceLastValidation / 86400000)}d of 7d). Keeping premium.`);
+			return license;
+		}
+		Logger.warn('License grace period expired, revoking premium status');
+		store.set('license', DEFAULT_LICENSE_STATUS);
+		return DEFAULT_LICENSE_STATUS;
 	}
 }
 

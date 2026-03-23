@@ -30,3 +30,6 @@ export const POLAR_CHECKOUT_URL =
 
 // Cache validation for 24 hours
 export const LICENSE_CACHE_DURATION = 24 * 60 * 60 * 1000;
+
+// Grace period: keep premium for 7 days even if revalidation fails (offline tolerance)
+export const LICENSE_GRACE_PERIOD = 7 * 24 * 60 * 60 * 1000;
