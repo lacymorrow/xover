@@ -60,27 +60,17 @@ function getErrorMessage(error: unknown): string {
 	return String(error);
 }
 
-function isNetworkError(error: unknown): boolean {
-	const msg = getErrorMessage(error).toLowerCase();
-	// Only match actual connectivity failures, not API responses containing these words.
-	// Polar API errors go through polarFetch which formats them as "Polar API ... returned <status>: ..."
-	// so they won't match these patterns.
-	return (
-		msg.includes('fetch failed') ||
-		msg.includes('network error') ||
-		msg.includes('networkerror') ||
-		msg.includes('enotfound') ||
-		msg.includes('econnrefused') ||
-		msg.includes('etimedout') ||
-		msg.includes('econnreset') ||
-		msg.includes('err_internet_disconnected') ||
-		msg.includes('net::err_')
-	);
-}
-
 export async function activateLicense(
 	key: string,
 ): Promise<{ success: boolean; error?: string }> {
+	// Fast online check using Electron's built-in API (instant, no HTTP request)
+	if (!net.isOnline()) {
+		return {
+			success: false,
+			error: 'No internet connection. Please connect to the internet to activate your license.',
+		};
+	}
+
 	try {
 		const deviceId = getDeviceId();
 
@@ -131,16 +121,12 @@ export async function activateLicense(
 	} catch (error: unknown) {
 		Logger.error('License activation failed:', error);
 		const msg = getErrorMessage(error);
-		// Turn raw API errors into user-friendly messages.
-		// Check API errors first (they include HTTP status codes from polarFetch),
-		// then fall back to network detection for actual connectivity issues.
+		// Turn raw API errors into user-friendly messages
 		let friendlyError = 'Failed to activate license.';
 		if (msg.includes('404') || msg.includes('ResourceNotFound')) {
 			friendlyError = 'Invalid license key. Please check the key and try again.';
 		} else if (msg.includes('422') || msg.includes('ValidationError')) {
 			friendlyError = 'Invalid license key format.';
-		} else if (isNetworkError(error)) {
-			friendlyError = 'No internet connection. Please connect to the internet to activate your license.';
 		} else if (msg) {
 			friendlyError = msg;
 		}
@@ -163,8 +149,8 @@ export async function deactivateLicense(): Promise<{
 			return { success: true };
 		}
 
-		// Only call deactivate if we have an activation ID
-		if (license.activationId) {
+		// Only call deactivate if we have an activation ID and are online
+		if (license.activationId && net.isOnline()) {
 			await polarFetch('deactivate', {
 				key: license.licenseKey,
 				organization_id: POLAR_ORGANIZATION_ID,
