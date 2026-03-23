@@ -149,8 +149,17 @@ export async function deactivateLicense(): Promise<{
 			return { success: true };
 		}
 
-		// Only call deactivate if we have an activation ID and are online
-		if (license.activationId && net.isOnline()) {
+		// Must be online to deactivate so the activation slot is freed on Polar's side.
+		// Otherwise the user loses premium locally but the slot stays consumed.
+		if (!net.isOnline()) {
+			return {
+				success: false,
+				error: 'No internet connection. You must be online to deactivate your license.',
+			};
+		}
+
+		// Only call deactivate if we have an activation ID
+		if (license.activationId) {
 			await polarFetch('deactivate', {
 				key: license.licenseKey,
 				organization_id: POLAR_ORGANIZATION_ID,
