@@ -190,14 +190,15 @@ export function GlobalContextProvider({
 				preload(paths.sounds);
 
 				// Setup listener to play sounds
-				const unsubSound = window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound: any) => {
+				const unsubSound = window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound) => {
+					const soundName = sound as string;
 					// Read latest settings from state via invoke to avoid stale closure
 					window.electron.ipcRenderer
 						// @ts-ignore
 						.invoke(ipcChannels.GET_RENDERER_SYNC, id ?? 'settings')
 						.then((res) => {
 							if (res?.settings?.allowSounds) {
-								play({ name: sound, path: paths.sounds });
+								play({ name: soundName, path: paths.sounds });
 							}
 						})
 						.catch(console.error);

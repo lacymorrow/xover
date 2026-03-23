@@ -16,10 +16,10 @@ export const POLAR_API_URL =
 	'https://api.polar.sh/v1/customer-portal/license-keys';
 
 export const POLAR_ORGANIZATION_ID =
-	process.env.POLAR_ORGANIZATION_ID || 'ff87e6a0-f1d9-4b1a-aca8-8d211c7cf4bf';
+	process.env.POLAR_ORGANIZATION_ID ?? 'ff87e6a0-f1d9-4b1a-aca8-8d211c7cf4bf';
 
 export const POLAR_PRODUCT_ID =
-	process.env.POLAR_PRODUCT_ID || '584b6ea6-d3e3-471b-ab67-9bdcd85afffa';
+	process.env.POLAR_PRODUCT_ID ?? '584b6ea6-d3e3-471b-ab67-9bdcd85afffa';
 
 export const PREMIUM_FEATURES = {
 	secondaryCrosshair: true,

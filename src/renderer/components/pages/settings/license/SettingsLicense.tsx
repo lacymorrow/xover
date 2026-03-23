@@ -1,6 +1,14 @@
 import { Separator } from '@/components/ui/separator';
+import { LicenseStatus } from '@/config/license';
 import { useGlobalContext } from '@/renderer/context/global-context';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+function maskLicenseKey(key: string): string {
+	if (key.length > 8) {
+		return `${key.slice(0, 4)}${'*'.repeat(key.length - 8)}${key.slice(-4)}`;
+	}
+	return '****';
+}
 
 export function SettingsLicense() {
 	const { isPremium, refreshLicense } = useGlobalContext();
@@ -12,23 +20,18 @@ export function SettingsLicense() {
 	const [maskedKey, setMaskedKey] = useState('');
 
 	// Load masked key on mount if premium
-	useState(() => {
+	useEffect(() => {
 		if (isPremium) {
 			window.electron
 				.getLicenseStatus()
-				.then((s: any) => {
+				.then((s: LicenseStatus) => {
 					if (s?.licenseKey) {
-						const key = s.licenseKey;
-						setMaskedKey(
-							key.length > 8
-								? `${key.slice(0, 4)}${'*'.repeat(key.length - 8)}${key.slice(-4)}`
-								: '****',
-						);
+						setMaskedKey(maskLicenseKey(s.licenseKey));
 					}
 				})
 				.catch(console.error);
 		}
-	});
+	}, [isPremium]);
 
 	const handleActivate = useCallback(async () => {
 		if (!licenseKey.trim()) return;
@@ -39,14 +42,9 @@ export function SettingsLicense() {
 			if (result.success) {
 				setStatus({ type: 'success', message: 'License activated successfully!' });
 				setLicenseKey('');
-				const s = await window.electron.getLicenseStatus();
+				const s: LicenseStatus = await window.electron.getLicenseStatus();
 				if (s?.licenseKey) {
-					const key = s.licenseKey;
-					setMaskedKey(
-						key.length > 8
-							? `${key.slice(0, 4)}${'*'.repeat(key.length - 8)}${key.slice(-4)}`
-							: '****',
-					);
+					setMaskedKey(maskLicenseKey(s.licenseKey));
 				}
 				await refreshLicense();
 			} else {
@@ -55,10 +53,10 @@ export function SettingsLicense() {
 					message: result.error || 'Activation failed.',
 				});
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			setStatus({
 				type: 'error',
-				message: error.message || 'Activation failed.',
+				message: error instanceof Error ? error.message : 'Activation failed.',
 			});
 		}
 	}, [licenseKey, refreshLicense]);
@@ -77,10 +75,10 @@ export function SettingsLicense() {
 					message: result.error || 'Deactivation failed.',
 				});
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			setStatus({
 				type: 'error',
-				message: error.message || 'Deactivation failed.',
+				message: error instanceof Error ? error.message : 'Deactivation failed.',
 			});
 		}
 	}, [refreshLicense]);
