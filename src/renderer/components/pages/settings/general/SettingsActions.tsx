@@ -6,6 +6,7 @@ import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKe
 import { InputSelectForm } from '@/renderer/components/input/InputSelectForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
+import { POLAR_CHECKOUT_URL } from '@/config/license';
 import { PremiumGate } from '@/renderer/components/ui/PremiumGate';
 import { useGlobalContext } from '@/renderer/context/global-context';
 
@@ -149,7 +150,7 @@ export function SettingsActions() {
 						<InputSwitch
 							value={false}
 							onChange={() => {
-								window.electron.openUrl('https://polar.sh/lacymorrow');
+								window.electron.openUrl(POLAR_CHECKOUT_URL);
 							}}
 							label="Secondary Crosshair"
 							description="Switch to a second crosshair when the bind is active."

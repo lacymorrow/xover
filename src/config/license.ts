@@ -26,5 +26,11 @@ export const PREMIUM_FEATURES = {
 	profiles: true, // placeholder for future use
 };
 
+// URL where users can purchase a license
+// Create a Checkout Link in Polar dashboard (Products → Checkout Links → New Link)
+// and paste the URL here. Falls back to the Polar storefront.
+export const POLAR_CHECKOUT_URL =
+	process.env.POLAR_CHECKOUT_URL ?? 'https://polar.sh';
+
 // Cache validation for 24 hours
 export const LICENSE_CACHE_DURATION = 24 * 60 * 60 * 1000;
