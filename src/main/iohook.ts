@@ -3,6 +3,7 @@ import { uIOhook } from 'uiohook-napi';
 
 import { uiohookKeycodes } from '../config/keys';
 import { $iohook } from '../config/strings';
+import { isPremium } from './license';
 import {
 	getActionState,
 	getSettings,
@@ -285,7 +286,7 @@ export const startIOHook = async () => {
 		registerFollowMouse();
 	}
 
-	if (secondaryBind) {
+	if (secondaryBind && isPremium()) {
 		const [input, trigger] = secondaryBind.split(':');
 
 		if (input === 'keyboard') {
