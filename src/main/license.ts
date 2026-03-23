@@ -62,13 +62,19 @@ function getErrorMessage(error: unknown): string {
 
 function isNetworkError(error: unknown): boolean {
 	const msg = getErrorMessage(error).toLowerCase();
+	// Only match actual connectivity failures, not API responses containing these words.
+	// Polar API errors go through polarFetch which formats them as "Polar API ... returned <status>: ..."
+	// so they won't match these patterns.
 	return (
 		msg.includes('fetch failed') ||
-		msg.includes('network') ||
+		msg.includes('network error') ||
+		msg.includes('networkerror') ||
 		msg.includes('enotfound') ||
 		msg.includes('econnrefused') ||
 		msg.includes('etimedout') ||
-		msg.includes('err_internet_disconnected')
+		msg.includes('econnreset') ||
+		msg.includes('err_internet_disconnected') ||
+		msg.includes('net::err_')
 	);
 }
 
@@ -125,14 +131,16 @@ export async function activateLicense(
 	} catch (error: unknown) {
 		Logger.error('License activation failed:', error);
 		const msg = getErrorMessage(error);
-		// Turn raw API errors into user-friendly messages
+		// Turn raw API errors into user-friendly messages.
+		// Check API errors first (they include HTTP status codes from polarFetch),
+		// then fall back to network detection for actual connectivity issues.
 		let friendlyError = 'Failed to activate license.';
-		if (isNetworkError(error)) {
-			friendlyError = 'No internet connection. Please connect to the internet to activate your license.';
-		} else if (msg.includes('404') || msg.includes('ResourceNotFound')) {
+		if (msg.includes('404') || msg.includes('ResourceNotFound')) {
 			friendlyError = 'Invalid license key. Please check the key and try again.';
 		} else if (msg.includes('422') || msg.includes('ValidationError')) {
 			friendlyError = 'Invalid license key format.';
+		} else if (isNetworkError(error)) {
+			friendlyError = 'No internet connection. Please connect to the internet to activate your license.';
 		} else if (msg) {
 			friendlyError = msg;
 		}
