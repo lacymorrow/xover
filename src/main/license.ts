@@ -45,7 +45,13 @@ async function polarFetch<T = Record<string, unknown>>(
 		throw new Error(`Polar API ${endpoint} returned ${response.status}: ${text}`);
 	}
 
-	return response.json() as Promise<T>;
+	// Handle empty responses (e.g. 204 No Content or empty body)
+	const text = await response.text();
+	if (!text) {
+		return {} as T;
+	}
+
+	return JSON.parse(text) as T;
 }
 
 function getErrorMessage(error: unknown): string {
@@ -105,9 +111,19 @@ export async function activateLicense(
 		return { success: true };
 	} catch (error: unknown) {
 		Logger.error('License activation failed:', error);
+		const msg = getErrorMessage(error);
+		// Turn raw API errors into user-friendly messages
+		let friendlyError = 'Failed to activate license.';
+		if (msg.includes('404') || msg.includes('ResourceNotFound')) {
+			friendlyError = 'Invalid license key. Please check the key and try again.';
+		} else if (msg.includes('422') || msg.includes('ValidationError')) {
+			friendlyError = 'Invalid license key format.';
+		} else if (msg) {
+			friendlyError = msg;
+		}
 		return {
 			success: false,
-			error: getErrorMessage(error) || 'Failed to activate license.',
+			error: friendlyError,
 		};
 	}
 }
