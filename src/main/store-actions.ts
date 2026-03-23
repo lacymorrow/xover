@@ -27,7 +27,9 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 				// macOS hides all windows when dock icon is hidden; re-show them
 				setTimeout(() => {
 					forEachWindow((win) => {
-						win.showInactive();
+						if (!win.isDestroyed()) {
+							win.showInactive();
+						}
 					});
 				}, 100);
 			}
@@ -77,9 +79,11 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 		}
 	}
 
-	// Sync with renderer
+	// Sync with renderer — skip destroyed windows
 	forEachWindow((win) => {
-		win.webContents.send(ipcChannels.APP_UPDATED);
+		if (!win.isDestroyed()) {
+			win.webContents.send(ipcChannels.APP_UPDATED);
+		}
 	});
 };
 
@@ -219,7 +223,9 @@ export const setActionStateKey = (key: keyof ActionStateType, state: any) => {
 
 	store.set(`actionState.${key}`, state); // todo: action state doesn't need to be stored
 	forEachWindow((win) => {
-		win.webContents.send(ipcChannels.ACTION_STATE, key, state);
+		if (!win.isDestroyed()) {
+			win.webContents.send(ipcChannels.ACTION_STATE, key, state);
+		}
 	});
 };
 

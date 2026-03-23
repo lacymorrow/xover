@@ -226,9 +226,18 @@ const registerADSResize = (button: number, behavior: string) => {
 	}
 };
 
+let iohookRunning = false;
+
 export const startIOHook = async () => {
 	if (!windows?.mainWindow || windows.mainWindow.isDestroyed()) {
 		return;
+	}
+
+	// Stop and clean up any existing listeners before re-registering
+	if (iohookRunning) {
+		uIOhook.stop();
+		uIOhook.removeAllListeners();
+		iohookRunning = false;
 	}
 
 	const {
@@ -324,6 +333,7 @@ export const startIOHook = async () => {
 	}
 
 	uIOhook.start();
+	iohookRunning = true;
 };
 
 export const stopIOHook = async () => {
@@ -336,4 +346,5 @@ export const stopIOHook = async () => {
 
 	uIOhook.stop();
 	uIOhook.removeAllListeners();
+	iohookRunning = false;
 };

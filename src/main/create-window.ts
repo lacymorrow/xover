@@ -37,7 +37,7 @@ import {
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
 import { windowClosed } from './utils/window-closed';
-import { getNextCrosshairWindow } from './utils/window-utils';
+import { getNextCrosshairWindow, safeSetBounds } from './utils/window-utils';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
@@ -106,12 +106,19 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
     Logger.info('Window finished load');
   });
 
-  browserWindow.on('moved', () => savePosition(browserWindow, id));
-  browserWindow.on('resize', () => savePosition(browserWindow, id));
+  // Store listener references so they can be cleaned up on close
+  const onMoved = () => savePosition(browserWindow, id);
+  const onResize = () => savePosition(browserWindow, id);
+  browserWindow.on('moved', onMoved);
+  browserWindow.on('resize', onResize);
 
-  // Window closed, but app is not quitting
+  // Window closing — clean up state and listeners
   browserWindow.on('close', () => {
     Logger.status('Window is closing', id);
+
+    // Remove event listeners to prevent leaks
+    browserWindow.removeListener('moved', onMoved);
+    browserWindow.removeListener('resize', onResize);
 
     // Remove window state
     deleteWindowState(id);
@@ -127,13 +134,6 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
       }
     }
     delete windows.crosshairWindows[id];
-  });
-
-  // Clean
-
-  // Window closed, but app is not quitting
-  browserWindow.on('closed', () => {
-    Logger.status('Window closed', id);
   });
 
   dock.initialize();
@@ -194,8 +194,8 @@ export const createCrosshairWindow = async (
       minWidth: sizeConfig.width,
       minHeight: sizeConfig.height,
       resizable: true,
-      ...(state?.x ? { x: state.x } : {}),
-      ...(state?.y ? { y: state.y } : {}),
+      ...(state?.x != null ? { x: state.x } : {}),
+      ...(state?.y != null ? { y: state.y } : {}),
     };
   } else {
     // normal: fixed size using per-window sizeMode dimensions
@@ -205,8 +205,8 @@ export const createCrosshairWindow = async (
       minWidth: sizeConfig.width,
       minHeight: sizeConfig.height,
       resizable: false,
-      ...(state?.x ? { x: state.x } : {}),
-      ...(state?.y ? { y: state.y } : {}),
+      ...(state?.x != null ? { x: state.x } : {}),
+      ...(state?.y != null ? { y: state.y } : {}),
     };
   }
 
@@ -247,6 +247,10 @@ export const createCrosshairWindow = async (
   window.setAlwaysOnTop(true, 'screen-saver', 1);
 
   window.on('ready-to-show', () => {
+    // Validate the window is on a visible display before showing
+    if (state?.x != null && state?.y != null) {
+      safeSetBounds(window, window.getBounds());
+    }
     window.show();
   });
 
@@ -257,7 +261,7 @@ export const createCrosshairWindow = async (
     setActiveWindow(id);
   });
 
-  window.on('closed', () => {
+  window.on('close', () => {
     windowClosed();
   });
 
@@ -339,6 +343,11 @@ export const createSettingsWindow = async () => {
 
   // Show settings if unlocked
   window.on('ready-to-show', () => {
+    // Validate saved position is still on a visible display
+    if (state?.x != null && state?.y != null) {
+      safeSetBounds(window, window.getBounds());
+    }
+
     if (!getSetting('isSettingsWindowOpen') || getSetting('isLocked')) {
       return;
     }
