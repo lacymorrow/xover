@@ -61,7 +61,7 @@
     "test": "jest",
     "analyze": "ANALYZE=true npm run build",
     "debug-prod": "npx cross-env DEBUG_PROD=true npm run package",
-    "release": "np --branch release && yarn build:release",
+    "release": "np --branch release && npm run package",
     "sh:copyexe": "cp dist/CrossOver-[!Portable]*.exe dist/CrossOver.exe",
     "sh:replacespaces": "find dist/ -name 'CrossOver*' -maxdepth 1 -exec bash -c ' mv \"$0\" \"${0// /-}\" ' {} \\;",
     "snap:login:export": "snapcraft export-login --snaps crossover --channels edge,stable -",
