@@ -255,6 +255,7 @@
       "package.json",
       "public"
     ],
+    "npmRebuild": false,
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
       "target": {
