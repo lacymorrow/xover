@@ -191,7 +191,7 @@ export function GlobalContextProvider({
 
 				// Setup listener to play sounds
 				const unsubSound = window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound) => {
-					const soundName = sound as string;
+					const soundName = String(sound);
 					// Read latest settings from state via invoke to avoid stale closure
 					window.electron.ipcRenderer
 						// @ts-ignore
