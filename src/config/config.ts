@@ -55,3 +55,7 @@ export const IMAGE_EXTENSIONS = [
 // gif|icns|ico|jpg|png|otf|eot|woff|woff2|ttf|svg|webp
 
 export const DIRECTORY_SCAN_DEPTH = 2; // How many subdirectories to scan for images
+
+// Developer Alerts
+export const DEV_ALERT_URL =
+  'https://raw.githubusercontent.com/lacymorrow/crossover/master/CROSSOVER_ALERT';

@@ -60,3 +60,9 @@ Completed
 5) Mouse/Keyboard actions — Done (initial)
    Added config/state for `hideOnMouseBind`, `hideOnMouseBehavior`, `hideOnKeyBind`, `adsResizeEnabled`, `adsResizeBind`, `adsResizeBehavior`, `adsResizeSize`. Implemented listeners in `src/main/iohook.ts` that signal renderer with `set_crosshair_opacity` and `set_crosshair_size`. Added renderer listeners in `Home.tsx` that update window state accordingly. Further UX polish remains.
 
+6) Developer Alerts — Done
+   Added `DEV_ALERT_URL` in `config/config.ts`, implemented `src/main/alert.ts` with secure HTTPS fetch and timeout using `got`, debounced periodic polling, and notification via `showDevAlert()` in `src/main/notifications.ts`. Initialized in `startup.idle()`.
+   Best practices: non-blocking fetch, timeouts, deduped alerts, respects user notification settings.
+7) Security hardening — Done
+   Added `setWindowOpenHandler` deny policy and navigation prevention for external URLs in `src/main/app-listeners.ts` (open in system browser instead).
+

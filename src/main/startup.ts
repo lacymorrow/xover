@@ -21,6 +21,7 @@ import { debugInfo, is } from './util';
 import { AutoUpdate } from './auto-update';
 import accessibility from './accessibility';
 import { scanImages } from './utils/getImages';
+import devAlerts from './alert';
 
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
@@ -107,6 +108,7 @@ export const idle = async () => {
 	Logger.status($init.idle);
 	console.timeLog(app.name, $init.idle);
 	await scanImages();
+  devAlerts.initDeveloperAlerts();
 };
 
 process.on('uncaughtException', (error) => {

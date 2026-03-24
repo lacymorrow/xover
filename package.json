@@ -41,11 +41,12 @@
 			"url": "https://github.com/amilajack"
 		}
 	],
-	"engines": {
-		"node": ">=14.0.0 <=20.0.0"
-	},
+  "engines": {
+    "node": ">=18.0.0 <=26.0.0"
+  },
 	"main": "./src/main/main.ts",
 	"scripts": {
+    "dev": "concurrently -k 'npm:start:preload' 'npm:start:renderer' 'npm:start:main'",
 		"build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
 		"build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
 		"build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
@@ -59,10 +60,11 @@
 		"package:linux": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -l --publish never && npm run build:dll",
 		"package:windows": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -w --publish never && npm run build:dll",
 		"rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
-		"start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
-		"start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
-		"start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
-		"start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
+    "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
+    "start:main:bundle": "cross-env NODE_ENV=development node -r ts-node/register/transpile-only ./node_modules/webpack/bin/webpack.js --config ./.erb/configs/webpack.config.main.dev.ts --watch",
+    "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
+    "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts --watch",
+    "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true node -r ts-node/register/transpile-only ./node_modules/webpack/bin/webpack.js serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
 		"test": "jest",
 		"analyze": "ANALYZE=true npm run build",
 		"debug-prod": "npx cross-env DEBUG_PROD=true npm run package",
@@ -334,5 +336,6 @@
 			"owner": "lacymorrow",
 			"repo": "crossover"
 		}
-	}
+	},
+	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

@@ -49,3 +49,7 @@ export const notification = (options: NotificationOptions) => {
 		Logger.info(`Notification not sent: ${options.title} - ${options.body}`);
 	}
 };
+
+export const showDevAlert = (message: string, action?: () => void) => {
+  notification({ title: 'CrossOver: Developer Update', body: message, action });
+};

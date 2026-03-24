@@ -109,6 +109,76 @@ export function SettingsActions() {
 			/>
 
 			<Separator />
+      <InputSwitch
+        value={settings.adsResizeEnabled}
+        onChange={() => {
+          handleChangeSetting({ adsResizeEnabled: !settings.adsResizeEnabled });
+        }}
+        label="ADS Resize"
+        description="Resize the crosshair while the specified mouse button is active."
+      />
+      <InputSelectForm
+        value={settings.adsResizeBehavior}
+        onChange={(value) => {
+          handleChangeSetting({ adsResizeBehavior: value as UiohookBehaviorType });
+        }}
+        label="ADS Behavior"
+        description="Hold will resize while pressed, press will toggle on/off."
+        items={[
+          { label: 'Hold to resize', value: 'hold' },
+          { label: 'Press to toggle on/off', value: 'toggle' },
+        ]}
+      />
+      <InputMouseKeyboardBind
+        value={settings.adsResizeBind}
+        onChange={(value) => {
+          handleChangeSetting({ adsResizeBind: value });
+        }}
+        label="ADS Mouse Bind"
+        description="Choose a mouse button trigger (e.g., Right Mouse Button)."
+      />
+      <InputSlider
+        value={settings.adsResizeSize}
+        onChange={(value) => {
+          handleChangeSetting({ adsResizeSize: value });
+        }}
+        label="ADS Resize Size"
+        details="Crosshair size (1-100) to use while the ADS bind is active."
+        min={1}
+        max={100}
+      />
+
+      <Separator />
+      <InputSelectForm
+        value={settings.hideOnMouseBehavior}
+        onChange={(value) => {
+          handleChangeSetting({ hideOnMouseBehavior: value as UiohookBehaviorType });
+        }}
+        label="Hide on Mouse Behavior"
+        description="Hold will hide while pressed, press will toggle on/off."
+        items={[
+          { label: 'Hold to hide', value: 'hold' },
+          { label: 'Press to toggle on/off', value: 'toggle' },
+        ]}
+      />
+      <InputMouseKeyboardBind
+        value={settings.hideOnMouseBind}
+        onChange={(value) => {
+          handleChangeSetting({ hideOnMouseBind: value });
+        }}
+        label="Hide on Mouse Bind"
+        description="Choose a mouse button trigger."
+      />
+      <InputMouseKeyboardBind
+        value={settings.hideOnKeyBind}
+        onChange={(value) => {
+          handleChangeSetting({ hideOnKeyBind: value });
+        }}
+        label="Hide on Key Bind"
+        description="Choose a keyboard key trigger."
+      />
+
+      <Separator />
 			<InputSlider
 				value={settings.transitionDuration}
 				onChange={(value) => {

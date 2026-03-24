@@ -9,6 +9,7 @@ import {
 	setActionStateKey,
 } from './store-actions';
 import windows from './windows';
+import { ipcChannels } from '../config/ipc-channels';
 
 // Types for uiohook-napi events
 interface UiohookKeyboardEvent {
@@ -266,22 +267,29 @@ export const startIOHook = async () => {
           if (event.button === parseInt(trigger, 10)) {
             const hidden = getActionState().secondary;
             setActionStateKey('secondary', !hidden);
-            if (windows.mainWindow && !windows.mainWindow.isDestroyed()) {
-              windows.mainWindow.webContents.send('set_crosshair_opacity', !hidden ? 0 : 1);
-            }
+            windows.mainWindow?.webContents.send(
+              ipcChannels.SET_CROSSHAIR_OPACITY,
+              !hidden ? 0 : 1,
+            );
           }
         });
       } else {
         uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
           if (event.button === parseInt(trigger, 10)) {
             setActionStateKey('secondary', true);
-            windows.mainWindow?.webContents.send('set_crosshair_opacity', 0);
+            windows.mainWindow?.webContents.send(
+              ipcChannels.SET_CROSSHAIR_OPACITY,
+              0,
+            );
           }
         });
         uIOhook.on('mouseup', (event: UiohookMouseEvent) => {
           if (event.button === parseInt(trigger, 10)) {
             setActionStateKey('secondary', false);
-            windows.mainWindow?.webContents.send('set_crosshair_opacity', 1);
+            windows.mainWindow?.webContents.send(
+              ipcChannels.SET_CROSSHAIR_OPACITY,
+              1,
+            );
           }
         });
       }
@@ -297,13 +305,19 @@ export const startIOHook = async () => {
         uIOhook.on('keydown', (event: UiohookKeyboardEvent) => {
           if (event.keycode === keycode) {
             setActionStateKey('secondary', true);
-            windows.mainWindow?.webContents.send('set_crosshair_opacity', 0);
+            windows.mainWindow?.webContents.send(
+              ipcChannels.SET_CROSSHAIR_OPACITY,
+              0,
+            );
           }
         });
         uIOhook.on('keyup', (event: UiohookKeyboardEvent) => {
           if (event.keycode === keycode) {
             setActionStateKey('secondary', false);
-            windows.mainWindow?.webContents.send('set_crosshair_opacity', 1);
+            windows.mainWindow?.webContents.send(
+              ipcChannels.SET_CROSSHAIR_OPACITY,
+              1,
+            );
           }
         });
       }
@@ -321,18 +335,24 @@ export const startIOHook = async () => {
             const current = getActionState().tilt; // use action state as scratch if needed
             const toggled = current === -999 ? 0 : -999; // hacky toggle marker
             setActionStateKey('tilt', toggled);
-            windows.mainWindow?.webContents.send('set_crosshair_size', toggled === -999 ? newSize : undefined);
+            windows.mainWindow?.webContents.send(
+              ipcChannels.SET_CROSSHAIR_SIZE,
+              toggled === -999 ? newSize : undefined,
+            );
           }
         });
       } else {
         uIOhook.on('mousedown', (event: UiohookMouseEvent) => {
           if (event.button === parseInt(trigger, 10)) {
-            windows.mainWindow?.webContents.send('set_crosshair_size', newSize);
+            windows.mainWindow?.webContents.send(
+              ipcChannels.SET_CROSSHAIR_SIZE,
+              newSize,
+            );
           }
         });
         uIOhook.on('mouseup', (event: UiohookMouseEvent) => {
           if (event.button === parseInt(trigger, 10)) {
-            windows.mainWindow?.webContents.send('set_crosshair_size');
+            windows.mainWindow?.webContents.send(ipcChannels.SET_CROSSHAIR_SIZE);
           }
         });
       }

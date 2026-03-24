@@ -99,7 +99,7 @@ export default {
 		});
 
 		// Play a sound
-		ipcMain.on(ipcChannels.PLAY_SOUND, (_event: any, sound: string) => {
+    ipcMain.on(ipcChannels.PLAY_SOUND, (_event: any, sound: string) => {
 			sounds.play(sound);
 		});
 

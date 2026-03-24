@@ -7,6 +7,8 @@ const APP_NOTIFICATION = 'app-notification'; // to display a notification using 
 
 const PRELOAD_SOUNDS = 'preload-sounds';
 const PLAY_SOUND = 'play-sound';
+const SET_CROSSHAIR_SIZE = 'set-crosshair-size';
+const SET_CROSSHAIR_OPACITY = 'set-crosshair-opacity';
 
 const ACTION_STATE = 'action-state';
 
@@ -46,6 +48,8 @@ export const ipcChannels = {
 	APP_UPDATED,
 	PRELOAD_SOUNDS,
 	PLAY_SOUND,
+  SET_CROSSHAIR_SIZE,
+  SET_CROSSHAIR_OPACITY,
 	ACTION_STATE,
 
 	// renderer -> main

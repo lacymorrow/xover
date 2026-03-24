@@ -46,7 +46,7 @@ const register = () => {
 	});
 
 	// Security measures
-	app.on('web-contents-created', (_event, webContents) => {
+  app.on('web-contents-created', (_event, webContents) => {
 		// Security #13: Prevent navigation
 		// https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
 		webContents.on('will-navigate', (event, navigationUrl) => {
@@ -55,6 +55,13 @@ const register = () => {
 			Logger.warn($errors.blockedNavigation, navigationUrl);
 			shell.openExternal(navigationUrl);
 		});
+
+    // Security: prevent new windows
+    webContents.setWindowOpenHandler(({ url }) => {
+      Logger.warn($errors.blockedNavigation, url);
+      shell.openExternal(url);
+      return { action: 'deny' };
+    });
 	});
 };
 
