@@ -36,6 +36,8 @@ interface GlobalContextType {
 	setSettings: (newSettings: Partial<SettingsType>) => void;
 	windowState: CrosshairWindowStateType;
 	crosshairImages: { label: string; value: string }[];
+	isPremium: boolean;
+	refreshLicense: () => Promise<void>;
 }
 
 const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -55,6 +57,8 @@ export const GlobalContext = React.createContext<GlobalContextType>({
 	setSettings: () => {},
 	windowState: DEFAULT_CROSSHAIR_WINDOW_STATE,
 	crosshairImages: [],
+	isPremium: false,
+	refreshLicense: async () => {},
 });
 
 export function GlobalContextProvider({
@@ -78,6 +82,16 @@ export function GlobalContextProvider({
 		React.useState<CustomAcceleratorsType>(DEFAULT_KEYBINDS);
 
 	const [crosshairImages, setCrosshairImages] = React.useState<ItemType[]>([]);
+	const [isPremium, setIsPremium] = React.useState(false);
+
+	const refreshLicense = useCallback(async () => {
+		try {
+			const status = await window.electron.getLicenseStatus();
+			setIsPremium(status?.isPremium ?? false);
+		} catch (error) {
+			console.error('Failed to fetch license status:', error);
+		}
+	}, []);
 
 	useEffect(() => {
 		// Create handler for receiving asynchronous messages from the main process
@@ -131,32 +145,28 @@ export function GlobalContextProvider({
 				.catch(console.error);
 		};
 
+		// Store unsubscribe functions for proper cleanup
+		const unsubscribers: Array<(() => void) | undefined> = [];
+
 		// Listen for messages from the main process
-		window.electron.ipcRenderer.on(ipcChannels.APP_UPDATED, async (data) => {
+		const unsubAppUpdated = window.electron.ipcRenderer.on(ipcChannels.APP_UPDATED, async (data) => {
 			console.log('APP_UPDATED', data);
 
 			await synchronizeAppState();
 		});
+		unsubscribers.push(unsubAppUpdated);
 
 		// Create notifications using the renderer
-		window.electron.ipcRenderer.on(
+		const unsubNotification = window.electron.ipcRenderer.on(
 			ipcChannels.APP_NOTIFICATION,
 			({ title, body, action }: any) => {
 				toast(title, {
 					...(body ? { description: body } : {}),
 					...(action ? { action } : {}),
-					// action: {
-					// 	label: 'Ok',
-					// 	onClick: () => {},
-					// },
 				});
-
-				// Renderer Web Notifications
-				// new Notification(title, {
-				// 	body,
-				// });
 			},
 		);
+		unsubscribers.push(unsubNotification);
 
 		// Get app info: name, version, paths, os - DOES NOT CHANGE
 		window.electron.ipcRenderer
@@ -180,28 +190,37 @@ export function GlobalContextProvider({
 				preload(paths.sounds);
 
 				// Setup listener to play sounds
-				window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound: any) => {
-					if (!settings.allowSounds) return;
-					play({ name: sound, path: paths.sounds });
+				const unsubSound = window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound) => {
+					const soundName = String(sound);
+					// Read latest settings from state via invoke to avoid stale closure
+					window.electron.ipcRenderer
+						// @ts-ignore
+						.invoke(ipcChannels.GET_RENDERER_SYNC, id ?? 'settings')
+						.then((res) => {
+							if (res?.settings?.allowSounds) {
+								play({ name: soundName, path: paths.sounds });
+							}
+						})
+						.catch(console.error);
 				});
+				unsubscribers.push(unsubSound);
 			})
 			.catch(console.error);
 
 		// Request initial data when the app loads
 		synchronizeAppState();
 
+		// Fetch license status
+		refreshLicense();
+
 		// Let the main process know that the renderer is ready
 		window.electron.ipcRenderer.send(ipcChannels.RENDERER_READY);
 
 		return () => {
-			// Clean up listeners when the component unmounts
-			window.electron.ipcRenderer.removeAllListeners(ipcChannels.APP_UPDATED);
-			window.electron.ipcRenderer.removeAllListeners(ipcChannels.PLAY_SOUND);
-			window.electron.ipcRenderer.removeAllListeners(
-				ipcChannels.APP_NOTIFICATION,
-			);
+			// Clean up listeners using stored unsubscribe functions
+			unsubscribers.forEach((unsub) => unsub?.());
 		};
-	}, [settings.allowSounds]);
+	}, []);
 
 	// Electron API functions
 	const setSettings = useCallback((newSettings: Partial<SettingsType>) => {
@@ -219,6 +238,8 @@ export function GlobalContextProvider({
 			message: messages[messages.length - 1] ?? '',
 			crosshairImages,
 			windowState,
+			isPremium,
+			refreshLicense,
 		};
 	}, [
 		appInfo,
@@ -229,6 +250,8 @@ export function GlobalContextProvider({
 		setSettings,
 		messages,
 		windowState,
+		isPremium,
+		refreshLicense,
 	]);
 
 	return (

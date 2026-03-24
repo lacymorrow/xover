@@ -6,6 +6,9 @@ import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKe
 import { InputSelectForm } from '@/renderer/components/input/InputSelectForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
+import { POLAR_CHECKOUT_URL } from '@/config/license';
+import { PremiumBadge } from '@/renderer/components/ui/PremiumBadge';
+import { PremiumGate } from '@/renderer/components/ui/PremiumGate';
 import { useGlobalContext } from '@/renderer/context/global-context';
 
 export function SettingsActions() {
@@ -141,27 +144,43 @@ export function SettingsActions() {
 			)}
 			<Separator />
 
-			{/* Secondary Action */}
-			<InputSwitch
-				value={settings.secondaryActionEnabled}
-				onChange={() => {
-					handleChangeSetting({
-						secondaryActionEnabled: !settings.secondaryActionEnabled,
-					});
-				}}
-				label="Secondary Crosshair"
-				description="Switch to a second crosshair when the bind is active."
-				details="Configure the secondary crosshair appearance in the Crosshair tab."
-			/>
-			{settings.secondaryActionEnabled && (
-				<InputMouseKeyboardBind
-					value={settings.secondaryBind}
-					onChange={(value) => {
-						handleChangeSetting({ secondaryBind: value });
+			{/* Secondary Action (Premium) */}
+			<PremiumGate
+				fallback={
+					<div className="space-y-2">
+						<InputSwitch
+							value={false}
+							onChange={() => {
+								window.electron.openUrl(POLAR_CHECKOUT_URL);
+							}}
+							label={<>Secondary Crosshair <PremiumBadge /></>}
+							description="Switch to a second crosshair when the bind is active."
+							details="Upgrade to premium to unlock this feature."
+						/>
+					</div>
+				}
+			>
+				<InputSwitch
+					value={settings.secondaryActionEnabled}
+					onChange={() => {
+						handleChangeSetting({
+							secondaryActionEnabled: !settings.secondaryActionEnabled,
+						});
 					}}
-					label="Secondary Bind"
+					label={<>Secondary Crosshair <PremiumBadge /></>}
+					description="Switch to a second crosshair when the bind is active."
+					details="Configure the secondary crosshair appearance in the Crosshair tab."
 				/>
-			)}
+				{settings.secondaryActionEnabled && (
+					<InputMouseKeyboardBind
+						value={settings.secondaryBind}
+						onChange={(value) => {
+							handleChangeSetting({ secondaryBind: value });
+						}}
+						label="Secondary Bind"
+					/>
+				)}
+			</PremiumGate>
 			<Separator />
 
 			{/* Tilt */}

@@ -3,6 +3,8 @@ import { CrosshairWindowStateType } from '@/config/settings';
 import { InputColor } from '@/renderer/components/input/InputColor';
 import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
+import { PremiumBadge } from '@/renderer/components/ui/PremiumBadge';
+import { PremiumGate } from '@/renderer/components/ui/PremiumGate';
 import { reticleItems } from '@/renderer/config/reticles';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useMemo } from 'react';
@@ -25,12 +27,13 @@ export function SettingsSecondaryCrosshair() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Secondary Crosshair</h3>
+				<h3 className="text-lg font-medium">Secondary Crosshair <PremiumBadge /></h3>
 				<p className="text-sm text-muted-foreground">
 					Configure the crosshair displayed when the secondary action is active.
 				</p>
 			</div>
 			<Separator />
+			<PremiumGate>
 			<CrosshairGallery stateKey="crosshairSecondary" />
 			<InputSlider
 				value={windowState.crosshairSizeSecondary}
@@ -117,6 +120,7 @@ export function SettingsSecondaryCrosshair() {
 					handleChangeSetting({ reticleColorSecondary: value });
 				}}
 			/>
+			</PremiumGate>
 		</div>
 	);
 }

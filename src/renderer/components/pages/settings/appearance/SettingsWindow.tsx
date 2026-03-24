@@ -32,7 +32,7 @@ export function SettingsWindow() {
 						<TabsTrigger value="primary">Primary</TabsTrigger>
 
 						<Tooltip>
-							<TooltipTrigger>
+							<TooltipTrigger asChild>
 								<TabsTrigger
 									value="secondary"
 									disabled={!settings.secondaryActionEnabled}

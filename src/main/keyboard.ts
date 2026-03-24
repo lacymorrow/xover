@@ -171,23 +171,21 @@ interface ShortcutType extends Electron.GlobalShortcut {
 }
 
 const registerKeyboardShortcuts = () => {
-	globalShortcut.unregisterAll();
-
 	const keybinds = store.get('keybinds');
 	const { allowDisableKeyboardShortcuts, isLocked, isHidden } =
 		store.get('settings');
 
-	// Register all shortcuts
+	// Collect all new shortcuts first, then swap atomically
+	const toRegister: Array<{ keybind: string; fn: () => void }> = [];
+
 	keyboardShortcuts.forEach((shortcut) => {
 		const { action, fn, ignoreWhenLocked } = shortcut;
 		const keybind = keybinds[action];
 
 		if (isLocked && allowDisableKeyboardShortcuts && action !== 'lock') {
-			// Disable shortcuts except for lock
 			return;
 		}
 
-		// Custom shortcuts
 		if (
 			!action ||
 			!fn ||
@@ -195,18 +193,26 @@ const registerKeyboardShortcuts = () => {
 			((isLocked || isHidden) && ignoreWhenLocked) ||
 			(isLocked && allowDisableKeyboardShortcuts && action !== 'lock')
 		) {
-			// Disable shortcut
 			Logger.info(`No keybind for ${action}`);
 			return;
 		}
 
-		// If a keybinds shortcut exists for this action
 		Logger.info(`Keybind for ${action} is ${keybind}`);
-		globalShortcut.register(keybind, () => {
-			// Do the thing
-			fn();
-		});
+		toRegister.push({ keybind, fn });
 	});
+
+	// Unregister old shortcuts and register new ones
+	globalShortcut.unregisterAll();
+
+	for (const { keybind, fn } of toRegister) {
+		try {
+			globalShortcut.register(keybind, () => {
+				fn();
+			});
+		} catch (error) {
+			Logger.error(`Failed to register shortcut ${keybind}:`, error);
+		}
+	}
 };
 
 const kb: ShortcutType = {

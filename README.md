@@ -1,26 +1,8 @@
-CrossOver data is stored as `config.json` in the Per-user application data directory, which by default points to:
-- `%APPDATA%` on Windows (e.g. `C:\Users\username\AppData\Roaming\CrossOver`)
-- `$XDG_CONFIG_HOME` or `~/.config` on Linux (e.g. `~/.config/CrossOver`)
-- `~/Library/Application Support` on macOS (e.g. `~/Library/Application Support/CrossOver`)
+# CrossOver v4
 
-#### Disable the "Lock" keybind
+A crosshair overlay for any screen. Pin a customizable crosshair on top of any application — perfect for games that lack crosshair options, accessibility, or creative use cases.
 
-Open the `config.json` file and change the `keybind` value to `""` (empty string) to disable the "Lock" keybind:
-
-```json
-{
-  "keybinds": {
-    "lock": "",
-		// ...
-  }
-}
-```
-
-# Cait Title
-
-Based on the [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate), this boilerplate adds UI components from [Shadcn](https://ui.shadcn.com/), styling with [Tailwind CSS](https://tailwindcss.com/), persistance with [electron-store](https://github.com/sindresorhus/electron-store), and a structured [React](https://react.dev/) context that promotes a data flow from the top down: Main process -> Renderer process.
-
-<br>
+Built with Electron 40, React 18, TypeScript, Tailwind CSS, and shadcn/ui. Rebuild of [CrossOver v3](https://github.com/lacymorrow/crossover) from scratch on the [electron-bones](https://github.com/nicely-gg/electron-bones) boilerplate.
 
 <div align="center">
 
@@ -31,88 +13,120 @@ Based on the [Electron React Boilerplate](https://github.com/electron-react-boil
 
 ## Features
 
-- 💬 App and System-wide Notifications
-- 🏃‍♂️ Auto Updater
-- 📦 Built-in Store
-- 🖱️ Context Menu
-- 🌙 Dark Mode
-- ❌ Error Handler
-- ⌨️ Keyboard Shortcut Manager
-- 📝 Logging
-- 🀱 Menu Bar for macOS, Windows, and Linux
-- 📂 Multi-Window
-- 🖥️ System Tray
+- Multiple crosshair windows with independent settings
+- Inline SVG crosshairs with fill, stroke, and width customization
+- Crosshair gallery with drag-and-drop custom image support
+- Secondary crosshair with toggle/hold keybinds
+- Lock mode — click-through overlay, stays on top of fullscreen apps
+- Hide on mouse button or keypress (toggle/hold)
+- ADS zoom — resize crosshair when aiming down sights
+- Tilt crosshair left/right with configurable binds
+- Follow mouse mode
+- Per-window size modes (compact, normal, large, resizable, fullscreen)
+- Configurable keyboard shortcuts for all actions
+- System tray with quick actions
+- Auto-updater
+- macOS accessibility permission flow (required for input hooks)
+- Single-instance lock
+- Dark mode
+- E2E test suite (Playwright)
 
 ## Getting Started
 
 ```bash
-
 # Clone this repository
 git clone https://github.com/lacymorrow/crossover.git
-
-# Go into the repository
 cd crossover
 
 # Install dependencies
-yarn
+npm install
 
-# Run the app
-yarn start
+# Run the app in development
+npm start
+
+# Build for production
+npm run build
 ```
 
-## BuiltWith
+Requires Node >= 18.x and npm >= 7.x. See `.nvmrc` for the pinned Node version.
 
-- [Electron](https://electronjs.org/)
-- [React](https://reactjs.org/)
-- [React Router](https://reacttraining.com/react-router/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Shadcn](https://ui.shadcn.com/)
+## Architecture
+
+```
+src/
+  main/           # Electron main process
+    iohook.ts     # Global mouse/keyboard hooks (uiohook-napi)
+    keyboard.ts   # Global shortcut registration
+    create-window.ts  # Window lifecycle management
+    store-actions.ts  # Settings persistence and sync
+    auto-update.ts    # Auto-updater with progress
+    accessibility.ts  # macOS accessibility permissions
+  renderer/       # React renderer process
+    context/      # Global state (settings, keybinds, action state)
+    components/   # UI components (settings pages, crosshair renderer)
+    windows/      # Window entry points (crosshair, settings)
+  config/         # Settings schema, IPC channels, keycodes
+test/             # Playwright E2E tests
+```
+
+Data flows top-down: main process stores state in `electron-store`, pushes updates to renderers via IPC (`APP_UPDATED`), renderers request state via `GET_RENDERER_SYNC`.
+
+## Configuration
+
+CrossOver data is stored as `config.json` in the per-user application data directory:
+
+- **Windows:** `%APPDATA%\CrossOver`
+- **Linux:** `$XDG_CONFIG_HOME/CrossOver` or `~/.config/CrossOver`
+- **macOS:** `~/Library/Application Support/CrossOver`
+
+### Disable the "Lock" keybind
+
+Edit `config.json` and set the lock keybind to an empty string:
+
+```json
+{
+  "keybinds": {
+    "lock": ""
+  }
+}
+```
+
+## Built With
+
+- [Electron 40](https://electronjs.org/)
+- [React 18](https://react.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
-
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [uiohook-napi](https://github.com/nicely-gg/uiohook-napi) — global input hooks
+- [electron-store](https://github.com/sindresorhus/electron-store) — persistent settings
+- [electron-updater](https://www.electron.build/auto-update) — auto-updates
 
 ## Development
 
-### Tailwind CSS
+### UI Components
 
-We use Tailwind CSS for styling. See the [Tailwind CSS docs](https://tailwindcss.com/docs) for more information.
-
-Some Tailwind plugins have been added for convenience:
-
-- [Tailwind Animate](https://github.com/jamiebuilds/tailwindcss-animate) - `tailwindcss-animate`
-- [Tailwind Container Queries](https://github.com/tailwindlabs/tailwindcss-container-queries) - `@tailwindcss/container-queries`
-- Child selectors to target immediate children like `child:w-xl`
-- Don't forget group selectors too: `group` (Parent) `group-hover:bg-gray-100` (Child)
-
-### Shadcn
-
-Shadcn is a UI component library for React. See the [Shadcn docs](https://ui.shadcn.com/) for more information.
-Use `npx shadcn-ui@latest add accordion ...` to add a component to your project.
-
-_Current installation command (to update all ui components):_
+Uses shadcn/ui. Add components with:
 
 ```sh
-npx shadcn-ui@latest add button checkbox dropdown-menu form input menubar radio-group scroll-area select separator sonner switch textarea
+npx shadcn-ui@latest add button checkbox dropdown-menu ...
 ```
 
-_To list components with updates: `npx shadcn-ui@latest diff`_
+Check for updates: `npx shadcn-ui@latest diff`
 
-## Electron-React-Boilerplate Docs
+### Testing
 
-See the Electron React Boilerplate [docs and guides here](https://electron-react-boilerplate.js.org/docs/installation)
+```sh
+npm test
+```
 
-
-### Tutorials
-
-- Creating multiple windows: https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/623#issuecomment-1382717291
-
+Runs Playwright E2E tests covering app launch, crosshair rendering, button interactions, settings window, and keyboard IPC.
 
 ## License
 
 MIT © [Lacy Morrow](https://github.com/lacymorrow)
 
-[github-actions-status]: https://github.com/lacymorrow/electron-shadcn-boilerplate/workflows/Build/badge.svg
-[github-actions-url]: https://github.com/lacymorrow/electron-shadcn-boilerplate/actions
-[github-tag-image]: https://img.shields.io/github/tag/electron-react-boilerplate/electron-react-boilerplate.svg?label=version
-[github-tag-url]: https://github.com/lacymorrow/electron-shadcn-boilerplate/releases/latest
-[stackoverflow-img]: https://img.shields.io/badge/stackoverflow-electron_react_boilerplate-blue.svg
-[stackoverflow-url]: https://stackoverflow.com/questions/tagged/electron-react-boilerplate
+[github-actions-status]: https://github.com/lacymorrow/crossover/workflows/Build/badge.svg
+[github-actions-url]: https://github.com/lacymorrow/crossover/actions
+[github-tag-image]: https://img.shields.io/github/tag/lacymorrow/crossover.svg?label=version
+[github-tag-url]: https://github.com/lacymorrow/crossover/releases/latest
