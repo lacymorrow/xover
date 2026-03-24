@@ -42,9 +42,7 @@ test('Settings button opens settings window', async () => {
 
 test('Settings window has correct title', async () => {
 	// Open settings via IPC to ensure it's open
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('open-settings'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('open-settings'));
 	await wait(delays.medium);
 
 	const titles = await getWindowTitles(electronApp);
@@ -52,9 +50,7 @@ test('Settings window has correct title', async () => {
 });
 
 test('Settings window is listed among all windows', async () => {
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('open-settings'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('open-settings'));
 	await wait(delays.medium);
 
 	const windows = electronApp.windows();
@@ -68,15 +64,11 @@ test('Settings window is listed among all windows', async () => {
 
 test('Focus returns to main window after settings', async () => {
 	// Open settings
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('open-settings'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('open-settings'));
 	await wait(delays.medium);
 
 	// Focus main
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('focus-window'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('focus-window'));
 	await wait(delays.medium);
 
 	const { focused, visible } = await focusedMinimizedVisible({

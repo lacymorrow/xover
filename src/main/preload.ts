@@ -1,4 +1,9 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent, webUtils } from 'electron';
+import {
+	contextBridge,
+	ipcRenderer,
+	IpcRendererEvent,
+	webUtils,
+} from 'electron';
 import { ipcChannels } from '../config/ipc-channels';
 import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { $errors } from '../config/strings';

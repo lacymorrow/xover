@@ -94,9 +94,7 @@ test('Correct number of control buttons', async () => {
 test('Buttons contain SVG icons', async () => {
 	const quitSvg = mainPage.locator('[data-testid="quit-button"] svg');
 	const resetSvg = mainPage.locator('[data-testid="reset-button"] svg');
-	const settingsSvg = mainPage.locator(
-		'[data-testid="settings-button"] svg',
-	);
+	const settingsSvg = mainPage.locator('[data-testid="settings-button"] svg');
 
 	expect(await quitSvg.count()).toBe(1);
 	expect(await resetSvg.count()).toBe(1);

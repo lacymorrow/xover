@@ -18,7 +18,7 @@ export default function CrosshairApp() {
 
 		const handleDragEnter = (e: DragEvent) => {
 			e.preventDefault();
-			dragCounter++;
+			dragCounter += 1;
 			setIsDragActive(true);
 		};
 
@@ -28,7 +28,7 @@ export default function CrosshairApp() {
 
 		const handleDragLeave = (e: DragEvent) => {
 			e.preventDefault();
-			dragCounter--;
+			dragCounter -= 1;
 			if (dragCounter === 0) {
 				setIsDragActive(false);
 			}
@@ -42,7 +42,7 @@ export default function CrosshairApp() {
 			const file = e.dataTransfer?.files[0];
 			if (!file) return;
 
-			const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+			const ext = `.${file.name.split('.').pop()?.toLowerCase()}`;
 			if (!IMAGE_EXTENSIONS.includes(ext)) return;
 
 			const filePath = window.electron.getPathForFile(file);

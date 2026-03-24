@@ -22,9 +22,7 @@ test.beforeAll(async () => {
 test.afterAll(closeApp);
 
 test('IPC: center-window centers the crosshair', async () => {
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('center-window'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('center-window'));
 	await wait(delays.short);
 
 	const bounds = await getBounds({
@@ -47,9 +45,7 @@ test('IPC: center-window centers the crosshair', async () => {
 	expect(movedBounds.y).toBe(bounds.y + 100);
 
 	// Re-center via IPC
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('center-window'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('center-window'));
 	await wait(delays.short);
 
 	const recenteredBounds = await getBounds({
@@ -61,9 +57,7 @@ test('IPC: center-window centers the crosshair', async () => {
 });
 
 test('IPC: open-settings opens settings window', async () => {
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('open-settings'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('open-settings'));
 	await wait(delays.medium);
 
 	const { focused, minimized, visible } = await focusedMinimizedVisible({
@@ -78,15 +72,11 @@ test('IPC: open-settings opens settings window', async () => {
 
 test('IPC: focus-window returns focus to main', async () => {
 	// Open settings first
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('open-settings'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('open-settings'));
 	await wait(delays.medium);
 
 	// Focus main
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('focus-window'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('focus-window'));
 	await wait(delays.medium);
 
 	const { focused, visible } = await focusedMinimizedVisible({
@@ -101,9 +91,7 @@ test('IPC: focus-window returns focus to main', async () => {
 test('IPC: quit-app closes the application', async () => {
 	let appClosed = false;
 
-	await electronApp.evaluate(async (app) =>
-		app.ipcMain.emit('quit-app'),
-	);
+	await electronApp.evaluate(async (app) => app.ipcMain.emit('quit-app'));
 
 	try {
 		await mainPage.title();

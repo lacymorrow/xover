@@ -64,10 +64,7 @@ export const requestAccessibilityPermissions = async (): Promise<boolean> => {
 								'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility',
 							);
 						} catch (error) {
-							Logger.warn(
-								'Could not open System Preferences directly:',
-								error,
-							);
+							Logger.warn('Could not open System Preferences directly:', error);
 						}
 
 						// Follow-up dialog after a short delay

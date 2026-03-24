@@ -126,7 +126,12 @@ export function GlobalContextProvider({
 				.invoke(ipcChannels.GET_CROSSHAIR_IMAGES)
 				.then((res) => {
 					const images = res
-						.filter((img: string) => img.startsWith('/') || img.startsWith('\\') || /^[A-Z]:\\/i.test(img))
+						.filter(
+							(img: string) =>
+								img.startsWith('/') ||
+								img.startsWith('\\') ||
+								/^[A-Z]:\\/i.test(img),
+						)
 						.map((img: any) => {
 							return {
 								label: (
@@ -149,11 +154,14 @@ export function GlobalContextProvider({
 		const unsubscribers: Array<(() => void) | undefined> = [];
 
 		// Listen for messages from the main process
-		const unsubAppUpdated = window.electron.ipcRenderer.on(ipcChannels.APP_UPDATED, async (data) => {
-			console.log('APP_UPDATED', data);
+		const unsubAppUpdated = window.electron.ipcRenderer.on(
+			ipcChannels.APP_UPDATED,
+			async (data) => {
+				console.log('APP_UPDATED', data);
 
-			await synchronizeAppState();
-		});
+				await synchronizeAppState();
+			},
+		);
 		unsubscribers.push(unsubAppUpdated);
 
 		// Create notifications using the renderer
@@ -190,19 +198,22 @@ export function GlobalContextProvider({
 				preload(paths.sounds);
 
 				// Setup listener to play sounds
-				const unsubSound = window.electron.ipcRenderer.on(ipcChannels.PLAY_SOUND, (sound) => {
-					const soundName = String(sound);
-					// Read latest settings from state via invoke to avoid stale closure
-					window.electron.ipcRenderer
-						// @ts-ignore
-						.invoke(ipcChannels.GET_RENDERER_SYNC, id ?? 'settings')
-						.then((res) => {
-							if (res?.settings?.allowSounds) {
-								play({ name: soundName, path: paths.sounds });
-							}
-						})
-						.catch(console.error);
-				});
+				const unsubSound = window.electron.ipcRenderer.on(
+					ipcChannels.PLAY_SOUND,
+					(sound) => {
+						const soundName = String(sound);
+						// Read latest settings from state via invoke to avoid stale closure
+						window.electron.ipcRenderer
+							// @ts-ignore
+							.invoke(ipcChannels.GET_RENDERER_SYNC, id ?? 'settings')
+							.then((res) => {
+								if (res?.settings?.allowSounds) {
+									play({ name: soundName, path: paths.sounds });
+								}
+							})
+							.catch(console.error);
+					},
+				);
 				unsubscribers.push(unsubSound);
 			})
 			.catch(console.error);
@@ -220,7 +231,7 @@ export function GlobalContextProvider({
 			// Clean up listeners using stored unsubscribe functions
 			unsubscribers.forEach((unsub) => unsub?.());
 		};
-	}, []);
+	}, [refreshLicense]);
 
 	// Electron API functions
 	const setSettings = useCallback((newSettings: Partial<SettingsType>) => {

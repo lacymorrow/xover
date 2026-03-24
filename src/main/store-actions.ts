@@ -1,7 +1,13 @@
 import { app, screen } from 'electron';
 import Logger from 'electron-log';
 import path from 'path';
-import { APP_ASPECT_RATIO, APP_HEIGHT, APP_MESSAGES_MAX, APP_WIDTH, SIZE_MODES } from '../config/config';
+import {
+	APP_ASPECT_RATIO,
+	APP_HEIGHT,
+	APP_MESSAGES_MAX,
+	APP_WIDTH,
+	SIZE_MODES,
+} from '../config/config';
 import { ipcChannels } from '../config/ipc-channels';
 import {
 	ActionStateType,
@@ -37,6 +43,7 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 
 		if (keys.includes('showTrayIcon')) {
 			// Lazy require to break circular dependency: store-actions → tray → store-actions
+			// eslint-disable-next-line global-require
 			const tray = require('./tray').default;
 			if (changedSettings.showTrayIcon) {
 				tray.initialize();
@@ -70,7 +77,12 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 					// normal
 					win.setResizable(true); // must be resizable to setBounds
 					const [currentX, currentY] = win.getPosition();
-					win.setBounds({ x: currentX, y: currentY, width: APP_WIDTH, height: APP_HEIGHT });
+					win.setBounds({
+						x: currentX,
+						y: currentY,
+						width: APP_WIDTH,
+						height: APP_HEIGHT,
+					});
 					win.setResizable(false);
 					win.setMinimumSize(APP_WIDTH, APP_HEIGHT);
 					win.setAspectRatio(APP_ASPECT_RATIO);
@@ -186,7 +198,12 @@ export const setWindowState = (
 		const sizeConfig = SIZE_MODES[state.sizeMode] ?? SIZE_MODES.normal;
 		win.setResizable(true);
 		const [currentX, currentY] = win.getPosition();
-		win.setBounds({ x: currentX, y: currentY, width: sizeConfig.width, height: sizeConfig.height });
+		win.setBounds({
+			x: currentX,
+			y: currentY,
+			width: sizeConfig.width,
+			height: sizeConfig.height,
+		});
 		win.setMinimumSize(sizeConfig.width, sizeConfig.height);
 		win.setResizable(false);
 	}

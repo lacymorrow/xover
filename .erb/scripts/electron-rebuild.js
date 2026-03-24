@@ -20,9 +20,7 @@ if (
 		? electronRebuildCmd
 		: altCmd;
 	const cmd =
-		process.platform === 'win32'
-			? baseCmd.replace(/\//g, '\\')
-			: baseCmd;
+		process.platform === 'win32' ? baseCmd.replace(/\//g, '\\') : baseCmd;
 	execSync(cmd, {
 		cwd: webpackPaths.appPath,
 		stdio: 'inherit',

@@ -204,7 +204,7 @@ const registerKeyboardShortcuts = () => {
 	// Unregister old shortcuts and register new ones
 	globalShortcut.unregisterAll();
 
-	for (const { keybind, fn } of toRegister) {
+	toRegister.forEach(({ keybind, fn }) => {
 		try {
 			globalShortcut.register(keybind, () => {
 				fn();
@@ -212,7 +212,7 @@ const registerKeyboardShortcuts = () => {
 		} catch (error) {
 			Logger.error(`Failed to register shortcut ${keybind}:`, error);
 		}
-	}
+	});
 };
 
 const kb: ShortcutType = {

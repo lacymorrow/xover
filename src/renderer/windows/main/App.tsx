@@ -26,7 +26,11 @@ export default function App() {
 			}
 		>
 			{settingsNavItems.map((item) => (
-				<Route key={item.title} path={item.href} element={<>{item.element}</>} />
+				<Route
+					key={item.title}
+					path={item.href}
+					element={<>{item.element}</>}
+				/>
 			))}
 			{index && <Route index element={<>{index.element}</>} />}
 			{index && <Route path="*" element={<>{index.element}</>} />}

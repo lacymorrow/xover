@@ -44,7 +44,9 @@ export function SettingsActions() {
 			<InputSwitch
 				value={settings.hideOnMouseEnabled || settings.hideOnKeyEnabled}
 				onChange={() => {
-					const newEnabled = !(settings.hideOnMouseEnabled || settings.hideOnKeyEnabled);
+					const newEnabled = !(
+						settings.hideOnMouseEnabled || settings.hideOnKeyEnabled
+					);
 					handleChangeSetting({
 						hideOnMouseEnabled: newEnabled,
 						hideOnKeyEnabled: newEnabled,
@@ -56,7 +58,9 @@ export function SettingsActions() {
 			{(settings.hideOnMouseEnabled || settings.hideOnKeyEnabled) && (
 				<>
 					<InputMouseKeyboardBind
-						value={settings.hideOnKeyBind || `mouse:${settings.hideOnMouseButton}`}
+						value={
+							settings.hideOnKeyBind || `mouse:${settings.hideOnMouseButton}`
+						}
 						onChange={(value) => {
 							const [input, trigger] = value.split(':');
 							if (input === 'mouse') {
@@ -153,7 +157,11 @@ export function SettingsActions() {
 							onChange={() => {
 								window.electron.openUrl(POLAR_CHECKOUT_URL);
 							}}
-							label={<>Secondary Crosshair <PremiumBadge /></>}
+							label={
+								<>
+									Secondary Crosshair <PremiumBadge />
+								</>
+							}
 							description="Switch to a second crosshair when the bind is active."
 							details="Upgrade to premium to unlock this feature."
 						/>
@@ -167,7 +175,11 @@ export function SettingsActions() {
 							secondaryActionEnabled: !settings.secondaryActionEnabled,
 						});
 					}}
-					label={<>Secondary Crosshair <PremiumBadge /></>}
+					label={
+						<>
+							Secondary Crosshair <PremiumBadge />
+						</>
+					}
 					description="Switch to a second crosshair when the bind is active."
 					details="Configure the secondary crosshair appearance in the Crosshair tab."
 				/>

@@ -20,14 +20,16 @@ export function Crosshair() {
 	const { secondary } = useActionStateContext();
 	const [svgContent, setSvgContent] = useState<string | null>(null);
 
-	const sizeMode = (windowState.sizeMode ?? 'normal') as CrosshairWindowStateType['sizeMode'];
+	const sizeMode = (windowState.sizeMode ??
+		'normal') as CrosshairWindowStateType['sizeMode'];
 	const showControls = SIZE_MODES[sizeMode]?.showControls ?? true;
 
 	// Resolve active crosshair and reticle based on secondary state
 	const activeCrosshair = useMemo(() => {
-		const value = secondary && windowState.crosshairSecondary
-			? windowState.crosshairSecondary
-			: windowState.crosshair;
+		const value =
+			secondary && windowState.crosshairSecondary
+				? windowState.crosshairSecondary
+				: windowState.crosshair;
 		// Ignore relative paths (invalid stored values)
 		if (value && !value.startsWith('/') && !/^[A-Z]:\\/i.test(value)) {
 			return undefined;
@@ -95,26 +97,16 @@ export function Crosshair() {
 	);
 
 	return (
-		<div
-			className="w-full h-full grid grid-cols-[1fr_auto_1fr]"
-		>
-			<div className="controls">
-				{showControls && <QuitButton />}
-			</div>
+		<div className="w-full h-full grid grid-cols-[1fr_auto_1fr]">
+			<div className="controls">{showControls && <QuitButton />}</div>
 
 			<div id="crosshair-wrapper" className="relative">
 				<div id="crosshair">
 					{isSvg && svgContent ? (
-						<div
-							dangerouslySetInnerHTML={{ __html: svgContent }}
-						/>
+						<div dangerouslySetInnerHTML={{ __html: svgContent }} />
 					) : (
 						<img
-							src={
-								activeCrosshair
-									? `file://${activeCrosshair}`
-									: crosshair
-							}
+							src={activeCrosshair ? `file://${activeCrosshair}` : crosshair}
 							alt=""
 							onError={handleError}
 						/>

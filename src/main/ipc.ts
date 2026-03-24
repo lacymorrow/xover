@@ -201,12 +201,12 @@ export default {
 		ipcMain.handle(ipcChannels.GET_LICENSE_STATUS, () => getLicenseStatus());
 
 		ipcMain.on(ipcChannels.CLOSE_ALL_WINDOWS, () => {
-			for (const id of Object.keys(windows.crosshairWindows)) {
+			Object.keys(windows.crosshairWindows).forEach((id) => {
 				const win = windows.crosshairWindows[id];
 				if (win && !win.isDestroyed()) {
 					win.close();
 				}
-			}
+			});
 		});
 	},
 };

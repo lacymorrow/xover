@@ -140,10 +140,7 @@ export function SettingsAdvanced() {
 					Focus next window
 				</Button>
 
-				<Button
-					onClick={handleCheckUpdate}
-					disabled={updateStatus !== null}
-				>
+				<Button onClick={handleCheckUpdate} disabled={updateStatus !== null}>
 					{updateStatus ?? 'Check for updates'}
 				</Button>
 				{updateStatus && (

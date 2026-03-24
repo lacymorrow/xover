@@ -43,8 +43,7 @@ test('App launches successfully', async () => {
 test('Main window has correct product name', async () => {
 	const result = await electronApp.evaluate(
 		async ({ BrowserWindow }, windowName) =>
-			BrowserWindow.getAllWindows().find((w) => w.title === windowName)
-				?.title,
+			BrowserWindow.getAllWindows().find((w) => w.title === windowName)?.title,
 		PRODUCT_NAME,
 	);
 	expect(result).toBe(PRODUCT_NAME);
@@ -82,10 +81,7 @@ test('First window matches mainPage reference', async () => {
 test('evaluateHandle works correctly', async () => {
 	const appHandle = await electronApp.evaluateHandle(({ app }) => app);
 	expect(
-		await electronApp.evaluate(
-			({ app }, appHandle) => app === appHandle,
-			appHandle,
-		),
+		await electronApp.evaluate(({ app }, handle) => app === handle, appHandle),
 	).toBeTruthy();
 });
 

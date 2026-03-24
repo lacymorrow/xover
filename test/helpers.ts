@@ -12,7 +12,9 @@ export const delays = {
 };
 
 export const wait = (ms: number): Promise<void> =>
-	new Promise((r) => setTimeout(r, ms));
+	new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 
 export const startApp = async (): Promise<{
 	electronApp: ElectronApplication;
@@ -56,28 +58,23 @@ export const focusedMinimizedVisible = async ({
 	electronApp: ElectronApplication;
 	windowName: string;
 }): Promise<{ focused: boolean; minimized: boolean; visible: boolean }> =>
-	app.evaluate(
-		async ({ BrowserWindow }, windowName) => {
-			const windows = BrowserWindow.getAllWindows();
-			let win = windows.find((w) => w.title === windowName);
+	app.evaluate(async ({ BrowserWindow }, name) => {
+		const windows = BrowserWindow.getAllWindows();
+		let win = windows.find((w) => w.title === name);
+		if (!win) {
+			[win] = windows;
 			if (!win) {
-				win = windows[0];
-				if (!win) {
-					return { focused: false, minimized: false, visible: false };
-				}
-				console.warn(
-					`Window "${windowName}" not found, using first window instead`,
-				);
+				return { focused: false, minimized: false, visible: false };
 			}
-			win.focus();
-			return {
-				focused: win.isFocused(),
-				minimized: win.isMinimized(),
-				visible: win.isVisible(),
-			};
-		},
-		windowName,
-	);
+			console.warn(`Window "${name}" not found, using first window instead`);
+		}
+		win.focus();
+		return {
+			focused: win.isFocused(),
+			minimized: win.isMinimized(),
+			visible: win.isVisible(),
+		};
+	}, windowName);
 
 export const getBounds = async ({
 	electronApp: app,
@@ -87,9 +84,9 @@ export const getBounds = async ({
 	windowName: string;
 }): Promise<{ x: number; y: number; width: number; height: number }> =>
 	app.evaluate(
-		async ({ BrowserWindow }, windowName) =>
+		async ({ BrowserWindow }, name) =>
 			BrowserWindow.getAllWindows()
-				.filter((w) => w.title === windowName)[0]
+				.filter((w) => w.title === name)[0]
 				.getBounds(),
 		windowName,
 	);

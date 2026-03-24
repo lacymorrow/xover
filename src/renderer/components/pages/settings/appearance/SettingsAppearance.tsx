@@ -8,7 +8,9 @@ import { useGlobalContext } from '@/renderer/context/global-context';
 export function SettingsAppearance() {
 	const { windowState, settings, setSettings } = useGlobalContext();
 
-	const handleChangeWindowState = (setting: Partial<CrosshairWindowStateType>) => {
+	const handleChangeWindowState = (
+		setting: Partial<CrosshairWindowStateType>,
+	) => {
 		window.electron.setWindowState(setting);
 	};
 
@@ -64,7 +66,9 @@ export function SettingsAppearance() {
 				]}
 				value={windowState.sizeMode ?? 'normal'}
 				onChange={(value) => {
-					handleChangeWindowState({ sizeMode: value as CrosshairWindowStateType['sizeMode'] });
+					handleChangeWindowState({
+						sizeMode: value as CrosshairWindowStateType['sizeMode'],
+					});
 				}}
 				card
 			/>

@@ -3,9 +3,9 @@ import { CrosshairWindowStateType } from '@/config/settings';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useMemo } from 'react';
+import { InputColor } from '@/renderer/components/input/InputColor';
 import { CrosshairGallery } from './CrosshairGallery';
 import { SettingsReticle } from './SettingsReticle';
-import { InputColor } from '@/renderer/components/input/InputColor';
 
 export function SettingsCrosshair() {
 	const { windowState } = useGlobalContext();

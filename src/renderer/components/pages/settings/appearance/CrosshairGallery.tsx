@@ -14,43 +14,52 @@ interface CrosshairGalleryProps {
 	stateKey?: 'crosshair' | 'crosshairSecondary';
 }
 
-export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryProps) {
+export function CrosshairGallery({
+	stateKey = 'crosshair',
+}: CrosshairGalleryProps) {
 	const { crosshairImages, windowState } = useGlobalContext();
 	const [search, setSearch] = useState('');
 	const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
 		new Set(),
 	);
 
-	const selectedValue = stateKey === 'crosshairSecondary' ? windowState.crosshairSecondary : windowState.crosshair;
+	const selectedValue =
+		stateKey === 'crosshairSecondary'
+			? windowState.crosshairSecondary
+			: windowState.crosshair;
 
-	const handleSelect = useCallback((value: string) => {
-		window.electron.setWindowState({ [stateKey]: value });
-	}, [stateKey]);
+	const handleSelect = useCallback(
+		(value: string) => {
+			window.electron.setWindowState({ [stateKey]: value });
+		},
+		[stateKey],
+	);
 
 	// Group images by folder, deduplicating by value (full path)
 	const grouped = useMemo(() => {
 		const groups: GroupedImages = {};
 		const seen = new Set<string>();
-		for (const img of crosshairImages) {
-			if (seen.has(img.value)) continue;
-			seen.add(img.value);
+		crosshairImages.forEach((img) => {
+			if (!seen.has(img.value)) {
+				seen.add(img.value);
 
-			const parts = img.value.replace(/\\/g, '/').split('/');
-			const filename = parts.pop() ?? '';
-			// Find the folder name (parent of file)
-			const crosshairsIdx = parts.findIndex((p) => p === 'crosshairs');
-			let folder = 'Other';
-			if (crosshairsIdx >= 0 && crosshairsIdx < parts.length - 1) {
-				folder = parts
-					.slice(crosshairsIdx + 1)
-					.join('/')
-					.replace(/^\/?/, '');
+				const parts = img.value.replace(/\\/g, '/').split('/');
+				const filename = parts.pop() ?? '';
+				// Find the folder name (parent of file)
+				const crosshairsIdx = parts.findIndex((p) => p === 'crosshairs');
+				let folder = 'Other';
+				if (crosshairsIdx >= 0 && crosshairsIdx < parts.length - 1) {
+					folder = parts
+						.slice(crosshairsIdx + 1)
+						.join('/')
+						.replace(/^\/?/, '');
+				}
+				if (!folder) folder = 'Other';
+
+				if (!groups[folder]) groups[folder] = [];
+				groups[folder].push({ ...img, filename });
 			}
-			if (!folder) folder = 'Other';
-
-			if (!groups[folder]) groups[folder] = [];
-			groups[folder].push({ ...img, filename });
-		}
+		});
 		return groups;
 	}, [crosshairImages]);
 
@@ -59,14 +68,14 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 		if (!search.trim()) return grouped;
 		const q = search.toLowerCase();
 		const result: GroupedImages = {};
-		for (const [folder, images] of Object.entries(grouped)) {
+		Object.entries(grouped).forEach(([folder, images]) => {
 			const filtered = images.filter(
 				(img) =>
 					img.filename.toLowerCase().includes(q) ||
 					folder.toLowerCase().includes(q),
 			);
 			if (filtered.length > 0) result[folder] = filtered;
-		}
+		});
 		return result;
 	}, [grouped, search]);
 
@@ -87,16 +96,17 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 	const handleClickBrowse = useCallback(() => {
 		const input = document.createElement('input');
 		input.type = 'file';
-		input.accept = 'image/png,image/jpeg,image/svg+xml,image/gif,image/webp,image/bmp';
+		input.accept =
+			'image/png,image/jpeg,image/svg+xml,image/gif,image/webp,image/bmp';
 		input.multiple = true;
 		input.onchange = () => {
 			if (input.files) {
-				for (const file of Array.from(input.files)) {
+				Array.from(input.files).forEach((file) => {
 					const filePath = window.electron.getPathForFile(file);
 					if (filePath) {
 						window.electron.openFile(filePath);
 					}
-				}
+				});
 			}
 		};
 		input.click();
@@ -105,7 +115,7 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 	return (
 		<div className="space-y-3">
 			<div className="space-y-1">
-				<label className="font-medium text-base">Crosshair</label>
+				<h3 className="font-medium text-base">Crosshair</h3>
 				<p className="text-sm text-muted-foreground">
 					Select the crosshair style.
 				</p>
@@ -160,8 +170,7 @@ export function CrosshairGallery({ stateKey = 'crosshair' }: CrosshairGalleryPro
 							{!isCollapsed && (
 								<div className="grid grid-cols-5 gap-1.5 p-1">
 									{images.map((img) => {
-										const isSelected =
-											selectedValue === img.value;
+										const isSelected = selectedValue === img.value;
 										return (
 											<button
 												key={img.value}

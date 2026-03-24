@@ -43,7 +43,9 @@ async function polarFetch<T = Record<string, unknown>>(
 
 	if (!response.ok) {
 		const text = await response.text();
-		throw new Error(`Polar API ${endpoint} returned ${response.status}: ${text}`);
+		throw new Error(
+			`Polar API ${endpoint} returned ${response.status}: ${text}`,
+		);
 	}
 
 	// Handle empty responses (e.g. 204 No Content or empty body)
@@ -67,7 +69,8 @@ export async function activateLicense(
 	if (!net.isOnline()) {
 		return {
 			success: false,
-			error: 'No internet connection. Please connect to the internet to activate your license.',
+			error:
+				'No internet connection. Please connect to the internet to activate your license.',
 		};
 	}
 
@@ -92,11 +95,14 @@ export async function activateLicense(
 		// validate-only mode (still premium, just no activation ID).
 		let activationId = '';
 		try {
-			const activateResult = await polarFetch<PolarActivateResponse>('activate', {
-				key,
-				organization_id: POLAR_ORGANIZATION_ID,
-				label: deviceId,
-			});
+			const activateResult = await polarFetch<PolarActivateResponse>(
+				'activate',
+				{
+					key,
+					organization_id: POLAR_ORGANIZATION_ID,
+					label: deviceId,
+				},
+			);
 
 			if (activateResult.id) {
 				activationId = activateResult.id;
@@ -104,7 +110,10 @@ export async function activateLicense(
 		} catch (activateError: unknown) {
 			// 403 means activations not enabled on this benefit, which is fine.
 			// The key validated successfully, so we still grant premium.
-			Logger.warn('License activation endpoint failed (activations may not be enabled):', activateError);
+			Logger.warn(
+				'License activation endpoint failed (activations may not be enabled):',
+				activateError,
+			);
 		}
 
 		const licenseStatus: LicenseStatus = {
@@ -124,7 +133,8 @@ export async function activateLicense(
 		// Turn raw API errors into user-friendly messages
 		let friendlyError = 'Failed to activate license.';
 		if (msg.includes('404') || msg.includes('ResourceNotFound')) {
-			friendlyError = 'Invalid license key. Please check the key and try again.';
+			friendlyError =
+				'Invalid license key. Please check the key and try again.';
 		} else if (msg.includes('422') || msg.includes('ValidationError')) {
 			friendlyError = 'Invalid license key format.';
 		} else if (msg) {
@@ -154,7 +164,8 @@ export async function deactivateLicense(): Promise<{
 		if (!net.isOnline()) {
 			return {
 				success: false,
-				error: 'No internet connection. You must be online to deactivate your license.',
+				error:
+					'No internet connection. You must be online to deactivate your license.',
 			};
 		}
 
@@ -204,7 +215,10 @@ export async function checkLicense(): Promise<LicenseStatus> {
 		if (license.activationId) {
 			validateBody.activation_id = license.activationId;
 		}
-		const validateResult = await polarFetch<PolarValidateResponse>('validate', validateBody);
+		const validateResult = await polarFetch<PolarValidateResponse>(
+			'validate',
+			validateBody,
+		);
 
 		if (validateResult.status === 'granted') {
 			const updated: LicenseStatus = {
@@ -226,7 +240,9 @@ export async function checkLicense(): Promise<LicenseStatus> {
 		// After the grace period expires, revoke premium so stolen keys can't persist forever offline.
 		const sinceLastValidation = Date.now() - license.lastValidated;
 		if (sinceLastValidation < LICENSE_GRACE_PERIOD) {
-			Logger.info(`License check failed but within grace period (${Math.round(sinceLastValidation / 86400000)}d of 7d). Keeping premium.`);
+			Logger.info(
+				`License check failed but within grace period (${Math.round(sinceLastValidation / 86400000)}d of 7d). Keeping premium.`,
+			);
 			return license;
 		}
 		Logger.warn('License grace period expired, revoking premium status');

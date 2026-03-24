@@ -40,7 +40,10 @@ export function SettingsLicense() {
 		try {
 			const result = await window.electron.activateLicense(licenseKey.trim());
 			if (result.success) {
-				setStatus({ type: 'success', message: 'License activated successfully!' });
+				setStatus({
+					type: 'success',
+					message: 'License activated successfully!',
+				});
 				setLicenseKey('');
 				const s: LicenseStatus = await window.electron.getLicenseStatus();
 				if (s?.licenseKey) {
@@ -78,7 +81,8 @@ export function SettingsLicense() {
 		} catch (error: unknown) {
 			setStatus({
 				type: 'error',
-				message: error instanceof Error ? error.message : 'Deactivation failed.',
+				message:
+					error instanceof Error ? error.message : 'Deactivation failed.',
 			});
 		}
 	}, [refreshLicense]);
@@ -130,7 +134,9 @@ export function SettingsLicense() {
 							onClick={handleDeactivate}
 							disabled={status.type === 'loading'}
 						>
-							{status.type === 'loading' ? 'Deactivating...' : 'Deactivate License'}
+							{status.type === 'loading'
+								? 'Deactivating...'
+								: 'Deactivate License'}
 						</button>
 					</div>
 				</>
@@ -139,9 +145,7 @@ export function SettingsLicense() {
 					{/* Free state - activation form */}
 					<div className="space-y-4">
 						<div className="space-y-2">
-							<label className="font-medium text-base" htmlFor="license-key">
-								License Key
-							</label>
+							<h3 className="font-medium text-base">License Key</h3>
 							<p className="text-sm text-muted-foreground">
 								Enter your license key to activate premium features.
 							</p>
@@ -162,9 +166,7 @@ export function SettingsLicense() {
 									type="button"
 									className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
 									onClick={handleActivate}
-									disabled={
-										status.type === 'loading' || !licenseKey.trim()
-									}
+									disabled={status.type === 'loading' || !licenseKey.trim()}
 								>
 									{status.type === 'loading' ? 'Activating...' : 'Activate'}
 								</button>
@@ -177,8 +179,8 @@ export function SettingsLicense() {
 					<div className="space-y-2">
 						<p className="font-medium text-base">Get a License</p>
 						<p className="text-sm text-muted-foreground">
-							Purchase a premium license to unlock secondary crosshairs, profiles,
-							and more.
+							Purchase a premium license to unlock secondary crosshairs,
+							profiles, and more.
 						</p>
 						<button
 							type="button"
