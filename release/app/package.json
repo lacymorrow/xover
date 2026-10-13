@@ -1,7 +1,7 @@
 {
 	"name": "crossover",
-	"version": "4.0.0",
-	"description": "A batteries-included Electron boilerplate.",
+	"version": "4.0.0-beta.1",
+	"description": "A Crosshair Overlay for any screen.",
 	"license": "CC-BY-NC-SA-4.0",
 	"homepage": "https://lacymorrow.github.io/crossover",
 	"author": {
