@@ -91,7 +91,7 @@ export function InputSlider({
 						<p className="text-muted-foreground">{description}</p>
 					)}
 				</div>
-				{value && (
+				{typeof value === 'number' && (
 					<>
 						{input ? (
 							<Input
@@ -128,6 +128,7 @@ export function InputSlider({
 				max={max}
 				step={step}
 				disabled={disabled}
+				className={cn(disabled && 'opacity-50')}
 				{...props}
 			/>
 			{details && <p className="text-sm text-muted-foreground">{details}</p>}
