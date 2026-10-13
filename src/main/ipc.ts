@@ -193,11 +193,26 @@ export default {
 		});
 
 		// License
+		// License changes affect every window (e.g. rotation in crosshair windows)
+		const withLicenseSync =
+			<T>(fn: () => Promise<T>) =>
+			async () => {
+				const result = await fn();
+				BrowserWindow.getAllWindows().forEach((win) => {
+					if (!win.isDestroyed()) {
+						win.webContents.send(ipcChannels.APP_UPDATED);
+					}
+				});
+				return result;
+			};
 		ipcMain.handle(ipcChannels.ACTIVATE_LICENSE, (_event, key: string) =>
-			activateLicense(key),
+			withLicenseSync(() => activateLicense(key))(),
 		);
-		ipcMain.handle(ipcChannels.DEACTIVATE_LICENSE, () => deactivateLicense());
-		ipcMain.handle(ipcChannels.CHECK_LICENSE, () => checkLicense());
+		ipcMain.handle(
+			ipcChannels.DEACTIVATE_LICENSE,
+			withLicenseSync(deactivateLicense),
+		);
+		ipcMain.handle(ipcChannels.CHECK_LICENSE, withLicenseSync(checkLicense));
 		ipcMain.handle(ipcChannels.GET_LICENSE_STATUS, () => getLicenseStatus());
 
 		ipcMain.on(ipcChannels.CLOSE_ALL_WINDOWS, () => {

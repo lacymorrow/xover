@@ -97,6 +97,7 @@ export function GlobalContextProvider({
 		// Create handler for receiving asynchronous messages from the main process
 		const synchronizeAppState = async () => {
 			console.log(ipcChannels.APP_UPDATED);
+			refreshLicense();
 
 			window.electron.ipcRenderer
 				// @ts-ignore

@@ -21,6 +21,7 @@ export const POLAR_PRODUCT_ID = '584b6ea6-d3e3-471b-ab67-9bdcd85afffa';
 
 export const PREMIUM_FEATURES = {
 	secondaryCrosshair: true,
+	rotation: true, // crosshair + reticle rotation sliders
 	profiles: true, // placeholder for future use
 };
 

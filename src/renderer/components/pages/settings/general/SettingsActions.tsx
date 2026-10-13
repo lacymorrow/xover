@@ -163,7 +163,7 @@ export function SettingsActions() {
 								</>
 							}
 							description="Switch to a second crosshair when the bind is active."
-							details="Upgrade to premium to unlock this feature."
+							details="Included with CrossOver Pro."
 						/>
 					</div>
 				}

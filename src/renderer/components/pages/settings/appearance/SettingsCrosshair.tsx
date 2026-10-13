@@ -1,6 +1,8 @@
 import { Separator } from '@/components/ui/separator';
 import { CrosshairWindowStateType } from '@/config/settings';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
+import { PremiumBadge } from '@/renderer/components/ui/PremiumBadge';
+import { PremiumGate, UpgradeLink } from '@/renderer/components/ui/PremiumGate';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useMemo } from 'react';
 import { InputColor } from '@/renderer/components/input/InputColor';
@@ -51,16 +53,34 @@ export function SettingsCrosshair() {
 				min={0}
 				max={100}
 			/>
-			<InputSlider
-				value={windowState.crosshairRotation}
-				onChange={(value) => {
-					handleChangeSetting({ crosshairRotation: value });
-				}}
-				label="Crosshair Rotation"
-				details="Adjust the rotation of the crosshair."
-				min={-180}
-				max={180}
-			/>
+			<PremiumGate
+				fallback={
+					<InputSlider
+						value={0}
+						label={
+							<>
+								Crosshair Rotation <PremiumBadge />
+							</>
+						}
+						details="Rotate the crosshair to any angle. Included with CrossOver Pro."
+						content={<UpgradeLink />}
+						min={-180}
+						max={180}
+						disabled
+					/>
+				}
+			>
+				<InputSlider
+					value={windowState.crosshairRotation}
+					onChange={(value) => {
+						handleChangeSetting({ crosshairRotation: value });
+					}}
+					label="Crosshair Rotation"
+					details="Adjust the rotation of the crosshair."
+					min={-180}
+					max={180}
+				/>
+			</PremiumGate>
 			{isSvgSelected && (
 				<>
 					<Separator />

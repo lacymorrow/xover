@@ -12,7 +12,7 @@ export function PremiumBadge({ className }: PremiumBadgeProps) {
 				className,
 			)}
 		>
-			Premium
+			Pro
 		</span>
 	);
 }
