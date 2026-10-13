@@ -7,6 +7,8 @@ on:
 
 jobs:
   publish:
+    # Releases are published from lacymorrow/crossover's release-v4.yml instead
+    # (its GITHUB_TOKEN can write there; this repo's can't).
     # To enable auto publishing to github, update your electron publisher
     # config in package.json > "build" and remove the conditional below
     # MAKE SURE TO REMOVE THE EXCLAMATION MARK FROM THE OWNER NAME BELOW
