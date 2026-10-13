@@ -12,6 +12,11 @@ import {
 } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 
+export interface MigrationsType {
+	v3Imported?: boolean;
+	v3ImportedAt?: number;
+}
+
 export type AppMessageType = string;
 
 export type AppMessageLogType = AppMessageType[];
@@ -28,6 +33,7 @@ export interface StoreType {
 	activeWindow: string;
 	actionState: ActionStateType;
 	license: LicenseStatus;
+	migrations: MigrationsType; // survives settings resets, so imports never re-run
 }
 
 export type WindowNamesType = 'settings' | 'crosshairs';
@@ -107,6 +113,14 @@ const schema: Store.Schema<StoreType> = {
 	appMessageLog: {
 		type: 'array',
 		default: [],
+	},
+	migrations: {
+		type: 'object',
+		properties: {
+			v3Imported: { type: 'boolean' },
+			v3ImportedAt: { type: 'number' },
+		},
+		default: {},
 	},
 	license: {
 		type: 'object',

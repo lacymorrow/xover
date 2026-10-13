@@ -18,6 +18,7 @@ import { refreshSettingsOnAppStart } from './reset';
 import sounds from './sounds';
 import tray from './tray';
 import { initializeAccessibilityCheck } from './accessibility';
+import { importV3Settings } from './import-v3';
 import { AutoUpdate } from './auto-update';
 import { checkLicense } from './license';
 import { debugInfo, is } from './util';
@@ -36,6 +37,10 @@ export const startup = () => {
 
 		// Initialize the error handler
 		errorHandling.initialize();
+
+		// Migrations: bring over CrossOver v3 settings (first run only).
+		// Must run before refreshSettingsOnAppStart() sets hadFirstRun.
+		importV3Settings();
 
 		refreshSettingsOnAppStart();
 

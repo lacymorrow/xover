@@ -267,7 +267,10 @@ export const resetStoreSettings = () => {
 
 export const resetStore = () => {
 	Logger.status($messages.resetStore);
+	// Keep migration flags, or the next launch would re-import v3 settings
+	const migrations = store.get('migrations');
 	store.clear();
+	store.set('migrations', migrations);
 
 	synchronizeApp();
 };
