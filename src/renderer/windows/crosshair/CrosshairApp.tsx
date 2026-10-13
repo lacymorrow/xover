@@ -8,7 +8,7 @@ import '@/renderer/styles/crosshair.scss';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function CrosshairApp() {
-	const { settings, windowState } = useGlobalContext();
+	const { settings, windowState, isPremium } = useGlobalContext();
 	const { tilt, hidden, adsActive, secondary } = useActionStateContext();
 	const [isDragActive, setIsDragActive] = useState(false);
 
@@ -91,9 +91,15 @@ export default function CrosshairApp() {
 			? settings.adsResizeSize / 100
 			: baseScale / 100;
 
+		// Rotation is a Pro feature; ignore stored values without a license
+		const pro = (degrees: number) => (isPremium ? degrees : 0);
+		const crosshairRotationSecondary = pro(
+			windowState.crosshairRotationSecondary,
+		);
+		const reticleRotationSecondary = pro(windowState.reticleRotationSecondary);
 		const rotation = secondary
-			? windowState.crosshairRotationSecondary
-			: windowState.crosshairRotation;
+			? crosshairRotationSecondary
+			: pro(windowState.crosshairRotation);
 
 		const reticleScale = secondary
 			? windowState.reticleSizeSecondary
@@ -102,8 +108,8 @@ export default function CrosshairApp() {
 			? windowState.reticleColorSecondary
 			: windowState.reticleColor;
 		const reticleRotation = secondary
-			? windowState.reticleRotationSecondary
-			: windowState.reticleRotation;
+			? reticleRotationSecondary
+			: pro(windowState.reticleRotation);
 
 		// Properties to apply to renderer every sync
 		const properties = {
@@ -120,10 +126,10 @@ export default function CrosshairApp() {
 			// Secondary alt vars for SCSS .secondary rules
 			'--crosshair-opacity-alt': windowState.crosshairOpacitySecondary / 100,
 			'--crosshair-scale-alt': windowState.crosshairSizeSecondary / 100,
-			'--crosshair-rotation-alt': `${windowState.crosshairRotationSecondary}deg`,
+			'--crosshair-rotation-alt': `${crosshairRotationSecondary}deg`,
 			'--reticle-scale-alt': windowState.reticleSizeSecondary / 100,
 			'--reticle-color-alt': windowState.reticleColorSecondary,
-			'--reticle-rotation-alt': `${windowState.reticleRotationSecondary}deg`,
+			'--reticle-rotation-alt': `${reticleRotationSecondary}deg`,
 
 			'--svg-fill-color': windowState.fillColor,
 			'--svg-stroke-color': windowState.strokeColor,
@@ -135,7 +141,7 @@ export default function CrosshairApp() {
 		Object.entries(properties).forEach(([key, value]) => {
 			document.documentElement.style.setProperty(key, String(value));
 		});
-	}, [settings, windowState, hidden, adsActive, secondary]);
+	}, [settings, windowState, isPremium, hidden, adsActive, secondary]);
 
 	useEffect(() => {
 		// Tilt

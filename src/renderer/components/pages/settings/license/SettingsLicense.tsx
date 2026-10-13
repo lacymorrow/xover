@@ -179,8 +179,9 @@ export function SettingsLicense() {
 					<div className="space-y-2">
 						<p className="font-medium text-base">Get a License</p>
 						<p className="text-sm text-muted-foreground">
-							Purchase a premium license to unlock secondary crosshairs,
-							profiles, and more.
+							CrossOver Pro adds a secondary crosshair you can switch to
+							mid-game, plus crosshair and reticle rotation. Pay once.
+							Everything that was free stays free.
 						</p>
 						<button
 							type="button"
@@ -189,7 +190,7 @@ export function SettingsLicense() {
 								window.electron.openUrl(POLAR_CHECKOUT_URL);
 							}}
 						>
-							Purchase License
+							Get CrossOver Pro
 						</button>
 					</div>
 				</>

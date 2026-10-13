@@ -22,9 +22,9 @@ export function PremiumGate({ children, fallback }: PremiumGateProps) {
 	return (
 		<div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center">
 			<div className="space-y-2">
-				<h3 className="text-lg font-medium">Premium Feature <PremiumBadge /></h3>
+				<h3 className="text-lg font-medium">CrossOver Pro <PremiumBadge /></h3>
 				<p className="text-sm text-muted-foreground">
-					This feature is available with a premium license.
+					This feature is included with CrossOver Pro.
 				</p>
 			</div>
 			<button
@@ -34,8 +34,22 @@ export function PremiumGate({ children, fallback }: PremiumGateProps) {
 					window.electron.openUrl(POLAR_CHECKOUT_URL);
 				}}
 			>
-				Upgrade to Premium
+				Get CrossOver Pro
 			</button>
 		</div>
+	);
+}
+
+export function UpgradeLink() {
+	return (
+		<button
+			type="button"
+			className="text-sm font-medium text-amber-500 hover:underline"
+			onClick={() => {
+				window.electron.openUrl(POLAR_CHECKOUT_URL);
+			}}
+		>
+			Get CrossOver Pro
+		</button>
 	);
 }

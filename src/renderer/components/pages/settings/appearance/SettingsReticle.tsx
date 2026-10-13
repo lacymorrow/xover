@@ -4,6 +4,8 @@ import { CrosshairWindowStateType } from '@/config/settings';
 import { InputColor } from '@/renderer/components/input/InputColor';
 import { InputComboboxForm } from '@/renderer/components/input/InputComboboxForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
+import { PremiumBadge } from '@/renderer/components/ui/PremiumBadge';
+import { PremiumGate, UpgradeLink } from '@/renderer/components/ui/PremiumGate';
 import { reticleItems } from '@/renderer/config/reticles';
 import { useGlobalContext } from '@/renderer/context/global-context';
 
@@ -43,16 +45,34 @@ export function SettingsReticle() {
 				min={0}
 				max={100}
 			/>
-			<InputSlider
-				value={windowState.reticleRotation}
-				onChange={(value) => {
-					handleChangeSetting({ reticleRotation: value });
-				}}
-				label="Reticle Rotation"
-				details="Adjust the rotation of the reticle in the center of the crosshair."
-				min={-180}
-				max={180}
-			/>
+			<PremiumGate
+				fallback={
+					<InputSlider
+						value={0}
+						label={
+							<>
+								Reticle Rotation <PremiumBadge />
+							</>
+						}
+						details="Rotate the reticle to any angle. Included with CrossOver Pro."
+						content={<UpgradeLink />}
+						min={-180}
+						max={180}
+						disabled
+					/>
+				}
+			>
+				<InputSlider
+					value={windowState.reticleRotation}
+					onChange={(value) => {
+						handleChangeSetting({ reticleRotation: value });
+					}}
+					label="Reticle Rotation"
+					details="Adjust the rotation of the reticle in the center of the crosshair."
+					min={-180}
+					max={180}
+				/>
+			</PremiumGate>
 			<InputColor
 				value={windowState.reticleColor}
 				label="Reticle Color"

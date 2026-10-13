@@ -18,13 +18,14 @@ export function InputSlider({
 	min,
 	max,
 	step,
+	disabled,
 
 	...props
 }: {
 	value?: number;
 	defaultValue?: number;
 	onChange?: (value: number) => void;
-	label?: string;
+	label?: React.ReactNode;
 	description?: string;
 	details?: string;
 	content?: React.ReactNode;
@@ -32,6 +33,7 @@ export function InputSlider({
 	min?: number;
 	max?: number;
 	step?: number;
+	disabled?: boolean;
 	props?: any;
 }) {
 	const uuid = useMemo(simpleUUID, []);
@@ -89,7 +91,7 @@ export function InputSlider({
 						<p className="text-muted-foreground">{description}</p>
 					)}
 				</div>
-				{value && (
+				{typeof value === 'number' && (
 					<>
 						{input ? (
 							<Input
@@ -125,6 +127,8 @@ export function InputSlider({
 				min={min}
 				max={max}
 				step={step}
+				disabled={disabled}
+				className={cn(disabled && 'opacity-50')}
 				{...props}
 			/>
 			{details && <p className="text-sm text-muted-foreground">{details}</p>}
