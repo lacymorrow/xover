@@ -293,7 +293,6 @@
         "nsis",
         "portable"
       ],
-      "publish": "github",
       "verifyUpdateCodeSignature": false
     },
     "portable": {
