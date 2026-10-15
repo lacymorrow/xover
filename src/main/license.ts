@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { net } from 'electron';
+import { BrowserWindow, net } from 'electron';
 import Logger from 'electron-log';
 import os from 'os';
 import {
@@ -10,6 +10,7 @@ import {
 	POLAR_API_URL,
 	POLAR_ORGANIZATION_ID,
 } from '../config/license';
+import { ipcChannels } from '../config/ipc-channels';
 import store from './store';
 
 interface PolarValidateResponse {
@@ -257,4 +258,13 @@ export function getLicenseStatus(): LicenseStatus {
 
 export function isPremium(): boolean {
 	return store.get('license').isPremium;
+}
+
+// License changes affect every window (e.g. rotation in crosshair windows)
+export function notifyLicenseChanged(): void {
+	BrowserWindow.getAllWindows().forEach((win) => {
+		if (!win.isDestroyed()) {
+			win.webContents.send(ipcChannels.APP_UPDATED);
+		}
+	});
 }

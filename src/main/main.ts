@@ -44,6 +44,7 @@ import { app } from 'electron';
 import Logger from 'electron-log';
 import { $errors, $init } from '../config/strings';
 
+import { findDeepLink, handleDeepLink, registerDeepLinks } from './deep-link';
 import ipc from './ipc';
 import windows from './windows';
 import { ready, startup } from './startup';
@@ -54,7 +55,13 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
 	app.quit();
 } else {
-	app.on('second-instance', () => {
+	// Must be registered before ready: macOS sends launch links via open-url
+	registerDeepLinks();
+
+	app.on('second-instance', (_event, argv) => {
+		// Windows and Linux deliver crossover:// links in the new instance's argv
+		handleDeepLink(findDeepLink(argv));
+
 		// Focus existing window when a second instance is launched
 		if (windows.mainWindow) {
 			if (windows.mainWindow.isMinimized()) {

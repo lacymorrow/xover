@@ -9,6 +9,7 @@ import {
 	createSettingsWindow,
 } from './create-window';
 import debugging from './debugging';
+import { deepLinksReady } from './deep-link';
 import errorHandling from './error-handling';
 import kb from './keyboard';
 import logger from './logger';
@@ -110,6 +111,9 @@ export const ready = async () => {
 export const idle = async () => {
 	await createSettingsWindow();
 	sounds.play('STARTUP');
+
+	// Links that arrived during launch need the settings window
+	deepLinksReady();
 
 	Logger.status($init.idle);
 	console.timeLog(app.name, $init.idle);

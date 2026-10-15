@@ -246,6 +246,14 @@
   },
   "build": {
     "appId": "com.lacymorrow.crossover",
+    "protocols": [
+      {
+        "name": "CrossOver",
+        "schemes": [
+          "crossover"
+        ]
+      }
+    ],
     "copyright": "Copyright © Lacy Morrow",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
