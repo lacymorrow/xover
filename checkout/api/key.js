@@ -18,12 +18,20 @@ async function polar(path) {
 	return response.json();
 }
 
+// The success page lives at crossover.lacy.sh/activate/
+const ALLOWED_ORIGINS = ['https://crossover.lacy.sh'];
+
 function send(res, code, body) {
 	res.setHeader('Cache-Control', 'no-store');
 	res.status(code).json(body);
 }
 
 export default async function handler(req, res) {
+	if (ALLOWED_ORIGINS.includes(req.headers.origin)) {
+		res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+		res.setHeader('Vary', 'Origin');
+	}
+
 	const checkoutId = String(req.query.checkout_id || '');
 	if (!UUID.test(checkoutId)) {
 		return send(res, 400, { status: 'error', reason: 'missing' });
