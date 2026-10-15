@@ -72,23 +72,30 @@ if (!gotTheLock) {
 	});
 }
 
-// Initialize the timer
-console.time(app.name);
-console.timeLog(app.name, $init.app);
+const launch = () => {
+	// Initialize the timer
+	console.time(app.name);
+	console.timeLog(app.name, $init.app);
 
-// Register ipcMain listeners
-ipc.initialize();
+	// Register ipcMain listeners
+	ipc.initialize();
 
-// SETUP APP (runs after startup())
-app
-	.whenReady()
-	.then(ready) // <-- this is where the app is initialized
-	.catch((error: Error) => {
-		Logger.error($errors.prefix, error);
-	});
+	// SETUP APP (runs after startup())
+	app
+		.whenReady()
+		.then(ready) // <-- this is where the app is initialized
+		.catch((error: Error) => {
+			Logger.error($errors.prefix, error);
+		});
 
-// LAUNCH THE APP
-startup();
+	// LAUNCH THE APP
+	startup();
+};
+
+// A second copy hands off to the first and exits without starting up
+if (gotTheLock) {
+	launch();
+}
 
 // See the idle() function in src/main/startup.ts
 // it's called in the ipcMain.on(ipcChannels.RENDERER_READY) listener
