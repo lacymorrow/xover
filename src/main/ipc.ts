@@ -10,6 +10,7 @@ import {
 	activateLicense,
 	checkLicense,
 	deactivateLicense,
+	notifyLicenseChanged,
 	getLicenseStatus,
 } from './license';
 import { notification } from './notifications';
@@ -193,16 +194,11 @@ export default {
 		});
 
 		// License
-		// License changes affect every window (e.g. rotation in crosshair windows)
 		const withLicenseSync =
 			<T>(fn: () => Promise<T>) =>
 			async () => {
 				const result = await fn();
-				BrowserWindow.getAllWindows().forEach((win) => {
-					if (!win.isDestroyed()) {
-						win.webContents.send(ipcChannels.APP_UPDATED);
-					}
-				});
+				notifyLicenseChanged();
 				return result;
 			};
 		ipcMain.handle(ipcChannels.ACTIVATE_LICENSE, (_event, key: string) =>
