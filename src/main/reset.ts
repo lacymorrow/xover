@@ -49,6 +49,10 @@ export const refreshSettingsOnAppStart = () => {
 		hadFirstRun: true,
 
 		isHidden: false,
+		// Transient, like isHidden. The Toggle Reticle keybind is a mid-match
+		// action; persisting it would relaunch into a missing reticle with no
+		// setting anywhere to explain why. v3 persisted this and had no UI for it.
+		isReticleHidden: false,
 		isSettingsWindowOpen: false,
 		currentTilt: 0,
 		resetOnAppStart: false,

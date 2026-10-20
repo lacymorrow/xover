@@ -25,6 +25,8 @@ export interface SettingsType {
 
 	startLocked: boolean;
 	startOnLogin: boolean;
+	// Excludes every crosshair window from screen captures and recordings
+	hideFromScreenCapture: boolean;
 
 	commandLineFlags: string[];
 	hardwareAcceleration: boolean;
@@ -39,6 +41,8 @@ export interface SettingsType {
 	hideOnMouseEnabled: boolean;
 	hideOnMouseButton: number; // 1=left, 2=right, 3=middle
 	hideOnMouseBehavior: IOHookBehaviorType; // toggle/hold
+	// Inverts auto-hide: the crosshair stays hidden and the bind reveals it
+	hideOnMouseInvert: boolean;
 
 	hideOnKeyEnabled: boolean;
 	hideOnKeyBind: string; // e.g. "keyboard:Alt"
@@ -62,6 +66,7 @@ export interface SettingsType {
 	// temporary
 	currentTilt: number;
 	isHidden: boolean;
+	isReticleHidden: boolean;
 	settingsCloseOnBlur: boolean;
 	isSettingsWindowOpen: boolean;
 	resetOnAppStart: boolean; // for debugging, reset via cli
@@ -92,6 +97,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	startLocked: false,
 	startOnLogin: false,
+	hideFromScreenCapture: false,
 
 	commandLineFlags: [],
 	hardwareAcceleration: true,
@@ -106,6 +112,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	hideOnMouseEnabled: false,
 	hideOnMouseButton: 2, // right click
 	hideOnMouseBehavior: 'hold',
+	hideOnMouseInvert: false,
 
 	hideOnKeyEnabled: false,
 	hideOnKeyBind: '',
@@ -129,6 +136,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	// temporary
 	currentTilt: 0,
 	isHidden: false,
+	isReticleHidden: false,
 	settingsCloseOnBlur: false,
 	isSettingsWindowOpen: false,
 	resetOnAppStart: false, // for debugging, reset via cli
@@ -246,6 +254,7 @@ export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
 	quit: `${accelerator}+Q`,
 	reset: `${accelerator}+R`,
 	hide: `${accelerator}+H`,
+	hideReticle: `${accelerator}+S`,
 	center: `${accelerator}+C`,
 	newWindow: `${accelerator}+N`,
 	duplicateWindow: `${accelerator}+D`,
