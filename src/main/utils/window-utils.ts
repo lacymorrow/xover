@@ -321,6 +321,39 @@ export const forEachCrosshairWindow = (
 	});
 };
 
+/**
+ * Exclude a window from screen captures and recordings, or stop excluding it.
+ *
+ * Maps to WDA_EXCLUDEFROMCAPTURE on Windows 10+ and NSWindowSharingNone on
+ * macOS. The crosshair stays visible on the physical screen either way; it just
+ * stops appearing in OBS, GeForce Instant Replay and screenshots.
+ * Ported from v3 #359 / #522.
+ */
+export const applyContentProtection = (
+	window: BrowserWindow,
+	enabled: boolean,
+) => {
+	if (!window || window.isDestroyed()) {
+		return;
+	}
+
+	try {
+		window.setContentProtection(enabled);
+	} catch (error) {
+		Logger.error('setContentProtection failed:', error);
+	}
+};
+
+/**
+ * Re-apply hideFromScreenCapture to every crosshair window, so the toggle takes
+ * effect without a restart. The settings window is deliberately left alone: a
+ * protected settings window cannot be screenshotted at all, which would break
+ * bug reports and QA captures.
+ */
+export const syncContentProtection = (enabled: boolean) => {
+	forEachCrosshairWindow((win) => applyContentProtection(win, enabled));
+};
+
 // -1 to disable
 export const setProgress = (percentage: number) => {
 	windows.mainWindow?.setProgressBar(percentage || -1);

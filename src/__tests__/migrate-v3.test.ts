@@ -106,16 +106,21 @@ describe('mapV3Preferences', () => {
 			duplicateWindow: 'Control+Shift+Alt+D',
 			focusNextWindow: 'Control+Shift+Alt+O',
 			moveRight: 'Control+Shift+Alt+Right',
+			// v4 gained the Toggle Reticle action in LAC-5182, so this one carries
+			// over now instead of being dropped
+			hideReticle: 'Control+Shift+Alt+S',
 		});
-		expect(r.keybinds).not.toHaveProperty('hideReticle');
 		expect(r.skipped).toEqual(
 			expect.arrayContaining([
-				expect.stringContaining('keybinds.hideReticle'),
 				expect.stringContaining('keybinds.about'),
 				expect.stringContaining('app.alerts'),
 				expect.stringContaining('crosshair.circleThickness'),
 			]),
 		);
+		// These gained v4 homes in LAC-5182, so they must no longer be skipped
+		expect(r.skipped.join(' ')).not.toContain('keybinds.hideReticle');
+		expect(r.skipped.join(' ')).not.toContain('app.hideFromScreenCapture');
+		expect(r.skipped.join(' ')).not.toContain('actions.showOnMouseInvert');
 	});
 
 	it('maps a customized setup', () => {

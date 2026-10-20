@@ -2,12 +2,14 @@ import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
 import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
 import { $notifications } from '../config/strings';
+import { shouldRegisterKeybind } from '../utils/keybinds';
 import store from './store';
 import windows from './windows';
 
 import { createDuplicateWindow, createNewWindow } from './create-window';
 import { notification } from './notifications';
 import { resetSettings } from './reset';
+import { getSetting, setSettings } from './store-actions';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
 import {
@@ -24,6 +26,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	// Toggle CrossOver
 	{
 		action: 'lock',
+		isSafety: true,
 		fn() {
 			if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
 				return;
@@ -49,6 +52,7 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 	{
 		action: 'reset',
 		allowUnbind: true,
+		isSafety: true,
 		fn() {
 			resetSettings();
 		},
@@ -67,6 +71,15 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 
 			// eslint-disable-next-line no-use-before-define
 			registerKeyboardShortcuts();
+		},
+	},
+
+	// Toggle the reticle (centre sight) without touching the crosshair image
+	{
+		action: 'hideReticle',
+		allowUnbind: true,
+		fn() {
+			setSettings({ isReticleHidden: !getSetting('isReticleHidden') });
 		},
 	},
 
@@ -185,27 +198,28 @@ const registerKeyboardShortcuts = () => {
 	// Collect all new shortcuts first, then swap atomically
 	const toRegister: Array<{ keybind: string; fn: () => void }> = [];
 
+	if (allowDisableKeyboardShortcuts) {
+		Logger.info('All keybinds disabled except Lock and Reset');
+	}
+
 	keyboardShortcuts.forEach((shortcut) => {
-		const { action, fn, ignoreWhenLocked } = shortcut;
+		const { action, fn } = shortcut;
 		const keybind = keybinds[action];
 
-		if (isLocked && allowDisableKeyboardShortcuts && action !== 'lock') {
-			return;
-		}
-
 		if (
-			!action ||
 			!fn ||
-			!keybind ||
-			((isLocked || isHidden) && ignoreWhenLocked) ||
-			(isLocked && allowDisableKeyboardShortcuts && action !== 'lock')
+			!shouldRegisterKeybind(shortcut, keybind, {
+				allDisabled: allowDisableKeyboardShortcuts,
+				isLocked,
+				isHidden,
+			})
 		) {
 			Logger.info(`No keybind for ${action}`);
 			return;
 		}
 
 		Logger.info(`Keybind for ${action} is ${keybind}`);
-		toRegister.push({ keybind, fn });
+		toRegister.push({ keybind: keybind as string, fn });
 	});
 
 	// Unregister old shortcuts and register new ones
