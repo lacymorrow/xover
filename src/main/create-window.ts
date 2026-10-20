@@ -37,7 +37,11 @@ import {
 import { is, resolveHtmlPath } from './util';
 import { savePosition } from './utils/savePosition';
 import { windowClosed } from './utils/window-closed';
-import { getNextCrosshairWindow, safeSetBounds } from './utils/window-utils';
+import {
+	applyContentProtection,
+	getNextCrosshairWindow,
+	safeSetBounds,
+} from './utils/window-utils';
 import windows from './windows';
 
 const getAssetPath = (...paths: string[]): string => {
@@ -169,7 +173,8 @@ export const createCrosshairWindow = async (
 		setWindowState(id, DEFAULT_CROSSHAIR_WINDOW_STATE);
 	}
 
-	const { isLocked, showTaskbarIcon, appSizeMode } = getSettings();
+	const { isLocked, showTaskbarIcon, appSizeMode, hideFromScreenCapture } =
+		getSettings();
 
 	// Per-window size mode (compact/normal/large)
 	const windowSizeMode = state?.sizeMode ?? 'normal';
@@ -242,6 +247,9 @@ export const createCrosshairWindow = async (
 	const window = createWindow(id, options);
 	window.setAspectRatio(APP_ASPECT_RATIO);
 	window.setIgnoreMouseEvents(isLocked);
+
+	// Keep the crosshair out of screen recordings when the user asked for that
+	applyContentProtection(window, hideFromScreenCapture);
 
 	// Values include normal, floating, torn-off-menu, modal-panel, main-menu, status, pop-up-menu, screen-saver
 	window.setAlwaysOnTop(true, 'screen-saver', 1);

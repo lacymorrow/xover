@@ -1,6 +1,7 @@
 export interface CustomAcceleratorsType {
 	lock?: string;
 	hide?: string;
+	hideReticle?: string;
 	center?: string;
 	quit?: string;
 	reset?: string;
@@ -20,4 +21,9 @@ export interface KeyboardShortcut {
 	fn: () => void;
 	ignoreWhenLocked?: boolean;
 	allowUnbind?: boolean;
+	/**
+	 * Survives the "disable all keybinds" master switch. Lock and Reset carry
+	 * this so a locked crosshair can never be stranded with no way back.
+	 */
+	isSafety?: boolean;
 }

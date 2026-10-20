@@ -5,6 +5,7 @@ import { CrosshairWindowStateType, SettingsType } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
 import { getPlatformInfo } from '../utils/platform';
 import autoUpdate from './auto-update';
+import dialogs from './dialog';
 import kb from './keyboard';
 import {
 	activateLicense,
@@ -151,7 +152,12 @@ export default {
 			app.quit();
 		});
 
-		ipcMain.on(ipcChannels.RESET_APP, () => {
+		ipcMain.on(ipcChannels.RESET_APP, async () => {
+			// Confirm first — this throws away every setting the user has (#391)
+			if (!(await dialogs.confirmResetSettings())) {
+				return;
+			}
+
 			resetStoreSettings();
 			// todo: maybe resetApp() should be called here
 		});

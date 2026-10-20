@@ -76,6 +76,7 @@ const V3_KEYBINDS: Record<string, keyof CustomAcceleratorsType> = {
 	quit: 'quit',
 	reset: 'reset',
 	hide: 'hide',
+	hideReticle: 'hideReticle',
 	center: 'center',
 	duplicate: 'duplicateWindow',
 	changeDisplay: 'changeDisplay',
@@ -301,8 +302,13 @@ export const mapV3Preferences = (
 			}
 		}
 
-		if (checkbox(actions.showOnMouseInvert, 'showOnMouseInvert')) {
-			skip('actions.showOnMouseInvert', 'no v4 equivalent');
+		const showOnMouseInvert = checkbox(
+			actions.showOnMouseInvert,
+			'showOnMouseInvert',
+		);
+		if (showOnMouseInvert !== undefined) {
+			settings.hideOnMouseInvert = showOnMouseInvert;
+			done('actions.showOnMouseInvert', 'hideOnMouseInvert');
 		}
 
 		const hideKey = toV4KeyBind(actions.hideOnKey);
@@ -379,6 +385,7 @@ export const mapV3Preferences = (
 				['sounds', 'allowSounds'],
 				['gpu', 'hardwareAcceleration'],
 				['boot', 'startOnLogin'],
+				['hideFromScreenCapture', 'hideFromScreenCapture'],
 			] as const
 		).forEach(([from, to]) => {
 			const checked = checkbox(app[from], from);
@@ -394,7 +401,7 @@ export const mapV3Preferences = (
 			done('app.startUnlocked', 'startLocked (inverted)');
 		}
 
-		['alerts', 'hideFromScreenCapture', 'gpuprocess'].forEach((key) => {
+		['alerts', 'gpuprocess'].forEach((key) => {
 			if (app[key] !== undefined) skip(`app.${key}`, 'no v4 equivalent');
 		});
 	}

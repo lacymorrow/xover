@@ -1,5 +1,7 @@
 import { app, dialog, Tray as ElectronTray, Menu } from 'electron';
 import path from 'path';
+import dialogs from './dialog';
+import { settingsAccelerator } from './menu';
 import { __resources } from './paths';
 import {
 	addCrosshairImage,
@@ -27,14 +29,8 @@ const getIconPath = () => {
 	return path.join(__resources, 'icons', systemIcon());
 };
 
-const initialize = () => {
-	if (windows.tray) {
-		return;
-	}
-
-	windows.tray = new ElectronTray(getIconPath());
-
-	const contextMenu = Menu.buildFromTemplate([
+const buildContextMenu = () =>
+	Menu.buildFromTemplate([
 		{
 			label: 'Show App',
 			click: () => {
@@ -69,16 +65,19 @@ const initialize = () => {
 				}
 			},
 		},
+		{ type: 'separator' },
 		{
-			label: 'Reset',
-			click: () => {
-				resetStoreSettings();
+			label: 'Reset...',
+			click: async () => {
+				if (await dialogs.confirmResetSettings()) {
+					resetStoreSettings();
+				}
 			},
 		},
 		{ type: 'separator' },
 		{
 			label: 'Settings...',
-			accelerator: 'Command+,',
+			...settingsAccelerator(),
 			click: () => {
 				openSettingsWindow();
 			},
@@ -87,8 +86,26 @@ const initialize = () => {
 		{ role: 'quit' },
 	]);
 
+const initialize = () => {
+	if (windows.tray) {
+		return;
+	}
+
+	windows.tray = new ElectronTray(getIconPath());
 	windows.tray.setToolTip(`${app.name}`);
-	windows.tray.setContextMenu(contextMenu);
+	windows.tray.setContextMenu(buildContextMenu());
+};
+
+/**
+ * Rebuild the tray menu in place. The Settings accelerator is read at build
+ * time, so the master switch needs this to show up here too.
+ */
+const refreshMenu = () => {
+	if (!windows.tray || windows.tray.isDestroyed()) {
+		return;
+	}
+
+	windows.tray.setContextMenu(buildContextMenu());
 };
 
 const destroy = () => {
@@ -98,5 +115,6 @@ const destroy = () => {
 
 export default {
 	initialize,
+	refreshMenu,
 	destroy,
 };

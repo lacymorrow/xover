@@ -1,5 +1,6 @@
 import { app, dialog as electronDialog } from 'electron';
 import path from 'path';
+import { $dialog } from '../config/strings';
 import { debugInfo, is } from './util';
 
 const validButtonIndex = (result: any) =>
@@ -120,9 +121,30 @@ const openUpdateDialog = async (action: Function) => {
 		});
 };
 
+/**
+ * Ask before throwing the user's settings away. Reset sits next to Quit in the
+ * tray menu, and #391 was someone who aimed for one and hit the other.
+ * Cancel is the default button, so a stray Return cancels. Ported from v3
+ * cf72e19.
+ */
+const confirmResetSettings = async (): Promise<boolean> => {
+	const { response } = await electronDialog.showMessageBox({
+		type: 'warning',
+		title: $dialog.reset.title,
+		message: $dialog.reset.message,
+		detail: $dialog.reset.detail,
+		buttons: [$dialog.reset.cancel, $dialog.reset.confirm],
+		defaultId: 0,
+		cancelId: 0,
+	});
+
+	return response === 1;
+};
+
 export default {
 	// openMediaDialog,
 	openAboutDialog,
 	// openAlertDialog,
 	openUpdateDialog,
+	confirmResetSettings,
 };

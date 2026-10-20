@@ -54,6 +54,9 @@ const schema: Store.Schema<StoreType> = {
 			hide: {
 				type: 'string',
 			},
+			hideReticle: {
+				type: 'string',
+			},
 			center: {
 				type: 'string',
 			},
@@ -172,6 +175,9 @@ const schema: Store.Schema<StoreType> = {
 			startLocked: {
 				type: 'boolean',
 			},
+			hideFromScreenCapture: {
+				type: 'boolean',
+			},
 			quitOnWindowClose: {
 				type: 'boolean',
 			},
@@ -192,6 +198,9 @@ const schema: Store.Schema<StoreType> = {
 				type: 'boolean',
 			},
 			isHidden: {
+				type: 'boolean',
+			},
+			isReticleHidden: {
 				type: 'boolean',
 			},
 			isSettingsWindowOpen: {
@@ -230,6 +239,9 @@ const schema: Store.Schema<StoreType> = {
 			hideOnMouseBehavior: {
 				type: 'string',
 				enum: ['toggle', 'hold'],
+			},
+			hideOnMouseInvert: {
+				type: 'boolean',
 			},
 			hideOnKeyEnabled: {
 				type: 'boolean',

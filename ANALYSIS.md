@@ -43,7 +43,6 @@ Both ship the same crosshair assets: 200 Kenney SVGs plus the named sets.
 | Feature | v3 source | Note |
 |---|---|---|
 | First-run onboarding overlay | `199a36e` | Four-step walkthrough on first launch. Needs a React overlay and a design pass, so it is tracked on its own issue rather than batched here |
-| Toggle Reticle keybind (`Ctrl+Shift+Alt+S`) | `24593f8` | No `hideReticle` action in v4 |
 | Circle reticle thickness | `crosshair.circleThickness` | v4 has SVG stroke width but no circle-reticle thickness. `migrate-v3.ts` skips the key |
 | Developer alert system | `src/main/alert.js` | v3 fetches an urgent-notice file from GitHub and shows it. No v4 equivalent |
 | Windows Store auto-launch | `electron-winstore-auto-launch` | Only affects the AppX/Store build |
@@ -62,8 +61,11 @@ Both ship the same crosshair assets: 200 Kenney SVGs plus the named sets.
 | Kenney crosshairs as SVG | `244f26b` + `3fa218b` | `assets/crosshairs/Kenney/*.svg` |
 | Master switch to disable all keybinds | `e1158af` | Settings → Keyboard |
 | Hide from screen recording | `4ac2cdf` | Settings → App |
-| Show-on-ADS (inverted auto-hide) | `12400e4` | Settings → Bindings |
+| Show-on-ADS (inverted auto-hide) | `12400e4` | Settings → Bindings, "Invert" under Auto-Hide |
+| Toggle Reticle keybind (`Ctrl+Shift+Alt+S`) | `24593f8` | Settings → Keyboard |
 | Confirmation before reset | `cf72e19` | Reset dialog: tray and Advanced |
+
+The v3 importer now carries `app.hideFromScreenCapture`, `actions.showOnMouseInvert` and `keybinds.hideReticle` across instead of dropping them.
 
 ---
 
@@ -95,6 +97,7 @@ Not gaps. Re-adding any of these needs a reason.
 | Second instance creates a shadow window | Second instance focuses the running one and exits (#54) |
 | `hidden.disableSafetyKeybinds` escape hatch | Not ported. Lock and Reset always survive the master switch, so the app can never be stranded locked |
 | Hide keybind only works while locked | Works always |
+| Reticle-hidden state persists across restart | Transient, like the hide-app state. Toggle Reticle is a mid-match action, and v3 had no UI for the flag, so persisting it meant relaunching into a missing reticle with nothing anywhere to explain why |
 
 ---
 

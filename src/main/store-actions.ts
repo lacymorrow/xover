@@ -17,8 +17,33 @@ import {
 } from '../config/settings';
 import { $messages } from '../config/strings';
 import store, { AppMessageType } from './store';
-import { forEachWindow } from './utils/window-utils';
+import { forEachWindow, syncContentProtection } from './utils/window-utils';
 import windows from './windows';
+
+/**
+ * Settings the input hook reads when it starts. A change to any of these while
+ * the app is locked needs the hook restarted to take effect.
+ */
+const IOHOOK_SETTINGS: string[] = [
+	'followMouseEnabled',
+	'secondaryActionEnabled',
+	'secondaryBind',
+	'secondaryBehavior',
+	'hideOnMouseEnabled',
+	'hideOnMouseButton',
+	'hideOnMouseBehavior',
+	'hideOnMouseInvert',
+	'hideOnKeyEnabled',
+	'hideOnKeyBind',
+	'adsResizeEnabled',
+	'adsResizeButton',
+	'adsResizeBehavior',
+	'tiltActionEnabled',
+	'tiltAngle',
+	'tiltBehavior',
+	'tiltLeftBind',
+	'tiltRightBind',
+];
 
 const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	// Sync with main
@@ -56,6 +81,33 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 			app.setLoginItemSettings({
 				openAtLogin: changedSettings.startOnLogin,
 			});
+		}
+
+		if (keys.includes('hideFromScreenCapture')) {
+			syncContentProtection(!!changedSettings.hideFromScreenCapture);
+		}
+
+		// The master switch re-registers the shortcuts AND rebuilds both menus,
+		// because the Settings accelerator is baked in at menu build time.
+		// Lazy requires break the store-actions → keyboard/menu/tray cycles.
+		if (keys.includes('allowDisableKeyboardShortcuts')) {
+			// eslint-disable-next-line global-require
+			require('./keyboard').default.registerKeyboardShortcuts();
+			// eslint-disable-next-line global-require
+			require('./menu').rebuildApplicationMenu();
+			// eslint-disable-next-line global-require
+			require('./tray').default.refreshMenu();
+		}
+
+		// Input-hook settings are read once, when the hook starts, and the hook
+		// only starts on lock. Without this, changing a bind while locked does
+		// nothing until the next unlock/lock cycle.
+		if (
+			keys.some((key) => IOHOOK_SETTINGS.includes(key)) &&
+			store.get('settings').isLocked
+		) {
+			// eslint-disable-next-line global-require
+			require('./iohook').startIOHook();
 		}
 
 		if (keys.includes('appSizeMode')) {

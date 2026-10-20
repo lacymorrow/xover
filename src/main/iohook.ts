@@ -150,7 +150,20 @@ const registerToggleHoldMouseTilt = (
 	}
 };
 
-const registerHideOnMouse = (button: number, behavior: string) => {
+/**
+ * `invert` turns auto-hide into show-on-ADS: the crosshair sits hidden and the
+ * bind reveals it while held, instead of the other way round. Ported from v3
+ * #499 / #308.
+ *
+ * In hold mode, press means "hidden = false" when inverted. Toggle mode needs no
+ * special case: the initial state is flipped at hook start, so each press
+ * already lands on the right value.
+ */
+const registerHideOnMouse = (
+	button: number,
+	behavior: string,
+	invert: boolean,
+) => {
 	if (behavior === 'toggle') {
 		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
@@ -161,18 +174,18 @@ const registerHideOnMouse = (button: number, behavior: string) => {
 		// hold
 		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
-				setActionStateKey('hidden', true);
+				setActionStateKey('hidden', !invert);
 			}
 		});
 		uIOhook.on('mouseup', (event) => {
 			if (event.button === button) {
-				setActionStateKey('hidden', false);
+				setActionStateKey('hidden', invert);
 			}
 		});
 	}
 };
 
-const registerHideOnKey = (bind: string) => {
+const registerHideOnKey = (bind: string, invert: boolean) => {
 	const [input, trigger] = bind.split(':');
 
 	if (input === 'keyboard') {
@@ -182,24 +195,24 @@ const registerHideOnKey = (bind: string) => {
 		const keycode = uiohookKeycodes[trigger as keyof typeof uiohookKeycodes];
 		uIOhook.on('keydown', (event) => {
 			if (event.keycode === keycode) {
-				setActionStateKey('hidden', true);
+				setActionStateKey('hidden', !invert);
 			}
 		});
 		uIOhook.on('keyup', (event) => {
 			if (event.keycode === keycode) {
-				setActionStateKey('hidden', false);
+				setActionStateKey('hidden', invert);
 			}
 		});
 	} else if (input === 'mouse') {
 		const button = parseInt(trigger, 10);
 		uIOhook.on('mousedown', (event) => {
 			if (event.button === button) {
-				setActionStateKey('hidden', true);
+				setActionStateKey('hidden', !invert);
 			}
 		});
 		uIOhook.on('mouseup', (event) => {
 			if (event.button === button) {
-				setActionStateKey('hidden', false);
+				setActionStateKey('hidden', invert);
 			}
 		});
 	}
@@ -249,6 +262,7 @@ export const startIOHook = async () => {
 		hideOnMouseEnabled,
 		hideOnMouseButton,
 		hideOnMouseBehavior,
+		hideOnMouseInvert,
 		hideOnKeyEnabled,
 		hideOnKeyBind,
 		adsResizeEnabled,
@@ -296,14 +310,25 @@ export const startIOHook = async () => {
 		}
 	}
 
-	// HIDE ON MOUSE
-	if (hideOnMouseEnabled) {
-		registerHideOnMouse(hideOnMouseButton, hideOnMouseBehavior);
+	// HIDE ON MOUSE / KEY. When inverted the crosshair starts hidden and the
+	// bind reveals it, so seed the state before the listeners go on.
+	const autoHideEnabled =
+		hideOnMouseEnabled || (hideOnKeyEnabled && hideOnKeyBind);
+
+	if (autoHideEnabled && hideOnMouseInvert) {
+		setActionStateKey('hidden', true);
 	}
 
-	// HIDE ON KEY
+	if (hideOnMouseEnabled) {
+		registerHideOnMouse(
+			hideOnMouseButton,
+			hideOnMouseBehavior,
+			hideOnMouseInvert,
+		);
+	}
+
 	if (hideOnKeyEnabled && hideOnKeyBind) {
-		registerHideOnKey(hideOnKeyBind);
+		registerHideOnKey(hideOnKeyBind, hideOnMouseInvert);
 	}
 
 	// ADS RESIZE
