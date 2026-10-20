@@ -11,16 +11,25 @@ CrossOver v4 — a gaming crosshair overlay built with Electron 40, React 18, Ty
 ```bash
 npm start           # Dev mode (starts webpack dev server + Electron)
 npm run build       # Production build (main + renderer)
-npm test            # Playwright E2E tests
+npm test            # Jest unit tests (src/**/__tests__), no build needed
 npm run package     # Build distributable installers
-npm run lint        # ESLint + TypeScript check
+npm run lint        # ESLint + Prettier
 npm run lint:fix    # Auto-fix lint issues
+npx tsc --noEmit    # Typecheck
 ```
 
-Run a single test file:
+Two separate test runners. `npm test` is Jest and only picks up
+`src/**/__tests__/**`. The Playwright E2E specs in `test/` launch the real
+Electron binary and run on their own:
+
 ```bash
-npx playwright test test/crosshair.spec.ts
+npx playwright test                      # all E2E specs
+npx playwright test test/crosshair.spec.ts   # one spec
 ```
+
+CI (`.github/workflows/test.yml`) runs `npm run lint`, `npm exec tsc` and
+`npm test`. It does not build and does not run Playwright, so keep the Jest
+suite free of anything that needs a bundle or a running app.
 
 ## Architecture
 

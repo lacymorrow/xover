@@ -173,13 +173,20 @@ describe('initPortablePaths', () => {
 	});
 
 	it('falls back to the default paths when the folder is not writable', () => {
-		// A portable copy on read-only media must still launch.
-		process.env.PORTABLE_EXECUTABLE_DIR = path.join(
-			path.sep,
-			'proc',
-			'self',
-			'no-such-place',
-		);
+		// A portable copy on read-only media must still launch. Make mkdir fail
+		// outright rather than naming an unwritable path: there isn't one that is
+		// unwritable on every platform. An absolute POSIX-looking path is simply
+		// created on the current drive on Windows, so the "failure" succeeded
+		// there and this test passed on macOS and Linux only.
+		process.env.PORTABLE_EXECUTABLE_DIR = os.tmpdir();
+
+		const mkdir = jest.spyOn(fs, 'mkdirSync').mockImplementation(() => {
+			const error = new Error('EACCES: read-only') as Error & {
+				code?: string;
+			};
+			error.code = 'EACCES';
+			throw error;
+		});
 
 		// The fallback logs to console on purpose; don't spill it into the report.
 		const consoleError = jest
@@ -190,6 +197,7 @@ describe('initPortablePaths', () => {
 		expect(setPath).not.toHaveBeenCalled();
 		expect(consoleError).toHaveBeenCalled();
 
+		mkdir.mockRestore();
 		consoleError.mockRestore();
 	});
 });
