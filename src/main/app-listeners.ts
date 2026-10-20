@@ -11,6 +11,20 @@ import { windowClosed } from './utils/window-closed';
 import { getNextCrosshairWindow } from './utils/window-utils';
 import windows from './windows';
 
+/**
+ * Release the input hook and the global shortcuts.
+ *
+ * The hook has to be cut off BEFORE any window is destroyed. A mousemove
+ * callback that lands after the BrowserWindow is gone calls setBounds on a
+ * destroyed window, which throws an ObjC exception that surfaces as an
+ * EXC_BAD_INSTRUCTION crash on quit (v3 #474/#485, fixed in e53d988). Safe to
+ * call more than once.
+ */
+const releaseInput = () => {
+	stopIOHook();
+	keyboard.unregisterAll();
+};
+
 const register = () => {
 	Logger.status($init.appListeners);
 
@@ -21,8 +35,7 @@ const register = () => {
 	app.on('will-quit', () => {
 		Logger.status($appListeners.willQuit);
 		// Unregister all shortcuts
-		stopIOHook();
-		keyboard.unregisterAll();
+		releaseInput();
 	});
 
 	// Sending a `SIGINT` (e.g: Ctrl-C) to an Electron app that registers
@@ -33,6 +46,10 @@ const register = () => {
 	// See https://github.com/electron/electron/issues/5273
 	app.on('before-quit', () => {
 		Logger.status($appListeners.beforeQuit);
+
+		// This handler force-exits, so will-quit never runs. Drop the input hook
+		// here or it outlives the windows it writes to.
+		releaseInput();
 
 		// TODO: BUG - Dock persists after app quits on macOS
 		if (is.macos) {

@@ -78,16 +78,23 @@ export const scanImages = async () => {
 			// Save the list of images
 			setCrosshairImages(images);
 
+			// A stored crosshair is unusable if the path is relative or the file is
+			// gone. Bundled crosshairs can be replaced across an update (the Kenney
+			// set moved from PNG to SVG), which would otherwise leave the window
+			// pointing at a deleted file and rendering nothing.
+			const isUnusable = (crosshair: string) =>
+				!path.isAbsolute(crosshair) || !fs.existsSync(crosshair);
+
 			// Clean up invalid crosshair paths in window states
 			const windowStates = getWindowStates();
 			Object.entries(windowStates).forEach(([id, state]) => {
 				if (state && typeof state === 'object') {
 					const s = state as any;
 					const updates: Record<string, undefined> = {};
-					if (s.crosshair && !path.isAbsolute(s.crosshair)) {
+					if (s.crosshair && isUnusable(s.crosshair)) {
 						updates.crosshair = undefined;
 					}
-					if (s.crosshairSecondary && !path.isAbsolute(s.crosshairSecondary)) {
+					if (s.crosshairSecondary && isUnusable(s.crosshairSecondary)) {
 						updates.crosshairSecondary = undefined;
 					}
 					if (Object.keys(updates).length > 0) {

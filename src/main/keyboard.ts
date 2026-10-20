@@ -1,10 +1,12 @@
 import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
 import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
+import { $notifications } from '../config/strings';
 import store from './store';
 import windows from './windows';
 
 import { createDuplicateWindow, createNewWindow } from './create-window';
+import { notification } from './notifications';
 import { resetSettings } from './reset';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
@@ -170,6 +172,11 @@ interface ShortcutType extends Electron.GlobalShortcut {
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => void;
 }
 
+// registerKeyboardShortcuts() re-runs on every lock toggle and every rebind, so
+// the same conflict would notify over and over. Only a change in which combos
+// are failing is news.
+let lastNotifiedConflicts = '';
+
 const registerKeyboardShortcuts = () => {
 	const keybinds = store.get('keybinds');
 	const { allowDisableKeyboardShortcuts, isLocked, isHidden } =
@@ -204,15 +211,37 @@ const registerKeyboardShortcuts = () => {
 	// Unregister old shortcuts and register new ones
 	globalShortcut.unregisterAll();
 
+	const failed: string[] = [];
+
 	toRegister.forEach(({ keybind, fn }) => {
 		try {
-			globalShortcut.register(keybind, () => {
+			// register() returns false on a conflict rather than throwing
+			const registered = globalShortcut.register(keybind, () => {
 				fn();
 			});
+
+			if (!registered) {
+				failed.push(keybind);
+			}
 		} catch (error) {
 			Logger.error(`Failed to register shortcut ${keybind}:`, error);
+			failed.push(keybind);
 		}
 	});
+
+	const conflicts = failed.join(', ');
+
+	if (failed.length > 0) {
+		Logger.warn(`Could not register shortcuts: ${conflicts}`);
+	}
+
+	if (conflicts !== lastNotifiedConflicts) {
+		lastNotifiedConflicts = conflicts;
+
+		if (failed.length > 0) {
+			notification($notifications.shortcutConflict(failed));
+		}
+	}
 };
 
 const kb: ShortcutType = {

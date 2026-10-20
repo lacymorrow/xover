@@ -16,6 +16,7 @@ import logger from './logger';
 import { setupDockMenu } from './menu';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
+import { initialize as initSessionPermissions } from './session-permissions';
 import sounds from './sounds';
 import tray from './tray';
 import { initializeAccessibilityCheck } from './accessibility';
@@ -53,6 +54,10 @@ export const startup = () => {
 
 		// Register app listeners, e.g. `app.on()`
 		appListeners.register();
+
+		// Deny every browser permission request, so the OS never prompts.
+		// Installs itself after the ready event, so calling it this early is safe.
+		initSessionPermissions();
 
 		Logger.status($init.started);
 		console.timeLog(app.name, $init.started);

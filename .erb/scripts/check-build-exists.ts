@@ -5,7 +5,15 @@ import fs from 'fs';
 import webpackPaths from '../configs/webpack.paths';
 
 const mainPath = path.join(webpackPaths.distMainPath, 'main.js');
-const rendererPath = path.join(webpackPaths.distRendererPath, 'renderer.js');
+
+// The renderer config emits one bundle per entry as `[name].renderer.js`
+// (app, child, crosshair). Checking a bare `renderer.js` looked for a file the
+// build never writes, so this gate failed even on a fully built tree and took
+// `npm test` with it.
+const rendererPath = path.join(
+	webpackPaths.distRendererPath,
+	'app.renderer.js',
+);
 
 if (!fs.existsSync(mainPath)) {
 	throw new Error(
