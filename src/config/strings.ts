@@ -37,6 +37,17 @@ export const $dialog = {
 	},
 };
 
+export const $notifications = {
+	// A conflict makes globalShortcut.register() return false instead of
+	// throwing, so without this the keybind silently does nothing (#516).
+	shortcutConflict: (failed: string[]) => ({
+		title: 'Keyboard shortcut unavailable',
+		body: `Another app is already using ${failed.join(
+			', ',
+		)}. Pick a different combo in Settings > Keybinds.`,
+	}),
+};
+
 export const $messages = {
 	resetStore: 'Reset App',
 	resetStoreSettings: 'Reset App Settings',

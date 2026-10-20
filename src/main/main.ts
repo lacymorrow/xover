@@ -40,6 +40,11 @@ Todo:
 - Documentation
 */
 
+// MUST stay the first import. Portable builds redirect userData from here, and
+// electron-store / electron-log resolve that path when their modules load.
+// eslint-disable-next-line import/order
+import { isPortable } from './portable';
+
 import { app } from 'electron';
 import Logger from 'electron-log';
 import { $errors, $init } from '../config/strings';
@@ -76,6 +81,10 @@ const launch = () => {
 	// Initialize the timer
 	console.time(app.name);
 	console.timeLog(app.name, $init.app);
+
+	if (isPortable) {
+		Logger.info(`Portable mode: userData is ${app.getPath('userData')}`);
+	}
 
 	// Register ipcMain listeners
 	ipc.initialize();

@@ -54,7 +54,7 @@ From analyzing all 100 most recent issues (out of 478+ total):
 | #308 | Show crosshair on ADS (instead of hide) | Open | **10 comments** — inverse ADS |
 | #127 | Detect focused window to show/hide + per-game settings | Open | **10 comments** — very popular |
 | #108 | Crosshair lean/tilt on keypress | Closed (implemented) | **18 comments** — was top request |
-| #64 | CrossOver doesn't work in fullscreen mode | Open | **19 comments** — fundamental limitation |
+| #64 | CrossOver doesn't work in fullscreen mode | Open | **19 comments** — Windows composition limit, see Tier 1 |
 | #61 | Toggle between two crosshairs | Open | Per-game/per-weapon |
 | #433 | Circle reticle with adjustable diameter/thickness | Closed (implemented) | Geometric reticle shapes |
 | #458 | Shortcut for show/hide reticle | Closed (implemented) | Quick implemented fix |
@@ -120,8 +120,10 @@ The xover repo is essentially dormant from a community perspective — 0 stars, 
 1. **Fullscreen/exclusive mode support** (39 related issues)
    - Issues: #1, #64 (19 comments), #351, #373, #416
    - Users consistently want overlays in true fullscreen games
-   - This is a fundamental Electron limitation — the overlay window can't draw over exclusive fullscreen
-   - Vulkan support (#416) proposed as a potential solution
+   - **This is a Windows limitation, not an Electron one.** Exclusive-fullscreen games stop DWM composition, so no ordinary window draws on top whatever toolkit built it. A Tauri or native rewrite would not change this (considered and rejected 2026-10-20). Win10/11 fullscreen optimizations already turn most DX11/12 fullscreen into flip-model borderless, where always-on-top works today
+   - The real lever is a UIAccess window, which sits in the higher z-band that Magnifier and the On-Screen Keyboard use. It needs a `uiAccess="true"` manifest, an Authenticode-signed exe, and installation under Program Files. Being prototyped in LAC-5181
+   - Swapchain or DLL injection (the Steam / Discord / RTSS approach) is **rejected**: anti-cheat ban risk, and it breaks the "never touches the game" promise
+   - Vulkan support (#416) was proposed as a solution, but it does not address the composition problem
    - **Status in XOver:** Not addressed
 
 2. **Game-aware behavior** (per-game settings, auto-show/hide)
@@ -380,7 +382,7 @@ XOver v4.0.0-alpha.1 and alpha.2 were released under the **crossover** repo's re
 
 ### Recurring Complaints (Themes)
 
-1. **"It doesn't work in fullscreen"** — The #1 user frustration. Electron overlays can't render over exclusive fullscreen games. Users keep reporting it despite it being a known limitation.
+1. **"It doesn't work in fullscreen"** — The #1 user frustration. No ordinary window renders over an exclusive-fullscreen game on Windows, because the game stops DWM composition; this is a Windows constraint rather than an Electron one. Users keep reporting it despite it being a known limitation. See the Tier 1 entry above for the UIAccess path out (LAC-5181).
 
 2. **"The error keeps popping up"** — The `setBadge` auto-update error. Users who installed v3.0.0 get an error dialog every 20 minutes. This is driving negative perception.
 
