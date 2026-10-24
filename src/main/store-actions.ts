@@ -45,6 +45,60 @@ const IOHOOK_SETTINGS: string[] = [
 	'tiltRightBind',
 ];
 
+/**
+ * Lazy requires throughout this file: keyboard, menu, tray and iohook all
+ * import store-actions, so a top-level import here would close the cycle at
+ * module load time.
+ */
+const syncKeybindRegistrations = () => {
+	// eslint-disable-next-line global-require
+	require('./keyboard').default.registerKeyboardShortcuts();
+	// eslint-disable-next-line global-require
+	require('./menu').rebuildApplicationMenu();
+	// eslint-disable-next-line global-require
+	require('./tray').default.refreshMenu();
+};
+
+const restartInputHook = () => {
+	// eslint-disable-next-line global-require
+	require('./iohook')
+		.startIOHook()
+		.catch((error: Error) => {
+			Logger.error('Could not restart the input hook', error);
+		});
+};
+
+/**
+ * Everything derived from settings that lives outside the store: the registered
+ * global shortcuts, both menus (the Settings accelerator is baked in at menu
+ * build time), per-window content protection and the input hook.
+ *
+ * `synchronizeApp` re-derives only the piece a settings change touched, which
+ * needs a list of changed keys. A store wipe has no such list and can change
+ * all of it, so the reset paths call this instead. Without it, Reset put
+ * `allowDisableKeyboardShortcuts: false` and `hideFromScreenCapture: false`
+ * back on screen while the app kept every keybind unregistered and every
+ * crosshair window content-protected.
+ */
+export const syncDerivedState = () => {
+	// Nothing is derived yet before `ready`: it registers the shortcuts, builds
+	// the menus and creates the windows and tray after this point. `--reset`
+	// runs during startup, and touching globalShortcut that early throws.
+	if (!app.isReady()) {
+		return;
+	}
+
+	syncKeybindRegistrations();
+	syncContentProtection(!!store.get('settings').hideFromScreenCapture);
+
+	// eslint-disable-next-line global-require
+	require('./iohook')
+		.resyncIOHook()
+		.catch((error: Error) => {
+			Logger.error('Could not resynchronize the input hook', error);
+		});
+};
+
 const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	// Sync with main
 	if (changedSettings) {
@@ -89,14 +143,8 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 
 		// The master switch re-registers the shortcuts AND rebuilds both menus,
 		// because the Settings accelerator is baked in at menu build time.
-		// Lazy requires break the store-actions → keyboard/menu/tray cycles.
 		if (keys.includes('allowDisableKeyboardShortcuts')) {
-			// eslint-disable-next-line global-require
-			require('./keyboard').default.registerKeyboardShortcuts();
-			// eslint-disable-next-line global-require
-			require('./menu').rebuildApplicationMenu();
-			// eslint-disable-next-line global-require
-			require('./tray').default.refreshMenu();
+			syncKeybindRegistrations();
 		}
 
 		// Input-hook settings are read once, when the hook starts, and the hook
@@ -106,8 +154,7 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 			keys.some((key) => IOHOOK_SETTINGS.includes(key)) &&
 			store.get('settings').isLocked
 		) {
-			// eslint-disable-next-line global-require
-			require('./iohook').startIOHook();
+			restartInputHook();
 		}
 
 		if (keys.includes('appSizeMode')) {
@@ -314,7 +361,11 @@ export const resetStoreSettings = () => {
 		}
 	});
 
-	// synchronizeApp(); // No need to sync, this is called during setWindowState
+	// setWindowState pushes the new settings to the renderers, but only if there
+	// was a crosshair window to iterate, and the state that lives outside the
+	// store still reflects the settings just wiped either way.
+	syncDerivedState();
+	synchronizeApp();
 };
 
 export const resetStore = () => {
@@ -324,6 +375,7 @@ export const resetStore = () => {
 	store.clear();
 	store.set('migrations', migrations);
 
+	syncDerivedState();
 	synchronizeApp();
 };
 

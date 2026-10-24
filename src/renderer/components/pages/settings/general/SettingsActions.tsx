@@ -102,7 +102,7 @@ export function SettingsActions() {
 						}}
 						label="Invert"
 						description="Hide the crosshair by default and show it on the bind instead."
-						details="For games where you only want the crosshair while aiming down sights."
+						details="For games where you only want the crosshair while aiming down sights. Starts hiding once the crosshair is locked, like the hide binds themselves."
 					/>
 				</>
 			)}
