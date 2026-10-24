@@ -1,5 +1,7 @@
 import { app } from 'electron';
+import Logger from 'electron-log';
 import { SettingsType } from '../config/settings';
+import { isResetRequested } from './command-line-flags';
 import sounds from './sounds';
 import {
 	getSettings,
@@ -21,7 +23,12 @@ export const refreshSettingsOnAppStart = () => {
 	const { appVersion, hadFirstRun, resetOnAppStart, startLocked } =
 		getSettings();
 
-	if (resetOnAppStart) {
+	// `crossover --reset` wipes the store on launch, for when stored settings are
+	// what's keeping the app from starting.
+	if (isResetRequested()) {
+		Logger.status('Command-line reset requested');
+		resetApp();
+	} else if (resetOnAppStart) {
 		resetApp();
 	}
 
