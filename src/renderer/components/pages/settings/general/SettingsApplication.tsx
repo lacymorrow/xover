@@ -104,6 +104,18 @@ export function SettingsApplication() {
 			/>
 			<Separator />
 			<InputSwitch
+				value={settings.hideFromScreenCapture}
+				onChange={() => {
+					handleChangeSetting({
+						hideFromScreenCapture: !settings.hideFromScreenCapture,
+					});
+				}}
+				label="Hide from screen recording"
+				description="Keep the crosshair out of recordings and screenshots."
+				details="It stays visible on your screen, but OBS, Instant Replay and screenshots won't capture it. Needs Windows 10 or later for full effect."
+				card
+			/>
+			<InputSwitch
 				value={settings.allowAnalytics}
 				onChange={() => {
 					handleChangeSetting({ allowAnalytics: !settings.allowAnalytics });

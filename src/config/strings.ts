@@ -35,6 +35,16 @@ export const $dialog = {
 		report: 'Report',
 		quit: 'Quit',
 	},
+	// Reset sits next to Quit in the tray, and #391 was a user who lost their
+	// setup by aiming for one and hitting the other.
+	reset: {
+		title: 'Reset CrossOver',
+		message: 'Reset every setting to default?',
+		detail:
+			'Your crosshair choice, size, colours, keybinds and window positions all go back to how they shipped. This cannot be undone.',
+		confirm: 'Reset',
+		cancel: 'Cancel',
+	},
 };
 
 export const $notifications = {

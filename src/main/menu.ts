@@ -18,6 +18,7 @@ import {
 import { getSetting, setSettings } from './store-actions';
 import { is } from './util';
 import { openSettingsWindow } from './utils/settingsWindow';
+import windows from './windows';
 
 // import { bugs, homepage } from '../../package.json';
 const { bugs, homepage } = packageJsonFields;
@@ -26,6 +27,20 @@ interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
 	selector?: string;
 	submenu?: DarwinMenuItemConstructorOptions[] | Menu;
 }
+
+/**
+ * The Settings accelerator (Cmd/Ctrl+,) lives in the menu rather than in the
+ * keybinds list, which makes it the one shortcut a user cannot clear
+ * individually. The master switch has to reach it too, or "disable all
+ * keybinds" is not telling the truth. v3 #299.
+ */
+export const settingsAccelerator = (): { accelerator?: string } => {
+	if (getSetting('allowDisableKeyboardShortcuts')) {
+		return {};
+	}
+
+	return { accelerator: is.macos ? 'Command+,' : 'Ctrl+,' };
+};
 
 export default class MenuBuilder {
 	mainWindow: BrowserWindow;
@@ -135,7 +150,7 @@ export default class MenuBuilder {
 				{
 					id: 'preferences',
 					label: `Settings\u2026`,
-					accelerator: 'Command+,',
+					...settingsAccelerator(),
 					click: () => {
 						openSettingsWindow();
 					},
@@ -298,7 +313,7 @@ export default class MenuBuilder {
 					{ type: 'separator' as const },
 					{
 						label: '&Settings',
-						accelerator: 'Ctrl+,',
+						...settingsAccelerator(),
 						id: 'preferences',
 						click: () => {
 							openSettingsWindow();
@@ -372,6 +387,24 @@ export default class MenuBuilder {
 		return templateDefault;
 	}
 }
+
+/**
+ * Rebuild the application menu in place. The Settings accelerator is read at
+ * build time, so flipping the master switch has no visible effect until the
+ * menu is rebuilt.
+ */
+export const rebuildApplicationMenu = () => {
+	const window =
+		windows.mainWindow && !windows.mainWindow.isDestroyed()
+			? windows.mainWindow
+			: BrowserWindow.getAllWindows().find((w) => !w.isDestroyed());
+
+	if (!window) {
+		return;
+	}
+
+	new MenuBuilder(window).buildMenu();
+};
 
 export const setupDockMenu = () => {
 	if (!is.macos) return;
