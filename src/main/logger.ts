@@ -3,6 +3,7 @@ import Logger from 'electron-log';
 import path from 'path';
 import { packageJsonFields } from '../config/config';
 import { $dialog, $init } from '../config/strings';
+import { shouldShowCrashDialog } from './crash-report';
 import { addAppMessage } from './store-actions';
 
 // const { bugs } = require('../../package.json');
@@ -14,7 +15,7 @@ const catchErrors = () => {
 	return Logger.errorHandler.startCatching({
 		showDialog: false,
 		onError({ createIssue, error, processType, versions }) {
-			if (processType === 'renderer') {
+			if (processType === 'renderer' || !shouldShowCrashDialog()) {
 				Logger.error(error);
 				return;
 			}

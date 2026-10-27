@@ -299,8 +299,17 @@ const kb: ShortcutType = {
 		windows.settingsWindow?.webContents.send('app-updated'); // TODO: ipcChannels.APP_UPDATED, we hard-coded this to prevent circular imports
 	},
 
-	// Inherit all methods from Electron's globalShortcut
-	...globalShortcut,
+	// Delegate to Electron's globalShortcut. Spreading `...globalShortcut`
+	// copies the native methods without their receiver, so calling
+	// `kb.unregisterAll()` threw "Illegal invocation: Function must be called
+	// on an object of type GlobalShortcut" on quit (releaseInput).
+	register: (accelerator, callback) =>
+		globalShortcut.register(accelerator, callback),
+	registerAll: (accelerators, callback) =>
+		globalShortcut.registerAll(accelerators, callback),
+	isRegistered: (accelerator) => globalShortcut.isRegistered(accelerator),
+	unregister: (accelerator) => globalShortcut.unregister(accelerator),
+	unregisterAll: () => globalShortcut.unregisterAll(),
 };
 
 export default kb;

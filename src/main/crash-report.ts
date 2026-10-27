@@ -22,7 +22,21 @@ const buildIssueUrl = (error: Error): string => {
 	return `${ISSUES_URL}?${params.toString()}`;
 };
 
+/**
+ * Only packaged builds get the crash dialog with the "Report Issue" button.
+ * In dev and under Playwright the dialog auto-resolves to its default button,
+ * which opened a GitHub new-issue tab for every crash during a test run
+ * (176 tabs from one afternoon of e2e runs). Errors are still logged either
+ * way, so nothing is lost for developers.
+ */
+export const shouldShowCrashDialog = (): boolean => app.isPackaged;
+
 export const showCrashReportDialog = async (error: Error): Promise<void> => {
+	if (!shouldShowCrashDialog()) {
+		Logger.error('Crash dialog suppressed (unpackaged build):', error);
+		return;
+	}
+
 	try {
 		const { response } = await dialog.showMessageBox({
 			type: 'error',
