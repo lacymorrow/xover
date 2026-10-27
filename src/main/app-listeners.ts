@@ -8,8 +8,8 @@ import { createCrosshairWindow } from './create-window';
 import { stopIOHook } from './iohook';
 import keyboard from './keyboard';
 import { windowClosed } from './utils/window-closed';
+import { showApp } from './utils/settingsWindow';
 import { getNextCrosshairWindow } from './utils/window-utils';
-import windows from './windows';
 
 /**
  * Release the input hook and the global shortcuts.
@@ -93,13 +93,11 @@ const ready = () => {
 
 	app.on('second-instance', () => {
 		Logger.warn($appListeners.secondInstance);
-		// Someone tried to run a second instance, we should focus our window.
-		if (windows.settingsWindow) {
-			// If the window is minimized, we should restore it and focus it.
-			if (windows.settingsWindow.isMinimized())
-				windows.settingsWindow.restore();
-			windows.settingsWindow.focus();
-		}
+		// Someone launched CrossOver again, which is how a user asks for the app
+		// they cannot see. Unlock and unhide before showing Settings: focusing a
+		// hidden window did nothing and a locked app refuses to open Settings
+		// at all (LAC-5839).
+		showApp();
 	});
 };
 

@@ -3,13 +3,10 @@ import path from 'path';
 import dialogs from './dialog';
 import { settingsAccelerator } from './menu';
 import { __resources } from './paths';
-import {
-	addCrosshairImage,
-	resetStoreSettings,
-	setActiveWindowState,
-} from './store-actions';
+import { resetSettings } from './reset';
+import { addCrosshairImage, setActiveWindowState } from './store-actions';
 import { is } from './util';
-import { openSettingsWindow } from './utils/settingsWindow';
+import { openSettingsWindow, showApp } from './utils/settingsWindow';
 import windows from './windows';
 
 // mac needs dark/light versions
@@ -34,8 +31,7 @@ const buildContextMenu = () =>
 		{
 			label: 'Show App',
 			click: () => {
-				windows.mainWindow?.show();
-				windows.mainWindow?.focus();
+				showApp();
 			},
 		},
 		{
@@ -70,7 +66,7 @@ const buildContextMenu = () =>
 			label: 'Reset...',
 			click: async () => {
 				if (await dialogs.confirmResetSettings()) {
-					resetStoreSettings();
+					resetSettings();
 				}
 			},
 		},

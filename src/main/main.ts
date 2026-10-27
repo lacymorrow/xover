@@ -51,7 +51,6 @@ import { $errors, $init } from '../config/strings';
 
 import { findDeepLink, handleDeepLink, registerDeepLinks } from './deep-link';
 import ipc from './ipc';
-import windows from './windows';
 import { ready, startup } from './startup';
 
 // Single instance lock
@@ -67,13 +66,8 @@ if (!gotTheLock) {
 		// Windows and Linux deliver crossover:// links in the new instance's argv
 		handleDeepLink(findDeepLink(argv));
 
-		// Focus existing window when a second instance is launched
-		if (windows.mainWindow) {
-			if (windows.mainWindow.isMinimized()) {
-				windows.mainWindow.restore();
-			}
-			windows.mainWindow.focus();
-		}
+		// Showing the app is handled by the listener in app-listeners.ts, which
+		// also unlocks and unhides it (LAC-5839).
 	});
 }
 

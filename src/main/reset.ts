@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, screen } from 'electron';
 import Logger from 'electron-log';
 import { SettingsType } from '../config/settings';
 import { isResetRequested } from './command-line-flags';
@@ -11,7 +11,7 @@ import {
 	setSettings,
 } from './store-actions';
 import { scanImages } from './utils/getImages';
-import windows from './windows';
+import { centerWindow, forEachCrosshairWindow } from './utils/window-utils';
 
 export const resetApp = () => {
 	// Sonic announcement
@@ -65,13 +65,30 @@ export const refreshSettingsOnAppStart = () => {
 
 	setSettings(freshSettings);
 	setActionStateKey('tilt', 0);
-
-	windows.crosshairWindows = {};
 };
 
 export const restartApp = () => {
 	app.relaunch(); // ONLY CALL THIS FUNCTION ONCE, or else it will cause multiple instances of the app to run
 	app.quit(); // Must be called after app.relaunch() to actually quit the app
+};
+
+/**
+ * Put every crosshair window back in the middle of the display it is currently
+ * on. Reset means back to defaults, and the default position is centered: a
+ * reset that restored every setting but left the crosshair parked in a corner
+ * read as a reset that had not run (LAC-5839).
+ *
+ * The window's own display, not the cursor's, which is what centerWindow()
+ * falls back to.
+ */
+const centerCrosshairWindows = () => {
+	forEachCrosshairWindow((window) => {
+		centerWindow({
+			window,
+			display: screen.getDisplayNearestPoint(window.getBounds()),
+			animated: true,
+		});
+	});
 };
 
 export const resetSettings = () => {
@@ -83,4 +100,5 @@ export const resetSettings = () => {
 
 	resetStoreSettings();
 	refreshSettingsOnAppStart();
+	centerCrosshairWindows();
 };

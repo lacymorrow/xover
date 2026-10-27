@@ -147,3 +147,41 @@ describe('reset re-derives the state that lives outside the store', () => {
 		expect(syncContentProtection).not.toHaveBeenCalled();
 	});
 });
+
+// Only the Lock and Hide keybinds used to re-register the shortcuts, so
+// locking from the tray, from Show App or from a reset left the
+// ignoreWhenLocked shortcuts in whatever state the last keybind press put them
+// in (LAC-5839 item 6).
+describe('locking or hiding re-registers the shortcuts', () => {
+	it('does it on an isLocked change from any caller', () => {
+		// eslint-disable-next-line global-require
+		require('../main/store-actions').setSettings({ isLocked: true });
+
+		expect(registerKeyboardShortcuts).toHaveBeenCalled();
+	});
+
+	it('does it on an isHidden change', () => {
+		// eslint-disable-next-line global-require
+		require('../main/store-actions').setSettings({ isHidden: true });
+
+		expect(registerKeyboardShortcuts).toHaveBeenCalled();
+	});
+
+	it('leaves other settings alone', () => {
+		// eslint-disable-next-line global-require
+		require('../main/store-actions').setSettings({ allowSounds: false });
+
+		expect(registerKeyboardShortcuts).not.toHaveBeenCalled();
+	});
+
+	// refreshSettingsOnAppStart() writes isHidden and isLocked during startup,
+	// before the ready event, where globalShortcut throws.
+	it('stays out of the way before the app is ready', () => {
+		isReady = false;
+
+		// eslint-disable-next-line global-require
+		require('../main/store-actions').setSettings({ isLocked: false });
+
+		expect(registerKeyboardShortcuts).not.toHaveBeenCalled();
+	});
+});

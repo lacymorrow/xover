@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.0.0-beta.6
+
+### Bug Fixes
+
+- **Toggle Reticle would not stay bound.** The keybind shipped in beta.5, and electron-store only applies defaults when the whole `keybinds` key is absent, so no store upgraded from beta.4 had the property. `setKeybind` validated the action against the keys the store already had and dropped every write. Any action added after an install was created was affected; the store is now backfilled from the defaults.
+- **Reset confirmation opened behind other apps**, from the tray and from Settings > Advanced. The dialog now brings CrossOver to the front and attaches itself to the settings window when that window is up. Same for the update prompt.
+- **Reset re-centers the crosshair** on the display it is currently on. Reset also behaves the same from all three entry points now: the tray and Settings > Advanced used to skip the sound, the image rescan and the transient state.
+- **Center Crosshair moved the settings window.** Global shortcuts act on crosshair windows only. The same audit fixed the move and display shortcuts doing nothing while the crosshair was locked, Focus Next Window cycling through Settings, and the crosshair's own center and close buttons acting on whichever window shared a numeric id.
+- **Show App left a locked crosshair stuck.** Show App, a second launch and the Settings shortcut now unlock and unhide the app before showing Settings. A locked app refused to open Settings, so all three did nothing at all.
+- **Auto-Hide left the reticle on screen.** Auto-Hide (ADS) hid the crosshair image only; the reticle is a sibling element and stayed at full opacity, and the secondary crosshair overrode the hide outright. It now hides the whole overlay in hold, toggle and invert modes, and the reticle returns to its own Toggle Reticle state on reveal.
+- **About page was still the template's.** Rebranded from "Electron-Hotplate", with the hardcoded star count and date dropped and the card pointing at lacymorrow/crossover. Window title, package keywords and the Snap store description too.
+
 ## 4.0.0-alpha.2
 
 ### Bug Fixes

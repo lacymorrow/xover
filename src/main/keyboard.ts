@@ -1,6 +1,7 @@
 import { CustomAcceleratorsType, KeyboardShortcut } from '@/types/keyboard';
 import { app, globalShortcut } from 'electron';
 import Logger from 'electron-log';
+import { DEFAULT_KEYBINDS } from '../config/settings';
 import { $notifications } from '../config/strings';
 import { shouldRegisterKeybind } from '../utils/keybinds';
 import store from './store';
@@ -9,11 +10,11 @@ import windows from './windows';
 import { createDuplicateWindow, createNewWindow } from './create-window';
 import { notification } from './notifications';
 import { resetSettings } from './reset';
-import { getSetting, setSettings } from './store-actions';
+import { getKeybinds, getSetting, setSettings } from './store-actions';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
 import {
-	activeWindow,
+	activeCrosshairWindow,
 	centerWindow,
 	focusNextWindow,
 	moveToNextDisplay,
@@ -32,10 +33,9 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 				return;
 			}
 
+			// setSettings() re-registers the shortcuts on an isLocked change, so
+			// every path that locks gets it, not just this one (LAC-5839).
 			toggleAppLock();
-
-			// eslint-disable-next-line no-use-before-define
-			registerKeyboardShortcuts();
 		},
 	},
 
@@ -68,9 +68,6 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 			}
 
 			toggleAppHide();
-
-			// eslint-disable-next-line no-use-before-define
-			registerKeyboardShortcuts();
 		},
 	},
 
@@ -89,7 +86,9 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		ignoreWhenLocked: true,
 		allowUnbind: true,
 		fn() {
-			const win = activeWindow() || windows.mainWindow;
+			// Crosshair windows only. `activeWindow()` here centered the settings
+			// window whenever it had focus (LAC-5839).
+			const win = activeCrosshairWindow();
 			if (!win) {
 				return;
 			}
@@ -191,7 +190,7 @@ interface ShortcutType extends Electron.GlobalShortcut {
 let lastNotifiedConflicts = '';
 
 const registerKeyboardShortcuts = () => {
-	const keybinds = store.get('keybinds');
+	const keybinds = getKeybinds();
 	const { allowDisableKeyboardShortcuts, isLocked, isHidden } =
 		store.get('settings');
 
@@ -262,10 +261,13 @@ const kb: ShortcutType = {
 	registerKeyboardShortcuts,
 
 	setKeybind: (keybind: keyof CustomAcceleratorsType, accelerator: string) => {
-		const keybinds = store.get('keybinds');
+		const keybinds = getKeybinds();
 
-		// Invalid keybind
-		if (!(keybind in keybinds)) {
+		// Unknown action. Checked against the defaults and not against the keys
+		// the store happens to have: a store written by an older version is
+		// missing every action added since, and checking it there dropped the
+		// write without a word (LAC-5839).
+		if (!(keybind in DEFAULT_KEYBINDS)) {
 			return;
 		}
 
@@ -284,7 +286,7 @@ const kb: ShortcutType = {
 	},
 
 	setKeybinds: (keybinds: Partial<CustomAcceleratorsType>) => {
-		const currentKeybinds = store.get('keybinds');
+		const currentKeybinds = getKeybinds();
 
 		store.set('keybinds', {
 			...currentKeybinds,

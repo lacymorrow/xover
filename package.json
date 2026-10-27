@@ -2,7 +2,7 @@
   "name": "crossover",
   "productName": "CrossOver",
   "appId": "com.lacymorrow.crossover",
-  "version": "4.0.0-beta.5",
+  "version": "4.0.0-beta.6",
   "description": "A Crosshair Overlay for any screen.",
   "company": "Fly5",
   "license": "CC-BY-NC-SA-4.0",
@@ -10,15 +10,12 @@
   "repository": "lacymorrow/crossover",
   "homepage": "https://lacymorrow.github.io/crossover",
   "keywords": [
-    "electron",
-    "boilerplate",
-    "react",
-    "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "crosshair",
+    "overlay",
+    "gaming",
+    "fps",
+    "aim",
+    "electron"
   ],
   "bugs": {
     "url": "https://github.com/lacymorrow/crossover/issues",
@@ -333,7 +330,7 @@
     },
     "snap": {
       "summary": "🎯 A Crosshair Overlay for any screen.",
-      "description": "A batteries-included boilerplate for making Electron apps.",
+      "description": "A crosshair overlay for any screen. Place a customizable crosshair on top of any game or app.",
       "plugs": [
         "default",
         "removable-media"
