@@ -1,10 +1,14 @@
 import { globalShortcut } from 'electron';
 import Logger from 'electron-log';
-import { getSettings, setSettings } from '../store-actions';
+import { getSettings, getWindowState, setSettings } from '../store-actions';
 import windows from '../windows';
 import { toggleAppHide } from './hideApp';
 import { toggleAppLock } from './lockApp';
-import { focusNextWindow, getNextCrosshairWindow } from './window-utils';
+import {
+	focusNextWindow,
+	getNextCrosshairWindow,
+	placeSettingsWindow,
+} from './window-utils';
 
 const unregisterEscapeKey = () => {
 	globalShortcut.unregister('Escape');
@@ -43,6 +47,15 @@ const revealSettingsWindow = () => {
 		settingsWindow.restore();
 	}
 
+	// Only on open: a window already on screen is the user's to move.
+	if (!settingsWindow.isVisible()) {
+		const { x, y } = getWindowState('settings') ?? {};
+		placeSettingsWindow(settingsWindow, { x, y });
+	}
+
+	// Above the crosshairs (screen-saver level 1), so a fallback overlap never
+	// leaves Settings behind one.
+	settingsWindow.setAlwaysOnTop(true, 'screen-saver', 2);
 	settingsWindow.show();
 	settingsWindow.focus();
 

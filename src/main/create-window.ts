@@ -40,6 +40,7 @@ import { windowClosed } from './utils/window-closed';
 import {
 	applyContentProtection,
 	getNextCrosshairWindow,
+	placeSettingsWindow,
 	safeSetBounds,
 } from './utils/window-utils';
 import windows from './windows';
@@ -360,6 +361,8 @@ export const createSettingsWindow = async () => {
 			return;
 		}
 
+		placeSettingsWindow(window, state);
+		window.setAlwaysOnTop(true, 'screen-saver', 2);
 		window.show();
 	});
 
