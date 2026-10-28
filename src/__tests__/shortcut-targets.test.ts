@@ -14,7 +14,11 @@ const makeWindow = (id: number) => ({
 	getBounds: () => ({ x: 0, y: 0, width: 200, height: 130 }),
 });
 
-const settingsWindow = makeWindow(1);
+// Named settingsWin, not settingsWindow: this file and dialog-focus.test.ts
+// are the only two test files with no top-level import, so TypeScript treats
+// both as global scripts and identical top-level names collide. ts-jest only
+// reports the collision on a cold cache, which is every CI run.
+const settingsWin = makeWindow(1);
 const crosshairA = makeWindow(2);
 const crosshairB = makeWindow(3);
 
@@ -54,7 +58,7 @@ jest.mock('../main/windows', () => ({
 const loadUtils = () => {
 	// eslint-disable-next-line global-require
 	const windows = require('../main/windows').default;
-	windows.settingsWindow = settingsWindow;
+	windows.settingsWindow = settingsWin;
 	windows.mainWindow = crosshairA;
 	// eslint-disable-next-line global-require
 	return require('../main/utils/window-utils');
@@ -64,7 +68,7 @@ beforeEach(() => {
 	jest.resetModules();
 	jest.clearAllMocks();
 	focused = null;
-	allWindows = [settingsWindow, crosshairA, crosshairB];
+	allWindows = [settingsWin, crosshairA, crosshairB];
 });
 
 describe('activeCrosshairWindow', () => {
@@ -74,7 +78,7 @@ describe('activeCrosshairWindow', () => {
 	});
 
 	it('is never the settings window', () => {
-		focused = settingsWindow;
+		focused = settingsWin;
 		expect(loadUtils().activeCrosshairWindow()).toBe(crosshairA);
 	});
 
@@ -88,7 +92,7 @@ describe('activeCrosshairWindow', () => {
 		const windows = require('../main/windows').default;
 		const utils = loadUtils();
 		windows.mainWindow = null;
-		allWindows = [settingsWindow, crosshairB];
+		allWindows = [settingsWin, crosshairB];
 
 		expect(utils.activeCrosshairWindow()).toBe(crosshairB);
 	});
@@ -100,21 +104,21 @@ describe('focusNextWindow', () => {
 		loadUtils().focusNextWindow();
 
 		expect(crosshairA.focus).toHaveBeenCalled();
-		expect(settingsWindow.focus).not.toHaveBeenCalled();
+		expect(settingsWin.focus).not.toHaveBeenCalled();
 	});
 
 	it('focuses a crosshair window when Settings has focus', () => {
-		focused = settingsWindow;
+		focused = settingsWin;
 		loadUtils().focusNextWindow();
 
 		expect(crosshairA.focus).toHaveBeenCalled();
 	});
 
 	it('does nothing when there is no crosshair window', () => {
-		allWindows = [settingsWindow];
-		focused = settingsWindow;
+		allWindows = [settingsWin];
+		focused = settingsWin;
 
 		expect(() => loadUtils().focusNextWindow()).not.toThrow();
-		expect(settingsWindow.focus).not.toHaveBeenCalled();
+		expect(settingsWin.focus).not.toHaveBeenCalled();
 	});
 });
