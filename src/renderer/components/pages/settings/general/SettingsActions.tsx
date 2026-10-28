@@ -1,7 +1,11 @@
 // todo: disable settings for disabled actions
 
 import { Separator } from '@/components/ui/separator';
-import { IOHookBehaviorType, SettingsType } from '@/config/settings';
+import {
+	HideBehaviorType,
+	IOHookBehaviorType,
+	SettingsType,
+} from '@/config/settings';
 import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKeyboardBind';
 import { InputSelectForm } from '@/renderer/components/input/InputSelectForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
@@ -68,6 +72,11 @@ export function SettingsActions() {
 									hideOnMouseEnabled: true,
 									hideOnKeyEnabled: false,
 									hideOnMouseButton: parseInt(trigger, 10),
+									// Press mode is keyboard only, and a mouse bind must not
+									// be left on a behavior the select no longer offers.
+									...(settings.hideOnMouseBehavior === 'press'
+										? { hideOnMouseBehavior: 'hold' as const }
+										: {}),
 								});
 							} else {
 								handleChangeSetting({
@@ -83,7 +92,7 @@ export function SettingsActions() {
 						value={settings.hideOnMouseBehavior}
 						onChange={(value) => {
 							handleChangeSetting({
-								hideOnMouseBehavior: value as IOHookBehaviorType,
+								hideOnMouseBehavior: value as HideBehaviorType,
 							});
 						}}
 						label="Hide Behavior"
@@ -91,6 +100,16 @@ export function SettingsActions() {
 						items={[
 							{ label: 'Hold to hide', value: 'hold' },
 							{ label: 'Press to toggle', value: 'toggle' },
+							// Needs a button to come back on, so it is offered only for a
+							// keyboard bind.
+							...(settings.hideOnKeyEnabled
+								? [
+										{
+											label: 'Press to hide until the next ADS click',
+											value: 'press',
+										},
+									]
+								: []),
 						]}
 					/>
 					<InputSwitch
