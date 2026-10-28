@@ -11,6 +11,11 @@ const toggleAppLock = jest.fn();
 const toggleAppHide = jest.fn();
 const setSettings = jest.fn();
 const focusNextWindow = jest.fn();
+const createCrosshairWindow = jest.fn();
+
+const liveCrosshair = { id: 2, isDestroyed: () => false };
+const deadCrosshair = { id: 3, isDestroyed: () => true };
+let nextCrosshair: typeof liveCrosshair | undefined;
 
 let settings: SettingsType = { ...DEFAULT_SETTINGS };
 let isFocused = false;
@@ -46,6 +51,11 @@ jest.mock('../main/utils/lockApp', () => ({
 }));
 jest.mock('../main/utils/window-utils', () => ({
 	focusNextWindow: () => focusNextWindow(),
+	getNextCrosshairWindow: () => nextCrosshair,
+}));
+
+jest.mock('../main/create-window', () => ({
+	createCrosshairWindow: () => createCrosshairWindow(),
 }));
 
 jest.mock('../main/windows', () => ({
@@ -65,6 +75,7 @@ beforeEach(() => {
 	jest.clearAllMocks();
 	settings = { ...DEFAULT_SETTINGS };
 	isFocused = false;
+	nextCrosshair = liveCrosshair;
 });
 
 describe('showApp', () => {
@@ -104,6 +115,35 @@ describe('showApp', () => {
 
 		expect(settingsWindow.hide).not.toHaveBeenCalled();
 		expect(settingsWindow.focus).toHaveBeenCalled();
+	});
+});
+
+describe('showApp with no usable crosshair window', () => {
+	const windowsModule = () =>
+		// eslint-disable-next-line global-require
+		require('../main/windows').default;
+
+	it('repoints a destroyed mainWindow at a live crosshair (beta.5 tray crash)', async () => {
+		const app = load();
+		windowsModule().mainWindow = deadCrosshair;
+		settings = { ...settings, isLocked: true };
+
+		await app.showApp();
+
+		expect(windowsModule().mainWindow).toBe(liveCrosshair);
+		expect(createCrosshairWindow).not.toHaveBeenCalled();
+		expect(toggleAppLock).toHaveBeenCalled();
+	});
+
+	it('creates a crosshair when every one was closed, then shows Settings', async () => {
+		const app = load();
+		windowsModule().mainWindow = null;
+		nextCrosshair = undefined;
+
+		await app.showApp();
+
+		expect(createCrosshairWindow).toHaveBeenCalledTimes(1);
+		expect(settingsWindow.show).toHaveBeenCalled();
 	});
 });
 

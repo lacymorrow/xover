@@ -4,7 +4,7 @@ import { getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
 import { toggleAppHide } from './hideApp';
 import { toggleAppLock } from './lockApp';
-import { focusNextWindow } from './window-utils';
+import { focusNextWindow, getNextCrosshairWindow } from './window-utils';
 
 const unregisterEscapeKey = () => {
 	globalShortcut.unregister('Escape');
@@ -60,7 +60,22 @@ const revealSettingsWindow = () => {
  * lock on, and a locked app refuses to open Settings, so the only way back was
  * the Lock keybind (LAC-5839).
  */
-export const showApp = () => {
+export const showApp = async () => {
+	// Show App is also the way back when no crosshair is left: every crosshair
+	// window closed (macOS keeps the app running), or `mainWindow` pointing at a
+	// destroyed one, which threw "Object has been destroyed" from the tray in
+	// beta.5. Repoint at a live crosshair, or create one the way the Dock icon
+	// does, before unhiding and unlocking, which both act on `mainWindow`.
+	if (!windows.mainWindow || windows.mainWindow.isDestroyed()) {
+		windows.mainWindow = getNextCrosshairWindow() ?? null;
+	}
+
+	if (!windows.mainWindow) {
+		// Required lazily: create-window imports modules that import this one.
+		// eslint-disable-next-line global-require
+		await require('../create-window').createCrosshairWindow();
+	}
+
 	const { isHidden, isLocked } = getSettings();
 
 	if (isHidden) {
