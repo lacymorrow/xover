@@ -53,6 +53,7 @@ settings window size is persisted on first run) clears it.
 
 - `npx tsc --noEmit`: clean.
 - `npm run lint`: 0 errors. The 44 warnings are pre-existing and none are in
-  the changed files except two unused `APP_WIDTH`/`APP_HEIGHT` imports in
-  `create-window.ts` that predate this branch.
+  the changed files. Two unused `APP_WIDTH`/`APP_HEIGHT` imports in
+  `create-window.ts` predated this branch and are removed here, since the file
+  is already in the diff.
 - `npm test`: 15 suites, 185 tests, all passing (76 of them the new suite).

@@ -8,13 +8,7 @@ import {
 } from 'electron';
 import Logger from 'electron-log';
 import path from 'path';
-import {
-	APP_ASPECT_RATIO,
-	APP_FRAME,
-	APP_HEIGHT,
-	APP_WIDTH,
-	SIZE_MODES,
-} from '../config/config';
+import { APP_ASPECT_RATIO, APP_FRAME, SIZE_MODES } from '../config/config';
 import { DEFAULT_CROSSHAIR_WINDOW_STATE } from '../config/settings';
 import { getUUID } from '../utils/getUUID';
 import { isObjectEmpty } from '../utils/isObjectEmpty';
