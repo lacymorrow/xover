@@ -321,6 +321,10 @@ export const createDuplicateWindow = async () => {
 	return window;
 };
 
+/** Narrowest Settings window that still shows the nav and every control. */
+const SETTINGS_MIN_WIDTH = 720;
+const SETTINGS_MIN_HEIGHT = 560;
+
 export const createSettingsWindow = async () => {
 	const state = getWindowState('settings');
 
@@ -328,6 +332,14 @@ export const createSettingsWindow = async () => {
 		title: `Settings - ${app.name}`,
 		titleBarStyle: 'hidden',
 		trafficLightPosition: { x: 12, y: 12 },
+
+		// The nav is 20% of the width, and the widest control in the content
+		// column is the 250px reticle combobox inside a 32px-padded pane. Below
+		// this the nav labels wrap onto two lines and the sliders lose their
+		// value readout, so Settings refuses to go smaller (LAC-5868). The
+		// generic 300x300 floor in createWindow() is for crosshair windows.
+		minWidth: SETTINGS_MIN_WIDTH,
+		minHeight: SETTINGS_MIN_HEIGHT,
 
 		...(state?.x && state?.y ? { x: state.x, y: state.y } : {}),
 		...(state?.width ? { width: state.width } : {}),

@@ -12,10 +12,50 @@ interface GroupedImages {
 interface CrosshairGalleryProps {
 	/** Which window state key to set when selecting a crosshair. Defaults to 'crosshair'. */
 	stateKey?: 'crosshair' | 'crosshairSecondary';
+	/** Render the "Add custom crosshair" button above the grid. */
+	showUpload?: boolean;
+}
+
+/**
+ * Pick an image file and hand it to the main process. Exported so the
+ * Crosshair pane can show it under "More" while the gallery itself stays at
+ * the top of the pane (LAC-5868).
+ */
+export function CrosshairUploadButton() {
+	const handleClickBrowse = useCallback(() => {
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept =
+			'image/png,image/jpeg,image/svg+xml,image/gif,image/webp,image/bmp';
+		input.multiple = true;
+		input.onchange = () => {
+			if (input.files) {
+				Array.from(input.files).forEach((file) => {
+					const filePath = window.electron.getPathForFile(file);
+					if (filePath) {
+						window.electron.openFile(filePath);
+					}
+				});
+			}
+		};
+		input.click();
+	}, []);
+
+	return (
+		<button
+			type="button"
+			onClick={handleClickBrowse}
+			className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed p-3 text-sm text-muted-foreground transition-colors cursor-pointer border-muted-foreground/25 hover:border-muted-foreground/50 hover:text-foreground"
+		>
+			<ImagePlus className="h-4 w-4" />
+			<span>Add custom crosshair</span>
+		</button>
+	);
 }
 
 export function CrosshairGallery({
 	stateKey = 'crosshair',
+	showUpload = true,
 }: CrosshairGalleryProps) {
 	const { crosshairImages, windowState } = useGlobalContext();
 	const [search, setSearch] = useState('');
@@ -93,25 +133,6 @@ export function CrosshairGallery({
 		[filteredGroups],
 	);
 
-	const handleClickBrowse = useCallback(() => {
-		const input = document.createElement('input');
-		input.type = 'file';
-		input.accept =
-			'image/png,image/jpeg,image/svg+xml,image/gif,image/webp,image/bmp';
-		input.multiple = true;
-		input.onchange = () => {
-			if (input.files) {
-				Array.from(input.files).forEach((file) => {
-					const filePath = window.electron.getPathForFile(file);
-					if (filePath) {
-						window.electron.openFile(filePath);
-					}
-				});
-			}
-		};
-		input.click();
-	}, []);
-
 	return (
 		<div className="space-y-3">
 			<div className="space-y-1">
@@ -121,14 +142,7 @@ export function CrosshairGallery({
 				</p>
 			</div>
 
-			<button
-				type="button"
-				onClick={handleClickBrowse}
-				className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed p-3 text-sm text-muted-foreground transition-colors cursor-pointer border-muted-foreground/25 hover:border-muted-foreground/50 hover:text-foreground"
-			>
-				<ImagePlus className="h-4 w-4" />
-				<span>Add custom crosshair</span>
-			</button>
+			{showUpload && <CrosshairUploadButton />}
 
 			<Input
 				placeholder="Search crosshairs..."

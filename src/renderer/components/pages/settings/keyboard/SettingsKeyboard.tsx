@@ -2,9 +2,17 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { InputKeyboardShortcut } from '@/renderer/components/input/InputKeyboardShortcut';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
+import { MoreSettings } from '@/renderer/components/ui/MoreSettings';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { CustomAcceleratorsType } from '@/types/keyboard';
 
+/**
+ * The Shortcuts pane, formerly Keyboard (LAC-5868).
+ *
+ * The six shortcuts people actually rebind stay on screen; window management
+ * and quit sit under "More shortcuts". Every keybind is still here and still
+ * writes the same `keybinds.*` key.
+ */
 export function SettingsKeyboard() {
 	const { keybinds, settings } = useGlobalContext();
 	const allDisabled = settings.allowDisableKeyboardShortcuts;
@@ -19,7 +27,7 @@ export function SettingsKeyboard() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Keyboard Shortcuts</h3>
+				<h3 className="text-lg font-medium">Shortcuts</h3>
 				<p className="text-sm text-muted-foreground">
 					Customize keyboard shortcuts to control the application. Press
 					&quot;Backspace&quot; or &quot;Delete&quot; to clear the current
@@ -64,71 +72,6 @@ export function SettingsKeyboard() {
 					}}
 				/>
 				<InputKeyboardShortcut
-					value={keybinds.newWindow}
-					label="New Crosshair Window"
-					description="Create a new crosshair window."
-					onChange={(value) => {
-						handleChangeKeybind('newWindow', value);
-					}}
-				/>
-				<InputKeyboardShortcut
-					value={keybinds.duplicateWindow}
-					label="Duplicate Crosshair Window"
-					description="Create a new crosshair window with the current window settings."
-					onChange={(value) => {
-						handleChangeKeybind('duplicateWindow', value);
-					}}
-				/>
-				<InputKeyboardShortcut
-					value={keybinds.focusNextWindow}
-					label="Focus Next Window"
-					description="Move focus to the next window."
-					onChange={(value) => {
-						handleChangeKeybind('focusNextWindow', value);
-					}}
-				/>
-				<InputKeyboardShortcut
-					value={keybinds.moveUp}
-					label="Move Up"
-					description="Move the active window up by a single pixel."
-					onChange={(value) => {
-						handleChangeKeybind('moveUp', value);
-					}}
-				/>
-				<InputKeyboardShortcut
-					value={keybinds.moveDown}
-					label="Move Down"
-					description="Move the active window down by a single pixel."
-					onChange={(value) => {
-						handleChangeKeybind('moveDown', value);
-					}}
-				/>
-				<InputKeyboardShortcut
-					value={keybinds.moveLeft}
-					label="Move Left"
-					description="Move the active window left by a single pixel."
-					onChange={(value) => {
-						handleChangeKeybind('moveLeft', value);
-					}}
-				/>
-				<InputKeyboardShortcut
-					value={keybinds.moveRight}
-					label="Move Right"
-					description="Move the active window right by a single pixel."
-					onChange={(value) => {
-						handleChangeKeybind('moveRight', value);
-					}}
-				/>
-				<InputKeyboardShortcut
-					value={keybinds.changeDisplay}
-					label="Move Window to Next Display"
-					description="Move the active window to the next connected display."
-					onChange={(value) => {
-						handleChangeKeybind('changeDisplay', value);
-					}}
-				/>
-				<Separator />
-				<InputKeyboardShortcut
 					value={keybinds.hide}
 					label="Hide Application"
 					description="Show/Hide all application windows."
@@ -145,14 +88,6 @@ export function SettingsKeyboard() {
 					}}
 				/>
 				<InputKeyboardShortcut
-					value={keybinds.quit}
-					label="Quit Application"
-					description="Close the application."
-					onChange={(value) => {
-						handleChangeKeybind('quit', value);
-					}}
-				/>
-				<InputKeyboardShortcut
 					value={keybinds.reset}
 					label="Reset Application"
 					description="Clear all settings and restore the app to its default state."
@@ -161,6 +96,81 @@ export function SettingsKeyboard() {
 						handleChangeKeybind('reset', value);
 					}}
 				/>
+
+				<MoreSettings label="More shortcuts">
+					<InputKeyboardShortcut
+						value={keybinds.newWindow}
+						label="New Crosshair Window"
+						description="Create a new crosshair window."
+						onChange={(value) => {
+							handleChangeKeybind('newWindow', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.duplicateWindow}
+						label="Duplicate Crosshair Window"
+						description="Create a new crosshair window with the current window settings."
+						onChange={(value) => {
+							handleChangeKeybind('duplicateWindow', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.focusNextWindow}
+						label="Focus Next Window"
+						description="Move focus to the next window."
+						onChange={(value) => {
+							handleChangeKeybind('focusNextWindow', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.moveUp}
+						label="Move Up"
+						description="Move the active window up by a single pixel."
+						onChange={(value) => {
+							handleChangeKeybind('moveUp', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.moveDown}
+						label="Move Down"
+						description="Move the active window down by a single pixel."
+						onChange={(value) => {
+							handleChangeKeybind('moveDown', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.moveLeft}
+						label="Move Left"
+						description="Move the active window left by a single pixel."
+						onChange={(value) => {
+							handleChangeKeybind('moveLeft', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.moveRight}
+						label="Move Right"
+						description="Move the active window right by a single pixel."
+						onChange={(value) => {
+							handleChangeKeybind('moveRight', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.changeDisplay}
+						label="Move Window to Next Display"
+						description="Move the active window to the next connected display."
+						onChange={(value) => {
+							handleChangeKeybind('changeDisplay', value);
+						}}
+					/>
+					<InputKeyboardShortcut
+						value={keybinds.quit}
+						label="Quit Application"
+						description="Close the application."
+						onChange={(value) => {
+							handleChangeKeybind('quit', value);
+						}}
+					/>
+				</MoreSettings>
 			</div>
 		</div>
 	);

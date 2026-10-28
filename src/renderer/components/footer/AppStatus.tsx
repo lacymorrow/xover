@@ -1,41 +1,21 @@
-import { Button } from '@/components/ui/button';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog';
 import { GlobalContext } from '@/renderer/context/global-context';
-import { simpleUUID } from '@/utils/getUUID';
 import { useContext } from 'react';
 
+/**
+ * The right half of the status bar: whatever the main process last said
+ * ("App activated", "Started").
+ *
+ * It used to double as a button that opened a dialog of the last few log
+ * lines. The status bar stays, the log button is gone (LAC-5868): nobody
+ * reading "App activated" is looking for a process log, and a clickable
+ * 11px string with no affordance was only ever found by accident.
+ */
 function AppStatus() {
-	const { message, messages } = useContext(GlobalContext);
+	const { message } = useContext(GlobalContext);
 
 	if (!message) return null;
-	if (messages?.length < 2) return <>{message}</>;
-	return (
-		<Dialog>
-			<DialogTrigger>{message}</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px] max-h-[60vh] overflow-auto">
-				<DialogHeader>
-					<DialogTitle>Application status log</DialogTitle>
-					<DialogDescription>
-						Viewing last {messages.length} messages from application processes
-					</DialogDescription>
-				</DialogHeader>
-				{messages.map((m) => (
-					<DialogDescription key={simpleUUID()}>{m}</DialogDescription>
-				))}
-				<DialogFooter>
-					<Button type="button">Close</Button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
-	);
+
+	return <>{message}</>;
 }
 
 export default AppStatus;

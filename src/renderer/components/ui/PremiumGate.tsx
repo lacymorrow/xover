@@ -44,7 +44,7 @@ export function UpgradeLink() {
 	return (
 		<button
 			type="button"
-			className="text-sm font-medium text-amber-500 hover:underline"
+			className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
 			onClick={() => {
 				window.electron.openUrl(POLAR_CHECKOUT_URL);
 			}}
