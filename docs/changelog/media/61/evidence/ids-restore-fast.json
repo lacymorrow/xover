@@ -1,0 +1,12 @@
+{
+	"mode": "restore-fast",
+	"pid": 64521,
+	"windows": [
+		{
+			"label": "hidden-create-restored-same-tick",
+			"id": 3421,
+			"dockVisible": false,
+			"isVisible": true
+		}
+	]
+}

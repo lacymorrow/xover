@@ -33,3 +33,7 @@ npm-debug.log.*
 *.ejs
 !.erb
 
+
+# Changelog media: JXA/Python reproduction harnesses, run by osascript and
+# python3 rather than bundled, so the app lint rules do not apply.
+docs
