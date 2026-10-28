@@ -98,16 +98,11 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 	// the dock is that transform, so it has to run before the constructor, not
 	// after it (v3 #580, GH #546).
 	//
-	// dock.initialize() puts the icon straight back to whatever showDockIcon says,
-	// and the window keeps what it was born with: measured on macOS 26.7.1 with
-	// Electron 40, a window created as a UIElement still floats over a fullscreen
-	// Space once the process is a regular app again (activation policy 0). So the
-	// dock-icon default costs nothing here.
+	// The dock then stays hidden: it is no longer a setting (LAC-5725), so there
+	// is nothing to restore after the constructor.
 	dock.setVisible(false);
 
 	const browserWindow = new BrowserWindow(options);
-
-	dock.initialize();
 
 	// todo: Maybe dont stay on top when unlocked
 	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706

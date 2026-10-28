@@ -89,15 +89,6 @@ export default class MenuBuilder {
 		submenu: [
 			getAutoUpdateMenuItem(),
 			{
-				label: 'Show Dock Icon',
-				type: 'checkbox',
-				id: 'showDockIcon',
-				checked: () => getSetting('showDockIcon'),
-				click: () => {
-					setSettings({ showDockIcon: !getSetting('showDockIcon') });
-				},
-			},
-			{
 				label: 'Show Tray Icon',
 				type: 'checkbox',
 				id: 'showTrayIcon',

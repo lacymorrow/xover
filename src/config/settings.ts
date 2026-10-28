@@ -24,7 +24,6 @@ export interface SettingsType {
 	allowDisableKeyboardShortcuts: boolean;
 	allowNotifications: boolean;
 	notificationType: NotificationType;
-	showDockIcon: boolean; // macOS only
 	showTaskbarIcon: boolean; // windows only
 	showTrayIcon: boolean;
 	quitOnWindowClose: boolean;
@@ -99,7 +98,6 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	allowSounds: true,
 	allowNotifications: true,
 	notificationType: 'all',
-	showDockIcon: true,
 	showTaskbarIcon: true,
 	showTrayIcon: true,
 	quitOnWindowClose: false,

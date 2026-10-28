@@ -160,9 +160,6 @@ const schema: Store.Schema<StoreType> = {
 				type: 'string',
 				enum: ['system', 'app', 'all'],
 			},
-			showDockIcon: {
-				type: 'boolean',
-			},
 			showTaskbarIcon: {
 				type: 'boolean',
 			},

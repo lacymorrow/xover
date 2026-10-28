@@ -7,7 +7,7 @@ import { forEachWindow } from './window-utils';
 export const setAppHide = (isHidden: boolean) => {
 	Logger.status(`App is ${isHidden ? 'hidden' : 'unhidden'}`);
 
-	const { isSettingsWindowOpen, showDockIcon } = getSettings();
+	const { isSettingsWindowOpen } = getSettings();
 
 	if (isHidden) {
 		// Hide all windows
@@ -26,11 +26,6 @@ export const setAppHide = (isHidden: boolean) => {
 		// Restore settings window
 		if (isSettingsWindowOpen) {
 			windows.settingsWindow?.show();
-		}
-
-		// Show dock icon
-		if (showDockIcon) {
-			dock.setVisible(true);
 		}
 	}
 };

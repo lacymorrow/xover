@@ -38,17 +38,6 @@ export function SettingsApplication() {
 				description="Start the app locked if it was locked when last closed."
 				card
 			/>
-			{(app.isMac || app.isDev) && (
-				<InputSwitch
-					value={settings.showDockIcon}
-					onChange={() => {
-						handleChangeSetting({ showDockIcon: !settings.showDockIcon });
-					}}
-					label="Dock icon"
-					description="Show the app icon in the dock. (macOS only)"
-					card
-				/>
-			)}
 			{(app.isWindows || app.isDev) && (
 				<InputSwitch
 					value={settings.showTaskbarIcon}

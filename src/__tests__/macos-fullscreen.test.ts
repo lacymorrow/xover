@@ -19,8 +19,10 @@
  *   created as a UIElement,
  *   then dock restored         -> still floats (activation policy 0)
  *
- * The third row is why showDockIcon can keep defaulting to true: the order is
- * what matters, not the end state. That is the whole fix, and this test pins it.
+ * The third row says the order is what matters, not the end state. The dock is
+ * now hidden unconditionally anyway (LAC-5725, `dock-always-hidden.test.ts`), so
+ * nothing restores it after the constructor. The ordering is still the fix, and
+ * this test pins it.
  */
 import { DEFAULT_SETTINGS, SettingsType } from '../config/settings';
 
@@ -129,15 +131,10 @@ const dockSequence = () =>
 		(event) => event.startsWith('dock:') || event === 'window-created',
 	);
 
-const EXPECTED = [
-	'dock:setVisible(false)',
-	'window-created',
-	'dock:initialize',
-];
+const EXPECTED = ['dock:setVisible(false)', 'window-created'];
 
-it('hides the dock before the crosshair window exists, then puts it back (#546)', async () => {
-	// The hide is the fix. dock.initialize() after it is what keeps showDockIcon
-	// honest, which the measurements above show costs nothing.
+it('hides the dock before the crosshair window exists (#546)', async () => {
+	// The hide is the fix, and it has to land before the constructor.
 	await createCrosshair();
 
 	expect(dockSequence()).toEqual(EXPECTED);

@@ -117,22 +117,6 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	if (changedSettings) {
 		const keys = Object.keys(changedSettings);
 
-		if (keys.includes('showDockIcon')) {
-			if (changedSettings.showDockIcon) {
-				app.dock?.show();
-			} else {
-				app.dock?.hide();
-				// macOS hides all windows when dock icon is hidden; re-show them
-				setTimeout(() => {
-					forEachWindow((win) => {
-						if (!win.isDestroyed()) {
-							win.showInactive();
-						}
-					});
-				}, 100);
-			}
-		}
-
 		if (keys.includes('showTrayIcon')) {
 			// Lazy require to break circular dependency: store-actions → tray → store-actions
 			// eslint-disable-next-line global-require
