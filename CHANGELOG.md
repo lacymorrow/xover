@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.0-beta.7
+
+### Bug Fixes
+
+- **Follow Mouse froze while any mouse button was down.** `uiohook-napi` maps libuiohook event types 4-9 and 11 to named events and has no case for `EVENT_MOUSE_DRAGGED` (10), so `mousemove` went silent for the whole drag. The hook now also listens on the catch-all `input` event and forwards type 10 to the same handler. Ported from v3 #542 / #541.
+- **The keyboard Auto-Hide bind ignored "Press to toggle".** Settings has offered the choice since v4 shipped, but the keyboard registration never read it, so picking it did nothing. It now honors the setting and adds a third mode from v3 #573 / #340: press to hide until the next ADS click, for dropping into first-person without holding a key. Press mode is offered for keyboard binds only; a bind switched to the mouse falls back to hold.
+- **Show App could not bring back a crosshair when none was usable.** Completes the beta.5 tray crash (`TypeError: Object has been destroyed` at `tray.ts:37`): beta.5's reset wiped `windows.crosshairWindows`, so closing the crosshair later left `mainWindow` pointing at a destroyed window. beta.6 removed that line and guarded destroyed windows; Show App now also repoints a stale `mainWindow` at a live crosshair, or creates one, the way the Dock icon does. Previously it left the lock on with no crosshair on screen.
+
 ## 4.0.0-beta.6
 
 ### Bug Fixes
