@@ -1,0 +1,3 @@
+--- 7d32661 feat(macos)!: hide the dock unconditionally, drop showDockIcon (LAC-5725)
+--- activation policy of the app process 9105 (0 regular/dock icon, 1 accessory/hidden)
+{"pid":9105,"policy":1}
