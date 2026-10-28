@@ -3,9 +3,10 @@ import { cn } from '@/lib/utils';
 import { Crosshair } from '@/renderer/components/app/Crosshair';
 import { useActionStateContext } from '@/renderer/context/action-state-context';
 import { useGlobalContext } from '@/renderer/context/global-context';
+import { getCrosshairVars } from '@/renderer/lib/crosshair-vars';
 import '@/renderer/styles/crosshair.scss';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function CrosshairApp() {
 	const { settings, windowState, isPremium } = useGlobalContext();
@@ -78,64 +79,14 @@ export default function CrosshairApp() {
 			'is-locked',
 		);
 
-		// Determine effective opacity and scale based on action state
-		const baseOpacity = secondary
-			? windowState.crosshairOpacitySecondary
-			: windowState.crosshairOpacity;
-		const effectiveOpacity = hidden ? 0 : baseOpacity / 100;
-
-		const baseScale = secondary
-			? windowState.crosshairSizeSecondary
-			: windowState.crosshairSize;
-		const effectiveScale = adsActive
-			? settings.adsResizeSize / 100
-			: baseScale / 100;
-
-		// Rotation is a Pro feature; ignore stored values without a license
-		const pro = (degrees: number) => (isPremium ? degrees : 0);
-		const crosshairRotationSecondary = pro(
-			windowState.crosshairRotationSecondary,
-		);
-		const reticleRotationSecondary = pro(windowState.reticleRotationSecondary);
-		const rotation = secondary
-			? crosshairRotationSecondary
-			: pro(windowState.crosshairRotation);
-
-		const reticleScale = secondary
-			? windowState.reticleSizeSecondary
-			: windowState.reticleSize;
-		const reticleColor = secondary
-			? windowState.reticleColorSecondary
-			: windowState.reticleColor;
-		const reticleRotation = secondary
-			? reticleRotationSecondary
-			: pro(windowState.reticleRotation);
-
-		// Properties to apply to renderer every sync
-		const properties = {
-			'--app-bg-color': windowState.backgroundColor,
-			'--app-foreground-color': windowState.foregroundColor,
-			'--app-opacity': !windowState.backgroundColor ? 0.8 : 1, // Background is transparent even if it's not set
-			'--crosshair-opacity': effectiveOpacity,
-			'--crosshair-scale': effectiveScale,
-			'--crosshair-rotation': `${rotation}deg`,
-			'--reticle-scale': reticleScale / 100,
-			'--reticle-color': reticleColor,
-			'--reticle-rotation': `${reticleRotation}deg`,
-
-			// Secondary alt vars for SCSS .secondary rules
-			'--crosshair-opacity-alt': windowState.crosshairOpacitySecondary / 100,
-			'--crosshair-scale-alt': windowState.crosshairSizeSecondary / 100,
-			'--crosshair-rotation-alt': `${crosshairRotationSecondary}deg`,
-			'--reticle-scale-alt': windowState.reticleSizeSecondary / 100,
-			'--reticle-color-alt': windowState.reticleColorSecondary,
-			'--reticle-rotation-alt': `${reticleRotationSecondary}deg`,
-
-			'--svg-fill-color': windowState.fillColor,
-			'--svg-stroke-color': windowState.strokeColor,
-			'--svg-stroke-width': String(windowState.strokeWidth),
-			'--transition-duration': `${settings.transitionDuration}ms`,
-		};
+		const properties = getCrosshairVars({
+			settings,
+			windowState,
+			isPremium,
+			hidden,
+			adsActive,
+			secondary,
+		});
 
 		// Apply properties to root
 		Object.entries(properties).forEach(([key, value]) => {

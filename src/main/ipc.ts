@@ -16,6 +16,7 @@ import {
 } from './license';
 import { notification } from './notifications';
 import { rendererPaths } from './paths';
+import { resetSettings } from './reset';
 import sounds from './sounds';
 import { idle } from './startup';
 import {
@@ -27,13 +28,12 @@ import {
 	getKeybinds,
 	getSettings,
 	getWindowState,
-	resetStoreSettings,
 	setActiveWindowState,
 	setSettings,
 } from './store-actions';
 import { openSettingsWindow } from './utils/settingsWindow';
 import {
-	activeWindow,
+	activeCrosshairWindow,
 	centerWindow,
 	focusNextWindow,
 } from './utils/window-utils';
@@ -139,7 +139,11 @@ export default {
 
 		// Close a window
 		ipcMain.on(ipcChannels.CLOSE_WINDOW, (event) => {
-			const window = BrowserWindow.fromId(event.sender.id) || activeWindow();
+			// fromWebContents, not fromId: `event.sender.id` is a webContents id and
+			// window ids are a separate sequence, so this closed whichever window
+			// happened to share the number (LAC-5839).
+			const window =
+				BrowserWindow.fromWebContents(event.sender) || activeCrosshairWindow();
 			if (!window) {
 				return;
 			}
@@ -158,8 +162,10 @@ export default {
 				return;
 			}
 
-			resetStoreSettings();
-			// todo: maybe resetApp() should be called here
+			// resetSettings(), not resetStoreSettings(): one reset for all three
+			// entry points, so this one also plays the sound, rescans images,
+			// clears transient state and re-centers the crosshair (LAC-5839).
+			resetSettings();
 		});
 
 		ipcMain.on(ipcChannels.UPDATE_APP, () => {
@@ -167,7 +173,7 @@ export default {
 		});
 
 		ipcMain.on(ipcChannels.CENTER_WINDOW, (event) => {
-			let window = BrowserWindow.fromId(event.sender.id);
+			let window = BrowserWindow.fromWebContents(event.sender);
 
 			// Don't center the settings window
 			if (window === windows.settingsWindow) {

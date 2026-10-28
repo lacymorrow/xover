@@ -8,6 +8,9 @@
 	--transition-duration: 100ms;
 	--transition-timing: ease-in-out;
 
+	/* Auto-Hide (ADS) hides the crosshair AND the reticle together */
+	--overlay-opacity: 1;
+
 	--crosshair-scale: 1;
 	--crosshair-opacity: 0.8;
 	--crosshair-opacity-alt: 0.8;
@@ -112,6 +115,17 @@ body {
 	width: 100%;
 	display: grid;
 	place-content: center;
+
+	/*
+		Auto-Hide lives here, on the wrapper, so it takes the reticle with it.
+		Driving it from --crosshair-opacity hid the image only: #reticle-wrapper
+		is a sibling of #crosshair, and `.secondary #crosshair` overrode the
+		hide outright. LAC-5839.
+	*/
+	will-change: opacity;
+	opacity: var(--overlay-opacity, 1);
+	transition: opacity var(--transition-duration, 100ms)
+		var(--transition-timing, ease-in-out);
 }
 
 #crosshair {

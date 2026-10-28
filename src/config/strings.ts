@@ -92,10 +92,11 @@ export const $iohook = {
 
 export const $settings = {
 	title: 'Settings',
-	description: 'Manage your account settings and application preferences',
+	description: 'Manage your crosshair and application preferences',
 	reloadToApply: 'Changes will not take effect until the app is restarted.',
 	app: {
-		githubUrl: 'https://github.com/lacymorrow/electron-hotplate',
+		githubUrl: 'https://github.com/lacymorrow/crossover',
+		repo: 'lacymorrow/crossover',
 	},
 	appearance: {
 		themeLabel: 'Theme',

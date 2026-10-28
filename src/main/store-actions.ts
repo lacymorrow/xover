@@ -13,8 +13,10 @@ import {
 	ActionStateType,
 	CrosshairWindowStateType,
 	DEFAULT_CROSSHAIR_WINDOW_STATE,
+	DEFAULT_KEYBINDS,
 	SettingsType,
 } from '../config/settings';
+import { CustomAcceleratorsType } from '../types/keyboard';
 import { $messages } from '../config/strings';
 import store, { AppMessageType } from './store';
 import { forEachWindow, syncContentProtection } from './utils/window-utils';
@@ -50,9 +52,20 @@ const IOHOOK_SETTINGS: string[] = [
  * import store-actions, so a top-level import here would close the cycle at
  * module load time.
  */
-const syncKeybindRegistrations = () => {
+const registerKeyboardShortcuts = () => {
+	// Nothing is registered before `ready`, and touching globalShortcut that
+	// early throws. Both `--reset` and refreshSettingsOnAppStart() write settings
+	// during startup, and the second one writes isHidden and isLocked.
+	if (!app.isReady()) {
+		return;
+	}
+
 	// eslint-disable-next-line global-require
 	require('./keyboard').default.registerKeyboardShortcuts();
+};
+
+const syncKeybindRegistrations = () => {
+	registerKeyboardShortcuts();
 	// eslint-disable-next-line global-require
 	require('./menu').rebuildApplicationMenu();
 	// eslint-disable-next-line global-require
@@ -147,6 +160,14 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 			syncKeybindRegistrations();
 		}
 
+		// isLocked and isHidden decide which shortcuts may be registered at all
+		// (shouldRegisterKeybind), so every caller that locks or hides has to
+		// re-register. Only the Lock and Hide keybinds used to do it themselves,
+		// which left Show App and the tray with a stale set (LAC-5839).
+		if (keys.includes('isLocked') || keys.includes('isHidden')) {
+			registerKeyboardShortcuts();
+		}
+
 		// Input-hook settings are read once, when the hook starts, and the hook
 		// only starts on lock. Without this, changing a bind while locked does
 		// nothing until the next unlock/lock cycle.
@@ -198,8 +219,35 @@ const synchronizeApp = (changedSettings?: Partial<SettingsType>) => {
 	});
 };
 
-export const getKeybinds = () => {
-	return store.get('keybinds');
+/**
+ * The stored keybinds, with any action missing from the store backfilled from
+ * the defaults.
+ *
+ * electron-store applies a schema `default` only when the whole `keybinds` key
+ * is absent, never per property. So a keybind added in a later version is
+ * missing from every store written by an earlier one: `hideReticle` shipped in
+ * 4.0.0-beta.5 and no install upgraded from beta.4 had the property. That made
+ * `setKeybind` drop every write to it, because it validates the action against
+ * the keys the store already has (LAC-5839). Backfilling here keeps that
+ * validation honest for this action and for every action added after it.
+ */
+export const getKeybinds = (): CustomAcceleratorsType => {
+	const stored = store.get('keybinds');
+	const missing = Object.keys(DEFAULT_KEYBINDS).filter(
+		(key) => !(key in stored),
+	);
+
+	if (missing.length === 0) {
+		return stored;
+	}
+
+	Logger.info(
+		`Backfilling keybinds missing from the store: ${missing.join(', ')}`,
+	);
+	const merged = { ...DEFAULT_KEYBINDS, ...stored };
+	store.set('keybinds', merged);
+
+	return merged;
 };
 
 export const getSetting = (setting: keyof SettingsType) => {

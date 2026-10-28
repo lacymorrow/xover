@@ -83,9 +83,38 @@ export type CenterWindowOptions = {
 
 export const activeWindow = () => BrowserWindow.getFocusedWindow();
 
-export const activeNonSettingsWindow = () => {
-	const win = activeWindow();
-	return win?.id === windows.settingsWindow?.id ? windows.mainWindow : win;
+/** Every live window except the settings window. */
+const crosshairWindows = () =>
+	BrowserWindow.getAllWindows().filter(
+		(win) => win !== windows.settingsWindow && !win.isDestroyed(),
+	);
+
+/**
+ * The crosshair window a global shortcut should act on.
+ *
+ * Never the settings window. The shortcuts center, move and duplicate the
+ * overlay, and with Settings focused `getFocusedWindow()` hands back the
+ * settings window, so Center Crosshair centered Settings instead (LAC-5839).
+ *
+ * A locked crosshair is `focusable: false` and the user is in a game, so in the
+ * case these shortcuts exist for nothing of ours is focused at all. Hence the
+ * fallback to the main window: returning the focused window alone made every
+ * move and display shortcut a no-op while locked.
+ */
+export const activeCrosshairWindow = (): BrowserWindow | undefined => {
+	const focused = activeWindow();
+
+	if (focused && !focused.isDestroyed() && focused !== windows.settingsWindow) {
+		return focused;
+	}
+
+	const { mainWindow } = windows;
+
+	if (mainWindow && !mainWindow.isDestroyed()) {
+		return mainWindow;
+	}
+
+	return crosshairWindows()[0];
 };
 
 /**
@@ -157,7 +186,7 @@ export const isWindowCentered = (window: WindowInstanceType) => {
 
 export const moveToNextDisplay = (options?: { window?: BrowserWindow }) => {
 	const opts = {
-		window: activeNonSettingsWindow(), // default to active window
+		window: activeCrosshairWindow(), // default to active crosshair window
 		...options,
 	};
 
@@ -259,7 +288,7 @@ export const moveWindow = ({
 	window?: BrowserWindow;
 	direction: 'up' | 'down' | 'left' | 'right';
 }) => {
-	const win = window || activeNonSettingsWindow();
+	const win = window || activeCrosshairWindow();
 
 	if (!win) {
 		return;
@@ -314,10 +343,8 @@ export const forEachWindow = (callback: (window: BrowserWindow) => void) => {
 export const forEachCrosshairWindow = (
 	callback: (window: BrowserWindow) => void,
 ) => {
-	BrowserWindow.getAllWindows().forEach((win) => {
-		if (win !== windows.settingsWindow) {
-			callback(win);
-		}
+	crosshairWindows().forEach((win) => {
+		callback(win);
 	});
 };
 
@@ -365,41 +392,30 @@ export const closeAllWindows = () => {
 	});
 };
 
+/**
+ * Move focus to the next crosshair window.
+ *
+ * The settings window is left out of the cycle: this is bound to a global
+ * shortcut whose job is to pick which crosshair the move and center shortcuts
+ * act on, and it is also what closeSettingsWindow() hands focus to on the way
+ * out (LAC-5839).
+ */
 export const focusNextWindow = () => {
-	const allWindows = BrowserWindow.getAllWindows();
-	const focusedWindow = BrowserWindow.getFocusedWindow();
-	if (!focusedWindow || focusedWindow.isDestroyed()) {
-		windows.mainWindow?.focus();
+	const candidates = crosshairWindows();
+
+	if (candidates.length === 0) {
 		return;
 	}
-	const focusedIndex = allWindows.indexOf(focusedWindow);
 
-	const nextIndex = (focusedIndex + 1) % allWindows.length;
-	const nextWindow = allWindows[nextIndex];
-
-	// Prevent focusing the settings window
-	// const nextWindow =
-	// 	win.id === windows.settingsWindow?.id ? windows.mainWindow : win;
-
-	if (!nextWindow || nextWindow.isDestroyed()) {
-		return;
-	}
+	const focusedWindow = activeWindow();
+	const focusedIndex = focusedWindow ? candidates.indexOf(focusedWindow) : -1;
+	const nextWindow = candidates[(focusedIndex + 1) % candidates.length];
 
 	nextWindow.focus();
 };
 
 // grab an available crosshair window
-export const getNextCrosshairWindow = () => {
-	const crosshairWindow = BrowserWindow.getAllWindows().find(
-		(win) => win !== windows.settingsWindow,
-	);
-
-	if (!crosshairWindow) {
-		return;
-	}
-
-	return crosshairWindow;
-};
+export const getNextCrosshairWindow = () => crosshairWindows()[0];
 
 export const getWindowById = (id: string) => {
 	if (id in windows.crosshairWindows) {
