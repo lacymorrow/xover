@@ -29,6 +29,7 @@ export function MoreSettings({
 		<div className="space-y-6">
 			<button
 				type="button"
+				data-testid="more-settings"
 				aria-expanded={open}
 				aria-controls={uuid}
 				onClick={() => {
