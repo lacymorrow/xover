@@ -3,6 +3,14 @@ import { APP_HEIGHT, APP_WIDTH } from './config';
 
 export type ThemeType = 'system' | 'light' | 'dark';
 export type IOHookBehaviorType = 'toggle' | 'hold';
+
+/**
+ * Auto-Hide takes a third behavior the other actions do not: hide now and let
+ * the next ADS click bring the crosshair back, so you can drop into
+ * first-person without holding a key down (v3 #573 / #340). The panel only
+ * offers it for a keyboard bind; on a mouse bind it falls back to hold.
+ */
+export type HideBehaviorType = IOHookBehaviorType | 'press';
 export type IOHookInputType = 'mouse' | 'keyboard';
 export type AppSizeModeType = 'normal' | 'resizable' | 'fullscreen';
 
@@ -40,7 +48,7 @@ export interface SettingsType {
 
 	hideOnMouseEnabled: boolean;
 	hideOnMouseButton: number; // 1=left, 2=right, 3=middle
-	hideOnMouseBehavior: IOHookBehaviorType; // toggle/hold
+	hideOnMouseBehavior: HideBehaviorType; // toggle/hold/press
 	// Inverts auto-hide: the crosshair stays hidden and the bind reveals it
 	hideOnMouseInvert: boolean;
 

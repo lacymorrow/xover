@@ -46,6 +46,19 @@ describe('auto-hide', () => {
 			0,
 		);
 	});
+
+	// v3 #559: ADS resize wrote opacity alongside the size, and registered after
+	// the hide listener, so releasing the button restored a crosshair that Show
+	// on ADS had just hidden. Here the two are separate keys driving separate
+	// properties, and resizing cannot reach the hide.
+	it('stays hidden while ADS resize is active too', () => {
+		const both = vars({ hidden: true, adsActive: true });
+
+		expect(both['--overlay-opacity']).toBe(0);
+		expect(both['--crosshair-scale']).toBe(
+			DEFAULT_SETTINGS.adsResizeSize / 100,
+		);
+	});
 });
 
 describe('the rest of the properties', () => {
