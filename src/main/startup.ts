@@ -17,7 +17,6 @@ import { setupDockMenu } from './menu';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import { initialize as initSessionPermissions } from './session-permissions';
-import sounds from './sounds';
 import tray from './tray';
 import { initializeAccessibilityCheck } from './accessibility';
 import { importV3Settings } from './import-v3';
@@ -115,7 +114,8 @@ export const ready = async () => {
 
 export const idle = async () => {
 	await createSettingsWindow();
-	sounds.play('STARTUP');
+	// No startup sound: CrossOver launches with the game and on login, and a
+	// chime there is noise nobody asked for (Lacy, 2026-10-28).
 
 	// Links that arrived during launch need the settings window
 	deepLinksReady();
