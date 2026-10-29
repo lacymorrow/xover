@@ -53,9 +53,7 @@ const revealSettingsWindow = () => {
 		placeSettingsWindow(settingsWindow, { x, y });
 	}
 
-	// Above the crosshairs (screen-saver level 1), so a fallback overlap never
-	// leaves Settings behind one.
-	settingsWindow.setAlwaysOnTop(true, 'screen-saver', 2);
+	// The focus handler in create-window raises it above the crosshairs.
 	settingsWindow.show();
 	settingsWindow.focus();
 

@@ -362,12 +362,19 @@ export const createSettingsWindow = async () => {
 		}
 
 		placeSettingsWindow(window, state);
-		window.setAlwaysOnTop(true, 'screen-saver', 2);
 		window.show();
+	});
+
+	// Above the crosshairs (screen-saver level 1) only while focused, so a
+	// fallback overlap is never hidden behind one but Settings does not float
+	// over other apps once the user clicks away.
+	window.on('focus', () => {
+		window.setAlwaysOnTop(true, 'screen-saver', 2);
 	});
 
 	// Hide window when clicked away (configurable)
 	window.on('blur', () => {
+		window.setAlwaysOnTop(false);
 		if (getSetting('settingsCloseOnBlur')) {
 			window.hide();
 			setSettings({ isSettingsWindowOpen: false });
