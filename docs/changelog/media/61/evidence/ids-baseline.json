@@ -1,0 +1,18 @@
+{
+	"mode": "baseline",
+	"pid": 56532,
+	"windows": [
+		{
+			"label": "regular-at-create",
+			"id": 3312,
+			"dockVisible": false,
+			"isVisible": true
+		},
+		{
+			"label": "uielement-at-create",
+			"id": 3313,
+			"dockVisible": false,
+			"isVisible": true
+		}
+	]
+}

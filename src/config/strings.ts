@@ -56,6 +56,13 @@ export const $notifications = {
 			', ',
 		)}. Pick a different combo in Settings > Keybinds.`,
 	}),
+
+	// A native Wayland compositor accepts the registration and then never
+	// delivers the key, so no registration result can catch this one (GH #456).
+	shortcutsBlocked: (reason: string) => ({
+		title: "Shortcuts won't work here",
+		body: reason,
+	}),
 };
 
 export const $messages = {

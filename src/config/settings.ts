@@ -38,6 +38,9 @@ export interface SettingsType {
 
 	commandLineFlags: string[];
 	hardwareAcceleration: boolean;
+	// Linux only: restart on the Ozone/X11 backend when the session is native
+	// Wayland, which cannot grab a global hotkey at all (GH #456)
+	relaunchOnX11: boolean;
 
 	// iohook
 	followMouseEnabled: boolean;
@@ -109,6 +112,7 @@ export const DEFAULT_SETTINGS: SettingsType = {
 
 	commandLineFlags: [],
 	hardwareAcceleration: true,
+	relaunchOnX11: true,
 
 	// iohook
 	followMouseEnabled: false,

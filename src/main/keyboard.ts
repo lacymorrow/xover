@@ -13,6 +13,7 @@ import { resetSettings } from './reset';
 import { getKeybinds, getSetting, setSettings } from './store-actions';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
+import wayland from './wayland';
 import {
 	activeCrosshairWindow,
 	centerWindow,
@@ -189,6 +190,33 @@ interface ShortcutType extends Electron.GlobalShortcut {
 // are failing is news.
 let lastNotifiedConflicts = '';
 
+// Same reason, but there is only ever one Wayland verdict per run, so once is
+// the whole budget.
+let waylandNoticeShown = false;
+
+// A native Wayland compositor accepts the registration and then never delivers
+// the key, so `registered === true` says nothing here. Say it plainly instead of
+// leaving the user with shortcuts that save and then do nothing (GH #456).
+const warnIfShortcutsBlocked = (registeredCount: number) => {
+	// Nothing bound, so a notice about shortcuts not firing would be noise.
+	if (registeredCount === 0) {
+		return;
+	}
+
+	const blocked = wayland.shortcutsBlockedReason();
+
+	if (!blocked) {
+		return;
+	}
+
+	Logger.warn(`Shortcuts cannot fire: ${blocked}`);
+
+	if (!waylandNoticeShown) {
+		waylandNoticeShown = true;
+		notification($notifications.shortcutsBlocked(blocked));
+	}
+};
+
 const registerKeyboardShortcuts = () => {
 	const keybinds = getKeybinds();
 	const { allowDisableKeyboardShortcuts, isLocked, isHidden } =
@@ -244,9 +272,18 @@ const registerKeyboardShortcuts = () => {
 
 	const conflicts = failed.join(', ');
 
+	// Diagnostics: the log is the only place a user can see what actually bound.
+	Logger.info(
+		`Shortcuts registered (${toRegister.length - failed.length}/${
+			toRegister.length
+		}). ${wayland.debugInfo()}`,
+	);
+
 	if (failed.length > 0) {
 		Logger.warn(`Could not register shortcuts: ${conflicts}`);
 	}
+
+	warnIfShortcutsBlocked(toRegister.length - failed.length);
 
 	if (conflicts !== lastNotifiedConflicts) {
 		lastNotifiedConflicts = conflicts;

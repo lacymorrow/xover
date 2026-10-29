@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ipcChannels } from '@/config/ipc-channels';
-import { SettingsType } from '@/config/settings';
+import { DEFAULT_SETTINGS, SettingsType } from '@/config/settings';
 import { $settings } from '@/config/strings';
 import { InputCheckboxGroup } from '@/renderer/components/input/InputCheckboxGroup';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
@@ -37,6 +37,13 @@ export function SettingsAdvanced() {
 		window.electron.setSettings(setting);
 	};
 
+	// A store written before this setting existed has no key for it, and the
+	// schema default only fires when `settings` is missing entirely. Match what
+	// wayland.ts does with the same absent value, or the switch would read off
+	// while the relaunch is on.
+	const relaunchOnX11 =
+		settings.relaunchOnX11 ?? DEFAULT_SETTINGS.relaunchOnX11;
+
 	const handleCheckUpdate = () => {
 		setUpdateStatus('Checking for updates...');
 		window.electron.ipcRenderer.send(ipcChannels.UPDATE_APP);
@@ -66,6 +73,18 @@ export function SettingsAdvanced() {
 					description={`Use hardware acceleration to improve performance. ${$settings.reloadToApply}`}
 					card
 				/>
+
+				{(app.isLinux || app.isDev) && (
+					<InputSwitch
+						value={relaunchOnX11}
+						onChange={() => {
+							handleChangeSetting({ relaunchOnX11: !relaunchOnX11 });
+						}}
+						label="Use X11 for global shortcuts"
+						description={`A Wayland session won't let any app grab a global hotkey, so CrossOver restarts itself on X11 once at launch. Turn this off to stay on Wayland, where the crosshair keeps drawing but the shortcuts do nothing. ${$settings.reloadToApply} (Linux only)`}
+						card
+					/>
+				)}
 
 				<InputCheckboxGroup
 					label="Command-line flags"
