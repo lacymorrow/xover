@@ -193,6 +193,9 @@ const schema: Store.Schema<StoreType> = {
 			hardwareAcceleration: {
 				type: 'boolean',
 			},
+			relaunchOnX11: {
+				type: 'boolean',
+			},
 
 			isLocked: {
 				type: 'boolean',

@@ -86,7 +86,22 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 		nodeIntegration: false,
 	};
 
+	// macOS only lets a window float over another app's fullscreen Space when the
+	// process was already a UIElement at the moment the NSWindow was created, and
+	// transforming afterwards does not repair a window that already exists. Hiding
+	// the dock is that transform, so it has to run before the constructor, not
+	// after it (v3 #580, GH #546).
+	//
+	// dock.initialize() puts the icon straight back to whatever showDockIcon says,
+	// and the window keeps what it was born with: measured on macOS 26.7.1 with
+	// Electron 40, a window created as a UIElement still floats over a fullscreen
+	// Space once the process is a regular app again (activation policy 0). So the
+	// dock-icon default costs nothing here.
+	dock.setVisible(false);
+
 	const browserWindow = new BrowserWindow(options);
+
+	dock.initialize();
 
 	// todo: Maybe dont stay on top when unlocked
 	// VisibleOnFullscreen removed in https://github.com/electron/electron/pull/21706
@@ -133,8 +148,6 @@ const createWindow = (id: string, opts?: BrowserWindowConstructorOptions) => {
 		}
 		delete windows.crosshairWindows[id];
 	});
-
-	dock.initialize();
 
 	// Open urls in the user's browser
 	if (browserWindow.webContents.setWindowOpenHandler) {

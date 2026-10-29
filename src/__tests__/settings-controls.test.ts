@@ -109,8 +109,8 @@ describe('settings window exposes every control it has keys for', () => {
 	// The counts are the second half of "remove nothing": without them a
 	// future change could delete a control and its key together and still
 	// pass every test above.
-	it('accounts for all 37 settings, 22 window-state keys and 14 keybinds', () => {
-		expect(settingKeys).toHaveLength(37);
+	it('accounts for all 38 settings, 22 window-state keys and 14 keybinds', () => {
+		expect(settingKeys).toHaveLength(38);
 		expect(windowStateKeys).toHaveLength(22);
 		expect(keybindKeys).toHaveLength(14);
 	});

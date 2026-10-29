@@ -67,6 +67,20 @@ Both ship the same crosshair assets: 200 Kenney SVGs plus the named sets.
 
 The v3 importer now carries `app.hideFromScreenCapture`, `actions.showOnMouseInvert` and `keybinds.hideReticle` across instead of dropping them.
 
+### Ported since (LAC-5973)
+
+| v3 fix | Where it landed in v4 |
+|---|---|
+| #580 / GH #546: crosshair did not draw over a macOS fullscreen game | `dock.setVisible(false)` moved above `new BrowserWindow()` in `src/main/create-window.ts`. macOS only floats a window over another app's fullscreen Space when the process was already a UIElement when that window was created |
+| #571 / GH #456: native Wayland cannot grab a global hotkey, silently | `src/main/wayland.ts` `detect()`, called from `startup()`; the notice fires from `keyboard.ts` |
+| #577 / GH #456: relaunch once on Ozone/X11 so the hotkeys work | `relaunchOnX11()` in `src/main/wayland.ts`, called first in `ready()`. Live code in v4 where it was dead in v3: v3 ships Electron 14, v4 ships 40. Behind the `relaunchOnX11` setting (Settings -> Advanced, Linux only, defaults on) because overlay transparency on Ozone/X11 under a Wayland compositor has no hardware in the fleet to confirm it |
+
+Unlike v3, v4 defaults `showDockIcon` to true, which looked like it would cost the
+fullscreen fix: a process with a dock icon is not a UIElement. Measured on macOS
+26.7.1 with Electron 40, it does not. Only the state at creation matters, so
+hiding the dock, creating the window and putting the icon straight back keeps
+both. `src/__tests__/macos-fullscreen.test.ts` pins that order.
+
 ---
 
 ## 5. Not applicable — a v3 fix for a bug v4 never had

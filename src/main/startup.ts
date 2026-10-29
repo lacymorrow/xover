@@ -17,7 +17,6 @@ import { setupDockMenu } from './menu';
 import protocol from './protocol';
 import { refreshSettingsOnAppStart } from './reset';
 import { initialize as initSessionPermissions } from './session-permissions';
-import sounds from './sounds';
 import tray from './tray';
 import { initializeAccessibilityCheck } from './accessibility';
 import { importV3Settings } from './import-v3';
@@ -25,6 +24,7 @@ import { AutoUpdate } from './auto-update';
 import { checkLicense } from './license';
 import { debugInfo, is } from './util';
 import { scanImages } from './utils/getImages';
+import wayland from './wayland';
 
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
@@ -52,6 +52,12 @@ export const startup = () => {
 		// App CLI flags
 		commandLineFlags.initialize();
 
+		// Global hotkeys need an X11 input grab, which native Wayland refuses. Work
+		// out whether this session can grab a key at all, so we can say so (GH #456).
+		// After commandLineFlags.initialize(), which is where the user's own
+		// `commandLineFlags` setting reaches app.commandLine.
+		wayland.detect();
+
 		// Register app listeners, e.g. `app.on()`
 		appListeners.register();
 
@@ -71,6 +77,18 @@ export const startup = () => {
 export const ready = async () => {
 	Logger.status($init.ready);
 	console.timeLog(app.name, $init.ready);
+
+	// Where a native Wayland backend can never grab a hotkey, come back on
+	// Ozone/X11 rather than asking the user to relaunch by hand. Nothing has a
+	// window yet, so this is the last quiet moment to replace the process (GH #456).
+	//
+	// Deliberately after whenReady(): app.exit() before the message loop is up
+	// quits without running the relaunch, which would leave CrossOver unable to
+	// start at all. A second instance never reaches here, because main.ts only
+	// calls launch() when it holds the single-instance lock.
+	if (wayland.relaunchOnX11()) {
+		return;
+	}
 
 	// Log Node/Electron versions
 	Logger.info(debugInfo());
@@ -115,7 +133,8 @@ export const ready = async () => {
 
 export const idle = async () => {
 	await createSettingsWindow();
-	sounds.play('STARTUP');
+	// No startup sound: CrossOver launches with the game and on login, and a
+	// chime there is noise nobody asked for (Lacy, 2026-10-28).
 
 	// Links that arrived during launch need the settings window
 	deepLinksReady();
