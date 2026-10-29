@@ -57,3 +57,10 @@ settings window size is persisted on first run) clears it.
   `create-window.ts` predated this branch and are removed here, since the file
   is already in the diff.
 - `npm test`: 15 suites, 185 tests, all passing (76 of them the new suite).
+
+## Recapture on 377a955 (2026-10-29)
+
+`after-*.png` were retaken from the real dev build on graphite after main (#61,
+#66) was merged and the In game lock note was added. `relaunchOnX11` is a
+Linux-only switch in Advanced (kept, not rendered on macOS). The In game pane
+now says its actions need the crosshair locked and shows the lock shortcut.
