@@ -1,8 +1,5 @@
 import { SettingsAbout } from '@/renderer/components/pages/settings/about/SettingsAbout';
-import { SettingsAppearance } from '@/renderer/components/pages/settings/appearance/SettingsAppearance';
 import {
-	BellIcon,
-	BlendingModeIcon,
 	Component1Icon,
 	Crosshair1Icon,
 	GearIcon,
@@ -14,8 +11,7 @@ import {
 
 import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
 import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/SettingsKeyboard';
-import { SettingsNotifications } from '@/renderer/components/pages/settings/notifications/SettingsNotifications';
-import { SettingsWindow } from '../components/pages/settings/appearance/SettingsWindow';
+import { SettingsCrosshair } from '../components/pages/settings/appearance/SettingsCrosshair';
 import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
 import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
 import { SettingsLicense } from '../components/pages/settings/license/SettingsLicense';
@@ -31,43 +27,37 @@ export const nav = {
 	},
 };
 
+/**
+ * Four panes plus Advanced (LAC-5868). Appearance and Notifications are gone
+ * as destinations, not as controls: theme and the two window-size settings
+ * moved to App, app colours and the whole notification group moved to
+ * Advanced. License and About stay reachable from the nav.
+ */
 export const settingsNavItems = [
 	{
 		title: 'Crosshair',
 		href: 'crosshair',
-		element: <SettingsWindow />,
+		element: <SettingsCrosshair />,
 		icon: Crosshair1Icon,
 		index: true,
 	},
 	{
-		title: 'Bindings',
-		href: 'bindings',
+		title: 'In game',
+		href: 'in-game',
 		element: <SettingsActions />,
 		icon: LightningBoltIcon,
 	},
 	{
-		title: 'Appearance',
-		href: 'appearance',
-		element: <SettingsAppearance />,
-		icon: BlendingModeIcon,
+		title: 'Shortcuts',
+		href: 'shortcuts',
+		element: <SettingsKeyboard />,
+		icon: KeyboardIcon,
 	},
 	{
 		title: 'App',
 		href: 'app',
 		element: <SettingsApplication />,
 		icon: GearIcon,
-	},
-	{
-		title: 'Notifications',
-		href: 'notifications',
-		element: <SettingsNotifications />,
-		icon: BellIcon,
-	},
-	{
-		title: 'Keyboard',
-		href: 'keyboard',
-		element: <SettingsKeyboard />,
-		icon: KeyboardIcon,
 	},
 	{
 		title: 'Advanced',

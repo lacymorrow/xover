@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { SettingsType } from '@/config/settings';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
 import { CardNotifications } from '@/renderer/components/pages/settings/notifications/CardNotifications';
@@ -14,12 +13,11 @@ export function SettingsNotifications() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Notifications</h3>
+				<h4 className="font-medium text-base">Notifications</h4>
 				<p className="text-sm text-muted-foreground">
 					Configure your notification preferences.
 				</p>
 			</div>
-			<Separator />
 			<InputSwitch
 				value={settings.allowSounds}
 				onChange={() => {

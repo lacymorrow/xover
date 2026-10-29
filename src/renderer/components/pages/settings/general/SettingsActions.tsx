@@ -1,5 +1,3 @@
-// todo: disable settings for disabled actions
-
 import { Separator } from '@/components/ui/separator';
 import {
 	HideBehaviorType,
@@ -10,13 +8,19 @@ import { InputMouseKeyboardBind } from '@/renderer/components/input/InputMouseKe
 import { InputSelectForm } from '@/renderer/components/input/InputSelectForm';
 import { InputSlider } from '@/renderer/components/input/InputSlider';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
-import { POLAR_CHECKOUT_URL } from '@/config/license';
-import { PremiumBadge } from '@/renderer/components/ui/PremiumBadge';
-import { PremiumGate } from '@/renderer/components/ui/PremiumGate';
+import { MoreSettings } from '@/renderer/components/ui/MoreSettings';
 import { useGlobalContext } from '@/renderer/context/global-context';
 
+/**
+ * The "In game" pane, formerly Bindings (LAC-5868).
+ *
+ * Above the fold: hiding while you aim, and follow-mouse. ADS zoom, tilt and
+ * the transition duration moved under "More"; the Secondary Crosshair switch
+ * and its bind moved to the Crosshair pane, next to the crosshair they pick.
+ * No setting was dropped and no store key changed.
+ */
 export function SettingsActions() {
-	const { settings } = useGlobalContext();
+	const { keybinds, settings } = useGlobalContext();
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		window.electron.setSettings(setting);
@@ -25,23 +29,18 @@ export function SettingsActions() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium">Input Bindings</h3>
+				<h3 className="text-lg font-medium">In game</h3>
 				<p className="text-sm text-muted-foreground">
-					Bind mouse and keyboard inputs to crosshair actions. Hooks are loaded
-					when a binding is enabled and the crosshair is active.
+					Bind mouse and keyboard inputs to crosshair actions.
+				</p>
+				<p className="mt-2 text-sm text-muted-foreground">
+					These actions only take effect while the crosshair is locked. Press{' '}
+					<kbd className="rounded border px-1 font-mono text-xs">
+						{keybinds.lock}
+					</kbd>{' '}
+					to lock it.
 				</p>
 			</div>
-			<Separator />
-			<InputSwitch
-				value={settings.followMouseEnabled}
-				onChange={() => {
-					handleChangeSetting({
-						followMouseEnabled: !settings.followMouseEnabled,
-					});
-				}}
-				label="Follow Mouse"
-				description="Keep the crosshair centered on the mouse cursor."
-			/>
 			<Separator />
 
 			{/* Hide on Action */}
@@ -57,7 +56,7 @@ export function SettingsActions() {
 					});
 				}}
 				label="Auto-Hide"
-				description="Hide the crosshair on input (key or mouse button press)."
+				description="Hide the crosshair on input (key or mouse button press). Requires the crosshair to be locked."
 			/>
 			{(settings.hideOnMouseEnabled || settings.hideOnKeyEnabled) && (
 				<>
@@ -127,169 +126,135 @@ export function SettingsActions() {
 			)}
 			<Separator />
 
-			{/* ADS Resize */}
 			<InputSwitch
-				value={settings.adsResizeEnabled}
+				value={settings.followMouseEnabled}
 				onChange={() => {
 					handleChangeSetting({
-						adsResizeEnabled: !settings.adsResizeEnabled,
+						followMouseEnabled: !settings.followMouseEnabled,
 					});
 				}}
-				label="ADS Zoom"
-				description="Resize the crosshair when aiming down sights."
+				label="Follow Mouse"
+				description="Keep the crosshair centered on the mouse cursor. Requires the crosshair to be locked."
 			/>
-			{settings.adsResizeEnabled && (
-				<>
-					<InputMouseKeyboardBind
-						value={`mouse:${settings.adsResizeButton}`}
-						onChange={(value) => {
-							const [_input, trigger] = value.split(':');
-							handleChangeSetting({
-								adsResizeButton: parseInt(trigger, 10),
-							});
-						}}
-						label="ADS bind"
-					/>
-					<InputSelectForm
-						value={settings.adsResizeBehavior}
-						onChange={(value) => {
-							handleChangeSetting({
-								adsResizeBehavior: value as IOHookBehaviorType,
-							});
-						}}
-						label="ADS Behavior"
-						description="Hold resizes while pressed, toggle flips on each press."
-						items={[
-							{ label: 'Hold to resize', value: 'hold' },
-							{ label: 'Press to toggle', value: 'toggle' },
-						]}
-					/>
-					<InputSlider
-						value={settings.adsResizeSize}
-						onChange={(value) => {
-							handleChangeSetting({ adsResizeSize: value });
-						}}
-						label="ADS crosshair size"
-						details="The crosshair scale when ADS is active (percentage)."
-						min={1}
-						max={100}
-					/>
-				</>
-			)}
-			<Separator />
 
-			{/* Secondary Action (Premium) */}
-			<PremiumGate
-				fallback={
-					<div className="space-y-2">
-						<InputSwitch
-							value={false}
-							onChange={() => {
-								window.electron.openUrl(POLAR_CHECKOUT_URL);
-							}}
-							label={
-								<>
-									Secondary Crosshair <PremiumBadge />
-								</>
-							}
-							description="Switch to a second crosshair when the bind is active."
-							details="Included with CrossOver Pro."
-						/>
-					</div>
-				}
-			>
+			<MoreSettings>
+				{/* ADS Resize */}
 				<InputSwitch
-					value={settings.secondaryActionEnabled}
+					value={settings.adsResizeEnabled}
 					onChange={() => {
 						handleChangeSetting({
-							secondaryActionEnabled: !settings.secondaryActionEnabled,
+							adsResizeEnabled: !settings.adsResizeEnabled,
 						});
 					}}
-					label={
-						<>
-							Secondary Crosshair <PremiumBadge />
-						</>
-					}
-					description="Switch to a second crosshair when the bind is active."
-					details="Configure the secondary crosshair appearance in the Crosshair tab."
+					label="ADS Zoom"
+					description="Resize the crosshair when aiming down sights. Requires the crosshair to be locked."
 				/>
-				{settings.secondaryActionEnabled && (
-					<InputMouseKeyboardBind
-						value={settings.secondaryBind}
-						onChange={(value) => {
-							handleChangeSetting({ secondaryBind: value });
-						}}
-						label="Secondary Bind"
-					/>
+				{settings.adsResizeEnabled && (
+					<>
+						<InputMouseKeyboardBind
+							value={`mouse:${settings.adsResizeButton}`}
+							onChange={(value) => {
+								const [_input, trigger] = value.split(':');
+								handleChangeSetting({
+									adsResizeButton: parseInt(trigger, 10),
+								});
+							}}
+							label="ADS bind"
+						/>
+						<InputSelectForm
+							value={settings.adsResizeBehavior}
+							onChange={(value) => {
+								handleChangeSetting({
+									adsResizeBehavior: value as IOHookBehaviorType,
+								});
+							}}
+							label="ADS Behavior"
+							description="Hold resizes while pressed, toggle flips on each press."
+							items={[
+								{ label: 'Hold to resize', value: 'hold' },
+								{ label: 'Press to toggle', value: 'toggle' },
+							]}
+						/>
+						<InputSlider
+							value={settings.adsResizeSize}
+							onChange={(value) => {
+								handleChangeSetting({ adsResizeSize: value });
+							}}
+							label="ADS crosshair size"
+							details="The crosshair scale when ADS is active (percentage)."
+							min={1}
+							max={100}
+						/>
+					</>
 				)}
-			</PremiumGate>
-			<Separator />
+				<Separator />
 
-			{/* Tilt */}
-			<InputSwitch
-				value={settings.tiltActionEnabled}
-				onChange={() => {
-					handleChangeSetting({
-						tiltActionEnabled: !settings.tiltActionEnabled,
-					});
-				}}
-				label="Enable Tilt"
-				description="Enable tilting the crosshair when the bind is pressed/held."
-			/>
-			{settings.tiltActionEnabled && (
-				<>
-					<InputSelectForm
-						value={settings.tiltBehavior}
-						onChange={(value) => {
-							handleChangeSetting({
-								tiltBehavior: value as IOHookBehaviorType,
-							});
-						}}
-						label="Tilt Behavior"
-						description="Select the tilt behavior. Hold will tilt while the bind is held, press will toggle tilt on/off."
-						items={[
-							{ label: 'Hold to enable tilt', value: 'hold' },
-							{ label: 'Press to toggle on/off', value: 'toggle' },
-						]}
-					/>
-					<InputSlider
-						value={settings.tiltAngle}
-						onChange={(value) => {
-							handleChangeSetting({ tiltAngle: value });
-						}}
-						label="Tilt angle"
-						details="Adjust the tilted angle. Negative values tilt counter-clockwise, positive values tilt clockwise."
-						min={0}
-						max={90}
-					/>
-					<InputMouseKeyboardBind
-						value={settings.tiltLeftBind}
-						onChange={(value) => {
-							handleChangeSetting({ tiltLeftBind: value });
-						}}
-						label="Left tilt bind"
-					/>
-					<InputMouseKeyboardBind
-						value={settings.tiltRightBind}
-						onChange={(value) => {
-							handleChangeSetting({ tiltRightBind: value });
-						}}
-						label="Right tilt bind"
-					/>
-				</>
-			)}
+				{/* Tilt */}
+				<InputSwitch
+					value={settings.tiltActionEnabled}
+					onChange={() => {
+						handleChangeSetting({
+							tiltActionEnabled: !settings.tiltActionEnabled,
+						});
+					}}
+					label="Enable Tilt"
+					description="Enable tilting the crosshair when the bind is pressed/held. Requires the crosshair to be locked."
+				/>
+				{settings.tiltActionEnabled && (
+					<>
+						<InputSelectForm
+							value={settings.tiltBehavior}
+							onChange={(value) => {
+								handleChangeSetting({
+									tiltBehavior: value as IOHookBehaviorType,
+								});
+							}}
+							label="Tilt Behavior"
+							description="Select the tilt behavior. Hold will tilt while the bind is held, press will toggle tilt on/off."
+							items={[
+								{ label: 'Hold to enable tilt', value: 'hold' },
+								{ label: 'Press to toggle on/off', value: 'toggle' },
+							]}
+						/>
+						<InputSlider
+							value={settings.tiltAngle}
+							onChange={(value) => {
+								handleChangeSetting({ tiltAngle: value });
+							}}
+							label="Tilt angle"
+							details="Adjust the tilted angle. Negative values tilt counter-clockwise, positive values tilt clockwise."
+							min={0}
+							max={90}
+						/>
+						<InputMouseKeyboardBind
+							value={settings.tiltLeftBind}
+							onChange={(value) => {
+								handleChangeSetting({ tiltLeftBind: value });
+							}}
+							label="Left tilt bind"
+						/>
+						<InputMouseKeyboardBind
+							value={settings.tiltRightBind}
+							onChange={(value) => {
+								handleChangeSetting({ tiltRightBind: value });
+							}}
+							label="Right tilt bind"
+						/>
+					</>
+				)}
 
-			<Separator />
-			<InputSlider
-				value={settings.transitionDuration}
-				onChange={(value) => {
-					handleChangeSetting({ transitionDuration: value });
-				}}
-				label="Transition duration"
-				details="Animation speed for tilt, secondary swap, and other binding transitions (ms)."
-				min={0}
-				max={1000}
-			/>
+				<Separator />
+				<InputSlider
+					value={settings.transitionDuration}
+					onChange={(value) => {
+						handleChangeSetting({ transitionDuration: value });
+					}}
+					label="Transition duration"
+					details="Animation speed for tilt, secondary swap, and other binding transitions (ms)."
+					min={0}
+					max={1000}
+				/>
+			</MoreSettings>
 		</div>
 	);
 }

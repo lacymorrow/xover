@@ -1,40 +1,38 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ipcChannels } from '@/config/ipc-channels';
-import { DEFAULT_SETTINGS, SettingsType } from '@/config/settings';
+import {
+	CrosshairWindowStateType,
+	DEFAULT_SETTINGS,
+	SettingsType,
+} from '@/config/settings';
 import { $settings } from '@/config/strings';
 import { InputCheckboxGroup } from '@/renderer/components/input/InputCheckboxGroup';
+import { InputColor } from '@/renderer/components/input/InputColor';
 import { InputSwitch } from '@/renderer/components/input/InputSwitch';
+import { SettingsNotifications } from '@/renderer/components/pages/settings/notifications/SettingsNotifications';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useState } from 'react';
 
-// if (flagDisableGpu) {
-// 	app.commandLine.appendSwitch('disable-gpu');
-// }
-
-// if (flagDisableSoftwareRasterizer) {
-// 	app.commandLine.appendSwitch('disable-software-rasterizer');
-// }
-
-// if (flagDisableSoftwareRasterizer) {
-// 	app.commandLine.appendSwitch('enable-transparent-visuals');
-// }
-
-// if (flagInProcessGpu) {
-// 	app.commandLine.appendSwitch('in-process-gpu');
-// }
-
-// 		--force_high_performance_gpu
-// Force using discrete GPU when there are multiple GPUs available.
-
-// --force_low_power_gpu
-// Force using integrated GPU when there are multiple GPUs available.
+/**
+ * The Advanced pane (LAC-5868): everything a crosshair overlay does not need
+ * you to see on day one. Notifications and sounds, the app's own colours,
+ * analytics, quit-on-close, auto-hide settings, the GPU switches and the
+ * maintenance buttons all landed here from the panes they used to own. Same
+ * keys, same behavior, nothing dropped.
+ */
 export function SettingsAdvanced() {
-	const { app, settings } = useGlobalContext();
+	const { app, settings, windowState } = useGlobalContext();
 	const [updateStatus, setUpdateStatus] = useState<string | null>(null);
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		window.electron.setSettings(setting);
+	};
+
+	const handleChangeWindowState = (
+		setting: Partial<CrosshairWindowStateType>,
+	) => {
+		window.electron.setWindowState(setting);
 	};
 
 	// A store written before this setting existed has no key for it, and the
@@ -61,7 +59,71 @@ export function SettingsAdvanced() {
 				</p>
 			</div>
 			<Separator />
+
+			<SettingsNotifications />
+
+			<Separator />
+			<div>
+				<h4 className="font-medium text-base">App colors</h4>
+				<p className="text-sm text-muted-foreground">
+					The CrossOver window itself, not the crosshair.
+				</p>
+			</div>
+			<InputColor
+				value={windowState.backgroundColor}
+				label="Background Color"
+				details="The background color of the Crosshair application window."
+				onChange={(value) => {
+					handleChangeWindowState({ backgroundColor: value });
+				}}
+			/>
+			<InputColor
+				value={windowState.foregroundColor}
+				label="Accent Color"
+				details="Highlight color used for buttons, links, and other interactive elements."
+				onChange={(value) => {
+					handleChangeWindowState({ foregroundColor: value });
+				}}
+			/>
+
+			<Separator />
 			<div className="flex flex-col gap-4">
+				<InputSwitch
+					value={settings.allowAnalytics}
+					onChange={() => {
+						handleChangeSetting({ allowAnalytics: !settings.allowAnalytics });
+					}}
+					label="Anonymous usage analytics"
+					description="Help improve the app by sending anonymous usage data."
+					card
+				/>
+
+				{(app.isMac || app.isDev) && (
+					<InputSwitch
+						value={settings.quitOnWindowClose}
+						onChange={() => {
+							handleChangeSetting({
+								quitOnWindowClose: !settings.quitOnWindowClose,
+							});
+						}}
+						label="Quit when all windows close"
+						description="Don't keep the app running when all windows are closed. (macOS only)"
+						card
+					/>
+				)}
+
+				<InputSwitch
+					value={settings.settingsCloseOnBlur}
+					onChange={() => {
+						handleChangeSetting({
+							settingsCloseOnBlur: !settings.settingsCloseOnBlur,
+						});
+					}}
+					label="Auto-hide settings window"
+					description="Close the settings window when it loses focus."
+					card
+				/>
+
 				<InputSwitch
 					value={settings.hardwareAcceleration}
 					onChange={() => {

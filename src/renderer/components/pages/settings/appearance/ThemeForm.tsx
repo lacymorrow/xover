@@ -174,6 +174,12 @@ export function ThemeForm() {
 										>
 											<SystemModeIcon />
 										</div>
+
+										{/* Light and Dark were labelled, System never was, so the
+										    third card read as a cut-off version of the second. */}
+										<span className="block w-full p-2 text-center font-normal">
+											{$settings.appearance.system}
+										</span>
 									</FormLabel>
 								</FormItem>
 							</RadioGroup>
