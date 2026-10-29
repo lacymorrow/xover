@@ -10,6 +10,7 @@ const crosshairWindow = { id: 2, isDestroyed: () => false };
 const settingsWindow = { id: 1, isDestroyed: () => false };
 
 const centerWindow = jest.fn();
+const playSound = jest.fn();
 const activeCrosshairWindow = jest.fn(() => crosshairWindow);
 const activeWindow = jest.fn(() => settingsWindow);
 
@@ -64,6 +65,10 @@ jest.mock('../main/notifications', () => ({ notification: jest.fn() }));
 jest.mock('../main/reset', () => ({ resetSettings: jest.fn() }));
 jest.mock('../main/utils/hideApp', () => ({ toggleAppHide: jest.fn() }));
 jest.mock('../main/utils/lockApp', () => ({ toggleAppLock: jest.fn() }));
+jest.mock('../main/sounds', () => ({
+	__esModule: true,
+	default: { play: (...args: unknown[]) => playSound(...args) },
+}));
 
 const actionFn = (action: string) => {
 	// eslint-disable-next-line global-require
@@ -90,11 +95,20 @@ describe('the center shortcut', () => {
 		});
 	});
 
+	// The crosshair can be on a display you aren't looking at, so the hotkey
+	// gets an audible confirm the Settings button doesn't need (LAC-6154).
+	it('plays the center cue', () => {
+		actionFn('center')();
+
+		expect(playSound).toHaveBeenCalledWith('CENTER');
+	});
+
 	it('does nothing when there is no crosshair window', () => {
 		activeCrosshairWindow.mockReturnValueOnce(undefined as any);
 
 		actionFn('center')();
 
 		expect(centerWindow).not.toHaveBeenCalled();
+		expect(playSound).not.toHaveBeenCalled();
 	});
 });

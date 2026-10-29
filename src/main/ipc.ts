@@ -185,13 +185,13 @@ export default {
 			}
 
 			centerWindow({ window, animated: true });
-			sounds.play('DONE');
+			sounds.play('CENTER');
 		});
 
 		ipcMain.on(ipcChannels.CENTER_WINDOW_MAIN, () => {
 			if (windows.mainWindow) {
 				centerWindow({ window: windows.mainWindow, animated: true });
-				sounds.play('DONE');
+				sounds.play('CENTER');
 			}
 		});
 

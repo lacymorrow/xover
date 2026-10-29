@@ -3,23 +3,19 @@ import { VOLUME } from '@/config/config';
 /* Cache of Audio elements, for instant playback */
 const cache: Record<string, HTMLAudioElement> = {};
 
-const sounds: Record<string, { url: string; volume: number }> = {
-	HERO: {
-		url: 'ui-sounds/heros/hero_decorative-celebration-01.wav',
-		volume: VOLUME,
-	},
-	STARTUP: {
-		url: 'ui-sounds/alerts/notification_ambient.wav',
-		volume: VOLUME,
-	},
-	NOTIFICATION: {
-		url: 'ui-sounds/alerts/notification_simple-02.wav',
-		volume: VOLUME,
-	},
-	UPDATE: {
-		url: 'ui-sounds/alerts/alert_high-intensity.wav',
-		volume: VOLUME,
-	},
+/**
+ * Every sound CrossOver can play. The set is deliberately small (LAC-6154):
+ * the app sits over a game, so a sound has to confirm something the person did
+ * blind with a hotkey, or tell them something they have to act on. Anything
+ * they can already see on screen stays silent.
+ *
+ * The shipped files are peak-normalized to -3 dBFS so one VOLUME applies to
+ * all of them and the short lock click is as audible as the longer chimes. The
+ * rest of the sound pack is kept in src/static/sounds, which is not bundled.
+ */
+export const sounds: Record<string, { url: string; volume: number }> = {
+	// Lock and unlock are the reason sound exists here: a hotkey press with no
+	// visible change to the crosshair.
 	LOCK: {
 		url: 'ui-sounds/primary-system/ui_lock.wav',
 		volume: VOLUME,
@@ -28,16 +24,21 @@ const sounds: Record<string, { url: string; volume: number }> = {
 		url: 'ui-sounds/primary-system/ui_unlock.wav',
 		volume: VOLUME,
 	},
-	DONE: {
-		url: 'ui-sounds/primary-system/navigation_selection-complete-celebration.wav',
+	// Center can also be a hotkey, and the crosshair may be off on another
+	// display where the move isn't visible. v3 played a cue here too.
+	CENTER: {
+		url: 'ui-sounds/primary-system/navigation_forward-selection-minimal.wav',
 		volume: VOLUME,
 	},
-	ERROR: {
-		url: 'ui-sounds/secondary-system/alert_error-03.wav',
+	// Something to act on: an update is waiting. Also the test sound.
+	NOTIFICATION: {
+		url: 'ui-sounds/alerts/notification_simple-01.wav',
 		volume: VOLUME,
 	},
-	RESET: {
-		url: 'ui-sounds/secondary-system/alert_error-03.wav',
+	// Reserved. No call site yet, kept so a celebration has a sound when one
+	// is earned.
+	HERO: {
+		url: 'ui-sounds/heros/hero_decorative-celebration-01.wav',
 		volume: VOLUME,
 	},
 };

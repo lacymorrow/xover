@@ -3,8 +3,8 @@
  *
  * Reset means back to defaults, and the default position is centered. It also
  * has to be the same reset from all three entry points: the tray and Settings >
- * Advanced used to call resetStoreSettings() directly, which skips the sound,
- * the image rescan and the transient state (LAC-5839 item 3).
+ * Advanced used to call resetStoreSettings() directly, which skips the image
+ * rescan and the transient state (LAC-5839 item 3).
  */
 import { DEFAULT_SETTINGS, SettingsType } from '../config/settings';
 
@@ -91,13 +91,21 @@ describe('resetSettings', () => {
 		});
 	});
 
-	it('wipes the stored settings, plays the sound and rescans images', () => {
+	it('wipes the stored settings and rescans images', () => {
 		// eslint-disable-next-line global-require
 		require('../main/reset').resetSettings();
 
 		expect(resetStoreSettings).toHaveBeenCalled();
-		expect(play).toHaveBeenCalledWith('RESET');
 		expect(scanImages).toHaveBeenCalled();
+	});
+
+	// Reset used to play an error tone, for a deliberate button press behind a
+	// confirm dialog, in a Settings window you are looking at (LAC-6154).
+	it('plays no sound', () => {
+		// eslint-disable-next-line global-require
+		require('../main/reset').resetSettings();
+
+		expect(play).not.toHaveBeenCalled();
 	});
 
 	it('clears the transient state a reset should not keep', () => {

@@ -37,6 +37,6 @@ export const testSoundMenuItem: any = {
 	label: 'Test Sound',
 	id: 'testSound',
 	click: () => {
-		sounds.play('UPDATE');
+		sounds.play('NOTIFICATION');
 	},
 };

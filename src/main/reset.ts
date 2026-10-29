@@ -2,7 +2,6 @@ import { app, screen } from 'electron';
 import Logger from 'electron-log';
 import { SettingsType } from '../config/settings';
 import { isResetRequested } from './command-line-flags';
-import sounds from './sounds';
 import {
 	getSettings,
 	resetStore,
@@ -14,8 +13,6 @@ import { scanImages } from './utils/getImages';
 import { centerWindow, forEachCrosshairWindow } from './utils/window-utils';
 
 export const resetApp = () => {
-	// Sonic announcement
-	sounds.play('RESET');
 	resetStore();
 };
 
@@ -92,8 +89,8 @@ const centerCrosshairWindows = () => {
 };
 
 export const resetSettings = () => {
-	// Sonic announcement
-	sounds.play('RESET');
+	// No sound: reset is a button press in Settings with a confirm dialog, and
+	// the old cue was an error tone for a deliberate action (LAC-6154).
 
 	// Rescan images
 	scanImages();
