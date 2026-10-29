@@ -384,6 +384,27 @@ export const createSettingsWindow = async () => {
 		window.show();
 	});
 
+	// Escape closes Settings, but only while Settings has focus. This used to be
+	// a globalShortcut, which swallowed Escape in every app (the game included)
+	// whenever the close button or close-on-blur hid Settings without releasing
+	// it, and which unregisterAll() dropped on every shortcut re-registration.
+	window.webContents.on('before-input-event', (event, input) => {
+		if (
+			input.type === 'keyDown' &&
+			input.key === 'Escape' &&
+			!input.alt &&
+			!input.control &&
+			!input.meta &&
+			!input.shift
+		) {
+			event.preventDefault();
+			// Required lazily: settingsWindow pulls in the lock/hide helpers and the
+			// input hook, which create-window must not load at import time.
+			// eslint-disable-next-line global-require
+			require('./utils/settingsWindow').closeSettingsWindow();
+		}
+	});
+
 	// Above the crosshairs (screen-saver level 2, one above theirs) only while
 	// focused, so a fallback overlap is never hidden behind one, but Settings
 	// does not float over other apps once the user clicks away.

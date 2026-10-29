@@ -1,5 +1,3 @@
-import { globalShortcut } from 'electron';
-import Logger from 'electron-log';
 import { getSettings, getWindowState, setSettings } from '../store-actions';
 import windows from '../windows';
 import { toggleAppHide } from './hideApp';
@@ -10,24 +8,11 @@ import {
 	placeSettingsWindow,
 } from './window-utils';
 
-const unregisterEscapeKey = () => {
-	globalShortcut.unregister('Escape');
-};
-
-const registerEscapeKey = () => {
-	globalShortcut.register('Escape', () => {
-		Logger.info('Escape key pressed');
-		// eslint-disable-next-line no-use-before-define
-		closeSettingsWindow();
-	});
-};
-
 export const closeSettingsWindow = () => {
 	const { isSettingsWindowOpen } = getSettings();
 
 	if (isSettingsWindowOpen) {
 		windows.settingsWindow?.hide();
-		unregisterEscapeKey();
 		focusNextWindow();
 		setSettings({ isSettingsWindowOpen: false });
 	}
@@ -58,7 +43,6 @@ const revealSettingsWindow = () => {
 	settingsWindow.focus();
 
 	if (!getSettings().isSettingsWindowOpen) {
-		registerEscapeKey();
 		setSettings({ isSettingsWindowOpen: true });
 	}
 };
