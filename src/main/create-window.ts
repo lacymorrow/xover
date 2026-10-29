@@ -365,9 +365,9 @@ export const createSettingsWindow = async () => {
 		window.show();
 	});
 
-	// Above the crosshairs (screen-saver level 1) only while focused, so a
-	// fallback overlap is never hidden behind one but Settings does not float
-	// over other apps once the user clicks away.
+	// Above the crosshairs (screen-saver level 2, one above theirs) only while
+	// focused, so a fallback overlap is never hidden behind one, but Settings
+	// does not float over other apps once the user clicks away.
 	window.on('focus', () => {
 		window.setAlwaysOnTop(true, 'screen-saver', 2);
 	});

@@ -147,4 +147,38 @@ describe('placeSettings', () => {
 		const r = placeSettings({ size, crosshairs: [], displays: [hd] });
 		expect(inside(r, hd.workArea)).toBe(true);
 	});
+
+	// LAC-5868 (xover#65) gives Settings a 720x560 floor. Placement reads the
+	// live window size, so that floor is the tightest case it has to handle.
+	describe('at the LAC-5868 minimum window size', () => {
+		const minSize = { width: 720, height: 560 };
+
+		it('still clears a crosshair centered on 1080p', () => {
+			const c = crosshairAt(960, 540);
+			const r = placeSettings({
+				size: minSize,
+				crosshairs: [c],
+				displays: [hd],
+			});
+			expect(hits(r, c)).toBe(false);
+			expect(inside(r, hd.workArea)).toBe(true);
+		});
+
+		it('stays on screen on a laptop display with no clear spot', () => {
+			const laptop: PlacementDisplay = {
+				id: 3,
+				workArea: { x: 0, y: 0, width: 1280, height: 800 },
+			};
+			const c = crosshairAt(640, 400);
+			const r = placeSettings({
+				size: minSize,
+				crosshairs: [c],
+				displays: [laptop],
+			});
+			// 720 wide leaves 560px either side of a centered crosshair, so no
+			// position clears it. Settings must still land fully on the display
+			// instead of being pushed off it.
+			expect(inside(r, laptop.workArea)).toBe(true);
+		});
+	});
 });
