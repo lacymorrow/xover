@@ -2,7 +2,7 @@ import Logger from 'electron-log';
 import dock from '../dock';
 import { getSetting, getSettings, setSettings } from '../store-actions';
 import windows from '../windows';
-import { forEachWindow } from './window-utils';
+import { forEachCrosshairWindow, forEachWindow } from './window-utils';
 
 export const setAppHide = (isHidden: boolean) => {
 	Logger.status(`App is ${isHidden ? 'hidden' : 'unhidden'}`);
@@ -18,8 +18,10 @@ export const setAppHide = (isHidden: boolean) => {
 		// Hide dock icon
 		dock.setVisible(false);
 	} else {
-		// Show all windows
-		forEachWindow((window) => {
+		// Show the crosshairs only. Settings comes back below if it was open;
+		// showing every window popped a closed Settings up on unhide, already
+		// visible, so showApp() skipped placing it beside the crosshairs.
+		forEachCrosshairWindow((window) => {
 			window.show();
 		});
 
