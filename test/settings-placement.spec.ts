@@ -27,7 +27,7 @@ const layouts: Array<
 	['right-edge', (w, h) => ({ x: w - 180, y: Math.round(h / 2 - 70) })],
 ];
 
-for (const [name, pos] of layouts) {
+layouts.forEach(([name, pos]) => {
 	test(`settings clears the crosshair: ${name}`, async () => {
 		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xo-place-'));
 		fs.mkdirSync(OUT, { recursive: true });
@@ -77,7 +77,7 @@ for (const [name, pos] of layouts) {
 
 			expect(info.settings).toBeTruthy();
 			const s = info.settings!;
-			for (const c of info.crosshairs) {
+			info.crosshairs.forEach((c) => {
 				const hit =
 					s.x < c.x + c.width &&
 					c.x < s.x + s.width &&
@@ -87,7 +87,7 @@ for (const [name, pos] of layouts) {
 					hit,
 					`settings ${JSON.stringify(s)} overlaps crosshair ${JSON.stringify(c)}`,
 				).toBe(false);
-			}
+			});
 			let cg = '[]';
 			try {
 				cg = execFileSync('osascript', [
@@ -125,7 +125,7 @@ for (const [name, pos] of layouts) {
 			await electronApp.close();
 		}
 	});
-}
+});
 
 // Board review on xover#67: Settings may sit above the crosshairs only while focused.
 const cgLayers = (): Array<{
