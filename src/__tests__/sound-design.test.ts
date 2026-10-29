@@ -28,6 +28,11 @@ const walk = (dir: string): string[] =>
 		return entry.isDirectory() ? walk(full) : [full];
 	});
 
+// The map stores urls, which are always forward-slashed. Windows walks the
+// same files with backslashes.
+const asUrl = (from: string, file: string) =>
+	path.relative(from, file).split(path.sep).join('/');
+
 const sourceFiles = (dir: string): string[] =>
 	walk(dir).filter((file) => /\.(ts|tsx)$/.test(file));
 
@@ -46,7 +51,7 @@ describe('sound design', () => {
 		Object.entries(sounds).forEach(([name, { url }]) => {
 			expect({
 				name,
-				exists: fs.existsSync(path.join(shippedDir, url)),
+				exists: fs.existsSync(path.join(shippedDir, ...url.split('/'))),
 			}).toEqual({ name, exists: true });
 		});
 	});
@@ -59,7 +64,7 @@ describe('sound design', () => {
 				return [
 					...source.matchAll(/(?:sounds?\.play|playSound)\(\s*'([A-Z_]+)'/g),
 				].map((match) => ({
-					file: path.relative(repoRoot, file),
+					file: asUrl(repoRoot, file),
 					name: match[1],
 				}));
 			});
@@ -70,7 +75,7 @@ describe('sound design', () => {
 
 	it('ships only the mapped files, keeping the rest of the pack out of the bundle', () => {
 		const shipped = walk(shippedDir)
-			.map((file) => path.relative(shippedDir, file))
+			.map((file) => asUrl(shippedDir, file))
 			.sort();
 
 		expect(shipped).toEqual(
