@@ -11,7 +11,13 @@ import { getSettings } from './store-actions';
  * Ported from v3 (6b5a1d2, #450/#486).
  */
 export const isResetRequested = (): boolean => {
-	if (process.env.CROSSOVER_RESET) {
+	// A reset is destructive, so CROSSOVER_RESET=0/false/no/off means off
+	// rather than "any value is truthy" (ported from v3 #583).
+	const env = process.env.CROSSOVER_RESET;
+	if (
+		env !== undefined &&
+		!['', '0', 'false', 'no', 'off'].includes(env.trim().toLowerCase())
+	) {
 		return true;
 	}
 
