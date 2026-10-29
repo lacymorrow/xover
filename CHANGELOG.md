@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.0.0-beta.8
+
+### Changes
+
+- **Settings is reorganized: four panes plus Advanced, nothing removed.** Crosshair, In game, Shortcuts and App hold what most people change, with less-used options under "More". Advanced holds notifications and sounds, command-line flags, app colors and the rest. Every control from beta.7 is still there and keeps its saved value. The Pro badge is blue, About shows CrossOver, and the settings window has a minimum size.
+- **Settings opens beside your crosshairs, never over or behind them.** It uses its last spot if that is clear, then a spot beside the main crosshair, then a screen corner or another display. It sits above the crosshairs only while focused.
+- **No startup sound.**
+
+### Bug Fixes
+
+- **Escape stayed grabbed in every app after closing Settings** with the close button or by clicking away, so games never saw it. Escape now closes Settings only while Settings has focus, and it keeps working after you lock, hide or rebind while Settings is open.
+- **Unhiding the app popped Settings open** even when it was closed.
+- **macOS: the crosshair draws over fullscreen apps again.** Ported from v3 #580.
+- **Linux: global shortcuts on native Wayland.** CrossOver explains when the session cannot grab a hotkey, and relaunches once on X11 so it can. Settings > Advanced (Linux only, on by default) turns the relaunch off. Ported from v3 #571 / #577.
+- **`CROSSOVER_RESET=0` no longer resets settings.** Empty, 0, false, no and off mean off. Ported from v3 #583.
+
 ## 4.0.0-beta.7
 
 ### Bug Fixes
