@@ -34,6 +34,7 @@ import { windowClosed } from './utils/window-closed';
 import {
 	applyContentProtection,
 	getNextCrosshairWindow,
+	placeSettingsWindow,
 	safeSetBounds,
 } from './utils/window-utils';
 import windows from './windows';
@@ -379,11 +380,20 @@ export const createSettingsWindow = async () => {
 			return;
 		}
 
+		placeSettingsWindow(window, state);
 		window.show();
+	});
+
+	// Above the crosshairs (screen-saver level 2, one above theirs) only while
+	// focused, so a fallback overlap is never hidden behind one, but Settings
+	// does not float over other apps once the user clicks away.
+	window.on('focus', () => {
+		window.setAlwaysOnTop(true, 'screen-saver', 2);
 	});
 
 	// Hide window when clicked away (configurable)
 	window.on('blur', () => {
+		window.setAlwaysOnTop(false);
 		if (getSetting('settingsCloseOnBlur')) {
 			window.hide();
 			setSettings({ isSettingsWindowOpen: false });

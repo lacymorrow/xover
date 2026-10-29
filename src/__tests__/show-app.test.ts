@@ -12,6 +12,7 @@ const toggleAppHide = jest.fn();
 const setSettings = jest.fn();
 const focusNextWindow = jest.fn();
 const createCrosshairWindow = jest.fn();
+const placeSettingsWindow = jest.fn();
 
 const liveCrosshair = { id: 2, isDestroyed: () => false };
 const deadCrosshair = { id: 3, isDestroyed: () => true };
@@ -19,12 +20,14 @@ let nextCrosshair: typeof liveCrosshair | undefined;
 
 let settings: SettingsType = { ...DEFAULT_SETTINGS };
 let isFocused = false;
+let isVisible = true;
 
 const settingsWindow = {
 	id: 1,
 	isDestroyed: () => false,
 	isMinimized: () => false,
-	isVisible: () => true,
+	isVisible: () => isVisible,
+	setAlwaysOnTop: jest.fn(),
 	isFocused: () => isFocused,
 	restore: jest.fn(),
 	show: jest.fn(),
@@ -40,6 +43,7 @@ jest.mock('electron-log', () => ({ info: jest.fn(), status: jest.fn() }));
 
 jest.mock('../main/store-actions', () => ({
 	getSettings: () => settings,
+	getWindowState: () => ({ x: 10, y: 20 }),
 	setSettings: (...args: unknown[]) => setSettings(...args),
 }));
 
@@ -52,6 +56,7 @@ jest.mock('../main/utils/lockApp', () => ({
 jest.mock('../main/utils/window-utils', () => ({
 	focusNextWindow: () => focusNextWindow(),
 	getNextCrosshairWindow: () => nextCrosshair,
+	placeSettingsWindow: (...args: unknown[]) => placeSettingsWindow(...args),
 }));
 
 jest.mock('../main/create-window', () => ({
@@ -75,6 +80,7 @@ beforeEach(() => {
 	jest.clearAllMocks();
 	settings = { ...DEFAULT_SETTINGS };
 	isFocused = false;
+	isVisible = true;
 	nextCrosshair = liveCrosshair;
 });
 
@@ -165,5 +171,26 @@ describe('openSettingsWindow', () => {
 
 		expect(settingsWindow.hide).toHaveBeenCalled();
 		expect(setSettings).toHaveBeenCalledWith({ isSettingsWindowOpen: false });
+	});
+});
+
+describe('Settings placement (LAC-6155)', () => {
+	it('places Settings off the crosshairs when it opens', () => {
+		isVisible = false;
+
+		load().showApp();
+
+		expect(placeSettingsWindow).toHaveBeenCalledWith(settingsWindow, {
+			x: 10,
+			y: 20,
+		});
+	});
+
+	it('leaves a Settings window that is already on screen where it is', () => {
+		isVisible = true;
+
+		load().showApp();
+
+		expect(placeSettingsWindow).not.toHaveBeenCalled();
 	});
 });

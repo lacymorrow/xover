@@ -1,0 +1,23 @@
+{
+  "workArea": {
+    "x": 0,
+    "y": 30,
+    "width": 1792,
+    "height": 1090
+  },
+  "settings": {
+    "x": 244,
+    "y": 30,
+    "width": 800,
+    "height": 600
+  },
+  "crosshairs": [
+    {
+      "x": 20,
+      "y": 40,
+      "width": 208,
+      "height": 130
+    }
+  ],
+  "cgWindowList": "[{\"layer\":1002,\"bounds\":{\"X\":244,\"Height\":600,\"Y\":30,\"Width\":800},\"order\":0},{\"layer\":1001,\"bounds\":{\"X\":20,\"Height\":130,\"Y\":40,\"Width\":208},\"order\":1}]\n"
+}

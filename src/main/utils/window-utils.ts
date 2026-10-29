@@ -4,6 +4,7 @@ import Logger from 'electron-log';
 import { Display } from 'electron/main';
 import { $actions, $errors } from '../../config/strings';
 import { is } from '../util';
+import { placeSettings } from './settings-placement';
 import windows, { WindowInstanceType } from '../windows';
 
 export type GetWindowBoundsCenteredOptions = {
@@ -421,4 +422,50 @@ export const getWindowById = (id: string) => {
 	if (id in windows.crosshairWindows) {
 		return windows.crosshairWindows[id];
 	}
+};
+
+/**
+ * Move Settings off the crosshairs before it is shown (LAC-6155).
+ *
+ * Only called when Settings opens. A window the user is already looking at is
+ * never moved, so this never fights a drag.
+ */
+export const placeSettingsWindow = (
+	window: BrowserWindow,
+	saved?: { x?: number; y?: number },
+) => {
+	if (!window || window.isDestroyed()) {
+		return;
+	}
+
+	const live = Object.values(windows.crosshairWindows).filter(
+		(win): win is BrowserWindow => !!win && !win.isDestroyed(),
+	);
+	if (live.length === 0) {
+		return;
+	}
+
+	const crosshairs = live.map((win) => win.getBounds());
+	const mainWindow =
+		windows.mainWindow && !windows.mainWindow.isDestroyed()
+			? windows.mainWindow
+			: live[0];
+	const main = mainWindow.getBounds();
+	const { width, height } = window.getBounds();
+
+	const next = placeSettings({
+		size: { width, height },
+		saved:
+			saved?.x != null && saved?.y != null
+				? { x: saved.x, y: saved.y }
+				: undefined,
+		main,
+		crosshairs,
+		preferredDisplayId: screen.getDisplayMatching(main).id,
+		displays: screen
+			.getAllDisplays()
+			.map((d) => ({ id: d.id, workArea: d.workArea })),
+	});
+
+	window.setBounds(next);
 };
