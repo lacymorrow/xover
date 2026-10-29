@@ -59,7 +59,7 @@ const onUpdateAvailable = () => {
 			body: $autoUpdate.updateAvailableBody,
 		});
 
-		sound.play('UPDATE');
+		sound.play('NOTIFICATION');
 
 		if (is.linux) {
 			dialog.openUpdateDialog(() => {
@@ -84,7 +84,8 @@ const onUpdateDownloaded = () => {
 			title: 'CrossOver has been Updated',
 			body: 'Relaunch to take effect',
 		});
-		sound.play('DONE'); // comment if we make notification silent
+		// No sound: the OS notification and the dock badge already say it, and
+		// this one fires on a background check mid-game (LAC-6154).
 	} catch (error) {
 		Logger.error(error);
 	}

@@ -10,6 +10,7 @@ import windows from './windows';
 import { createDuplicateWindow, createNewWindow } from './create-window';
 import { notification } from './notifications';
 import { resetSettings } from './reset';
+import sounds from './sounds';
 import { getKeybinds, getSetting, setSettings } from './store-actions';
 import { toggleAppHide } from './utils/hideApp';
 import { toggleAppLock } from './utils/lockApp';
@@ -95,6 +96,10 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 			}
 
 			centerWindow({ window: win, animated: true });
+
+			// The one center path that can be blind: the crosshair may be on a
+			// display you aren't looking at (LAC-6154).
+			sounds.play('CENTER');
 		},
 	},
 

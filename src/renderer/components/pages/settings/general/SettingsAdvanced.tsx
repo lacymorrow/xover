@@ -215,7 +215,6 @@ export function SettingsAdvanced() {
 				<Button
 					onClick={() => {
 						window.electron.ipcRenderer.send(ipcChannels.FOCUS_WINDOW_MAIN);
-						window.electron.playSound('DONE');
 					}}
 				>
 					Focus next window
