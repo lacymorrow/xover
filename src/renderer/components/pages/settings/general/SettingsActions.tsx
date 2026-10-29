@@ -20,7 +20,7 @@ import { useGlobalContext } from '@/renderer/context/global-context';
  * No setting was dropped and no store key changed.
  */
 export function SettingsActions() {
-	const { settings } = useGlobalContext();
+	const { keybinds, settings } = useGlobalContext();
 
 	const handleChangeSetting = (setting: Partial<SettingsType>) => {
 		window.electron.setSettings(setting);
@@ -31,8 +31,14 @@ export function SettingsActions() {
 			<div>
 				<h3 className="text-lg font-medium">In game</h3>
 				<p className="text-sm text-muted-foreground">
-					Bind mouse and keyboard inputs to crosshair actions. Hooks are loaded
-					when a binding is enabled and the crosshair is active.
+					Bind mouse and keyboard inputs to crosshair actions.
+				</p>
+				<p className="mt-2 text-sm text-muted-foreground">
+					These actions only take effect while the crosshair is locked. Press{' '}
+					<kbd className="rounded border px-1 font-mono text-xs">
+						{keybinds.lock}
+					</kbd>{' '}
+					to lock it.
 				</p>
 			</div>
 			<Separator />
@@ -50,7 +56,7 @@ export function SettingsActions() {
 					});
 				}}
 				label="Auto-Hide"
-				description="Hide the crosshair on input (key or mouse button press)."
+				description="Hide the crosshair on input (key or mouse button press). Requires the crosshair to be locked."
 			/>
 			{(settings.hideOnMouseEnabled || settings.hideOnKeyEnabled) && (
 				<>
@@ -128,7 +134,7 @@ export function SettingsActions() {
 					});
 				}}
 				label="Follow Mouse"
-				description="Keep the crosshair centered on the mouse cursor."
+				description="Keep the crosshair centered on the mouse cursor. Requires the crosshair to be locked."
 			/>
 
 			<MoreSettings>
@@ -141,7 +147,7 @@ export function SettingsActions() {
 						});
 					}}
 					label="ADS Zoom"
-					description="Resize the crosshair when aiming down sights."
+					description="Resize the crosshair when aiming down sights. Requires the crosshair to be locked."
 				/>
 				{settings.adsResizeEnabled && (
 					<>
@@ -192,7 +198,7 @@ export function SettingsActions() {
 						});
 					}}
 					label="Enable Tilt"
-					description="Enable tilting the crosshair when the bind is pressed/held."
+					description="Enable tilting the crosshair when the bind is pressed/held. Requires the crosshair to be locked."
 				/>
 				{settings.tiltActionEnabled && (
 					<>
