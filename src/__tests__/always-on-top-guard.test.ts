@@ -24,6 +24,11 @@
  * under a focused Settings would bury it.
  */
 
+// Keeps this file a module, so its helpers do not land in the global scope and
+// collide with the same names in another suite (ts-jest type-checks the whole
+// program, and `shortcut-targets.test.ts` also has a `makeWindow`).
+export {};
+
 type WindowStub = {
 	id: string;
 	visible: boolean;
