@@ -51,6 +51,28 @@ export const reassertAlwaysOnTop = () => {
 			return;
 		}
 
+		// Asking again when the window already believes it is topmost is not a
+		// no-op, which is the whole premise of this module. Traced through
+		// Electron 40.8.0 / Chromium 144.0.7559.236:
+		//
+		//   BaseWindow::SetAlwaysOnTop            electron_api_base_window.cc
+		//     -> NativeWindowViews::SetAlwaysOnTop  native_window_views.cc:1122
+		//     -> Widget::SetZOrderLevel             widget.cc:1097
+		//     -> DesktopNativeWidgetAura::SetZOrderLevel
+		//                                           desktop_native_widget_aura.cc:1047
+		//     -> DesktopWindowTreeHostWin::SetZOrderLevel
+		//                                           desktop_window_tree_host_win.cc:467
+		//     -> HWNDMessageHandler::SetAlwaysOnTop hwnd_message_handler.cc:855
+		//     -> ::SetWindowPos(hwnd, HWND_TOPMOST, SWP_NOMOVE | SWP_NOSIZE
+		//                                         | SWP_NOACTIVATE)
+		//
+		// Nothing on that chain compares against the current level. Electron
+		// guards only the `always-on-top-changed` emit (`level_changed`), so a
+		// repeated call re-issues the Win32 request without spamming events.
+		// `SWP_NOACTIVATE` is why the tick cannot steal focus, and
+		// `MoveBehindTaskBarIfNeeded` is a no-op at 'screen-saver' because that
+		// level is not in Electron's behind-the-taskbar set. Per tick, per
+		// visible crosshair, the cost is one `SetWindowPos`.
 		window.setAlwaysOnTop(true, 'screen-saver', 1);
 	});
 };
