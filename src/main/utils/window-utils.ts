@@ -85,7 +85,7 @@ export type CenterWindowOptions = {
 export const activeWindow = () => BrowserWindow.getFocusedWindow();
 
 /** Every live window except the settings window. */
-const crosshairWindows = () =>
+export const crosshairWindows = () =>
 	BrowserWindow.getAllWindows().filter(
 		(win) => win !== windows.settingsWindow && !win.isDestroyed(),
 	);

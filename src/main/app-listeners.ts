@@ -7,12 +7,16 @@ import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
 import { stopIOHook } from './iohook';
 import keyboard from './keyboard';
+import {
+	startAlwaysOnTopGuard,
+	stopAlwaysOnTopGuard,
+} from './utils/always-on-top';
 import { windowClosed } from './utils/window-closed';
 import { showApp } from './utils/settingsWindow';
 import { getNextCrosshairWindow } from './utils/window-utils';
 
 /**
- * Release the input hook and the global shortcuts.
+ * Release the input hook, the global shortcuts and the always-on-top guard.
  *
  * The hook has to be cut off BEFORE any window is destroyed. A mousemove
  * callback that lands after the BrowserWindow is gone calls setBounds on a
@@ -23,6 +27,7 @@ import { getNextCrosshairWindow } from './utils/window-utils';
 const releaseInput = () => {
 	stopIOHook();
 	keyboard.unregisterAll();
+	stopAlwaysOnTopGuard();
 };
 
 const register = () => {
@@ -79,6 +84,11 @@ const register = () => {
 };
 
 const ready = () => {
+	// Windows drops the crosshair out of the top of the topmost band whenever
+	// another app asserts topmost after us, and v4 only ever asked once
+	// (LAC-7272).
+	startAlwaysOnTopGuard();
+
 	app.on('activate', async () => {
 		Logger.status($appListeners.activate);
 
