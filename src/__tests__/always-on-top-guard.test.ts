@@ -24,10 +24,11 @@
  * under a focused Settings would bury it.
  */
 
-// Keeps this file a module, so its helpers do not land in the global scope and
-// collide with the same names in another suite (ts-jest type-checks the whole
-// program, and `shortcut-targets.test.ts` also has a `makeWindow`).
-export {};
+// This import is also what keeps the file a module. Without a top-level import
+// or export it is a script, and ts-jest type-checks the whole program, so
+// `makeWindow` here collided with the one in `shortcut-targets.test.ts` and took
+// every CI job down. `jest/no-export` rules out the usual `export {}`.
+import type * as AlwaysOnTop from '../main/utils/always-on-top';
 
 type WindowStub = {
 	id: string;
@@ -106,9 +107,10 @@ const loadGuard = (platform: string = 'win32') => {
 	jest.resetModules();
 
 	// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-	const guard = require('../main/utils/always-on-top');
-	// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-	const windows = require('../main/windows').default;
+	const guard: typeof AlwaysOnTop = require('../main/utils/always-on-top');
+	const windows: { settingsWindow: unknown } =
+		// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+		require('../main/windows').default;
 
 	return { guard, windows };
 };
