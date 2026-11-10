@@ -6,6 +6,11 @@ on:
       - main
 
 jobs:
+  # Each platform packages on its own runner. Windows used to ride along on the
+  # macOS job, which built it for the host arch (arm64) and bundled the host's
+  # rebuilt native modules into the Windows app: Mach-O binaries in
+  # `build/Release`, which `node-gyp-build` reaches for before the `win32-x64`
+  # prebuild. Both failures were silent. See LAC-7453.
   build-mac-windows:
     # To enable auto publishing to github, update your electron publisher
     # config in package.json > "build" and remove the conditional below
@@ -14,8 +19,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest]
+        include:
+          - os: macos-latest
+            package: package:mac
+          - os: windows-latest
+            package: package:windows
 
     steps:
       - name: Checkout git repo
@@ -31,7 +41,7 @@ jobs:
         run: |
           npm install
           npm run postinstall
-          npm run package:mw
+          npm run ${{ matrix.package }}
 
       - name: Archive build artifacts
         uses: actions/upload-artifact@v6
