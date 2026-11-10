@@ -128,6 +128,9 @@ layouts.forEach(([name, pos]) => {
 });
 
 // Board review on xover#67: Settings may sit above the crosshairs only while focused.
+// The blurred assertion below is deliberate, not a bug being locked in: an
+// unfocused Settings must drop under the crosshairs so it does not float over
+// the game. See LAC-7148 and the blur handler in create-window.ts.
 const cgLayers = (): Array<{
 	layer: number;
 	bounds: { X: number; Y: number; Width: number; Height: number };

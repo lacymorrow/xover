@@ -405,15 +405,24 @@ export const createSettingsWindow = async () => {
 		}
 	});
 
-	// Above the crosshairs (screen-saver level 2, one above theirs) only while
-	// focused, so a fallback overlap is never hidden behind one, but Settings
-	// does not float over other apps once the user clicks away.
+	// Above the crosshairs (screen-saver level 2, one above theirs) while
+	// focused, so an overlapping Settings is reachable with a click.
 	window.on('focus', () => {
 		window.setAlwaysOnTop(true, 'screen-saver', 2);
 	});
 
 	// Hide window when clicked away (configurable)
 	window.on('blur', () => {
+		// Back to a normal window, so Settings never floats over other apps
+		// (the game included) once the user clicks away. This is a deliberate
+		// trade-off, not an oversight: the whole always-on-top band sits above
+		// normal windows, so there is no level above the crosshairs but below
+		// the game. While Settings overlaps a crosshair AND is unfocused the
+		// crosshair therefore draws over it. Placement opens every normal
+		// layout clear of the crosshairs, so this only shows up in the
+		// least-overlap fallback or after the user drags one onto the other,
+		// and one click on any part of Settings not under a crosshair (an
+		// unlocked crosshair takes the click itself) restores it. See LAC-7148.
 		window.setAlwaysOnTop(false);
 		if (getSetting('settingsCloseOnBlur')) {
 			window.hide();
