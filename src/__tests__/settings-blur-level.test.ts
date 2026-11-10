@@ -139,6 +139,9 @@ it('leaves a blurred Settings on screen by default', async () => {
 	await openSettings();
 	emit('blur');
 
+	// Positive control: the blur handler really ran. Without it, a creation path
+	// that stops registering handlers would make the assert below pass vacuously.
+	expect(setAlwaysOnTop).toHaveBeenCalledWith(false);
 	expect(hide).not.toHaveBeenCalled();
 });
 

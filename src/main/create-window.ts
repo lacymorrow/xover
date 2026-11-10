@@ -421,7 +421,8 @@ export const createSettingsWindow = async () => {
 		// crosshair therefore draws over it. Placement opens every normal
 		// layout clear of the crosshairs, so this only shows up in the
 		// least-overlap fallback or after the user drags one onto the other,
-		// and one click on Settings restores it. See LAC-7148.
+		// and one click on any part of Settings not under a crosshair (an
+		// unlocked crosshair takes the click itself) restores it. See LAC-7148.
 		window.setAlwaysOnTop(false);
 		if (getSetting('settingsCloseOnBlur')) {
 			window.hide();
