@@ -45,11 +45,12 @@
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "cross-env NODE_ENV=development eslint . --fix --ext .js,.jsx,.ts,.tsx",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -mwl --publish never && npm run build:dll",
-    "package:mw": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -mw --publish never && npm run build:dll",
+    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -mwl --publish never && npm run assert:win-arch && npm run build:dll",
+    "package:mw": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -mw --publish never && npm run assert:win-arch && npm run build:dll",
     "package:mac": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -m --publish never && npm run build:dll",
     "package:linux": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -l --publish never && npm run build:dll",
-    "package:windows": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -w --publish never && npm run build:dll",
+    "package:windows": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build -w --publish never && npm run assert:win-arch && npm run build:dll",
+    "assert:win-arch": "ts-node ./.erb/scripts/assert-win-arch.js",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development NODE_OPTIONS='--import tsx' electronmon .",
@@ -296,8 +297,18 @@
     },
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "verifyUpdateCodeSignature": false
     },
