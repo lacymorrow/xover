@@ -4,7 +4,6 @@ import { uIOhook } from 'uiohook-napi';
 import { uiohookKeycodes } from '../config/keys';
 import { HideBehaviorType } from '../config/settings';
 import { $iohook } from '../config/strings';
-import { isPremium } from './license';
 import {
 	getActionState,
 	getSettings,
@@ -415,7 +414,7 @@ export const startIOHook = async () => {
 
 	const needsHook =
 		followMouseEnabled ||
-		secondaryBind ||
+		(secondaryActionEnabled && secondaryBind) ||
 		tiltEnabled ||
 		hideOnMouseEnabled ||
 		(hideOnKeyEnabled && hideOnKeyBind) ||
@@ -432,7 +431,10 @@ export const startIOHook = async () => {
 		registerFollowMouse();
 	}
 
-	if (secondaryBind && isPremium()) {
+	// Free since LAC-7671. The switch has to agree with the bind: the panel only
+	// shows the bind inside `secondaryActionEnabled`, so a stored bind left
+	// behind by switching off must go quiet with it.
+	if (secondaryActionEnabled && secondaryBind) {
 		const [input, trigger] = secondaryBind.split(':');
 
 		if (input === 'keyboard') {

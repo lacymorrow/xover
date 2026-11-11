@@ -19,9 +19,26 @@ export const POLAR_ORGANIZATION_ID = 'ff87e6a0-f1d9-4b1a-aca8-8d211c7cf4bf';
 
 export const POLAR_PRODUCT_ID = '584b6ea6-d3e3-471b-ab67-9bdcd85afffa';
 
+/**
+ * Pro gates. The porting rule (knowledge/portfolio.md, knowledge/properties.md)
+ * is that anything free in v3 stays free in v4, so a flag here is only legal
+ * for a feature v3 never had.
+ *
+ * `secondaryCrosshair` and `rotation` were gated through beta.8 and are free
+ * again (LAC-7671): v3.4.9 ships the duplicate crosshair (preferences.js:74)
+ * and tilt with an angle slider (preferences.js:42-48), both with no licensing
+ * code anywhere in v3.
+ *
+ * `profiles` is a placeholder with no implementation in `src/`. v3.4.8 ships
+ * presets free (crossover `src/main/presets.js`), so under the same rule this
+ * has to go false when profiles is built. LAC-7713.
+ *
+ * Nothing reads this object: `isPremium()` and `<PremiumGate>` are what gate a
+ * feature. `src/__tests__/v3-free-features.test.ts` pins both.
+ */
 export const PREMIUM_FEATURES = {
-	secondaryCrosshair: true,
-	rotation: true, // crosshair + reticle rotation sliders
+	secondaryCrosshair: false,
+	rotation: false, // crosshair + reticle rotation sliders
 	profiles: true, // placeholder for future use
 };
 

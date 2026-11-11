@@ -15,7 +15,6 @@ const vars = (over: Partial<Parameters<typeof getCrosshairVars>[0]> = {}) =>
 	getCrosshairVars({
 		settings: DEFAULT_SETTINGS,
 		windowState: DEFAULT_CROSSHAIR_WINDOW_STATE,
-		isPremium: false,
 		hidden: false,
 		adsActive: false,
 		secondary: false,
@@ -79,16 +78,19 @@ describe('the rest of the properties', () => {
 		);
 	});
 
-	it('ignores stored rotation without a license', () => {
+	// Rotation was Pro in beta.8 and is free again: v3 ships tilt with an angle
+	// slider, so the porting rule never allowed the gate (LAC-7671). The rule
+	// itself is pinned in v3-free-features.test.ts.
+	it('uses stored rotation, with no license involved', () => {
 		const rotated = {
 			...DEFAULT_CROSSHAIR_WINDOW_STATE,
 			crosshairRotation: 45,
 			reticleRotation: 45,
 		};
 
-		expect(vars({ windowState: rotated })['--crosshair-rotation']).toBe('0deg');
-		expect(
-			vars({ windowState: rotated, isPremium: true })['--crosshair-rotation'],
-		).toBe('45deg');
+		expect(vars({ windowState: rotated })['--crosshair-rotation']).toBe(
+			'45deg',
+		);
+		expect(vars({ windowState: rotated })['--reticle-rotation']).toBe('45deg');
 	});
 });

@@ -3,7 +3,6 @@ import { CrosshairWindowStateType, SettingsType } from '@/config/settings';
 export interface CrosshairVarsInput {
 	settings: SettingsType;
 	windowState: CrosshairWindowStateType;
-	isPremium: boolean;
 	/** Auto-Hide (ADS) is hiding the overlay right now */
 	hidden: boolean;
 	adsActive: boolean;
@@ -14,8 +13,8 @@ export interface CrosshairVarsInput {
  * The CSS custom properties the crosshair window renders from.
  *
  * Pure, so the rules that are easy to get wrong can be pinned in a test:
- * which values the secondary crosshair swaps in, that rotation is ignored
- * without a license, and that Auto-Hide hides everything.
+ * which values the secondary crosshair swaps in, and that Auto-Hide hides
+ * everything.
  *
  * `--overlay-opacity` is what Auto-Hide drives, and it is applied to the
  * wrapper around both the crosshair image and the reticle. Hiding used to run
@@ -27,7 +26,6 @@ export interface CrosshairVarsInput {
 export const getCrosshairVars = ({
 	settings,
 	windowState,
-	isPremium,
 	hidden,
 	adsActive,
 	secondary,
@@ -43,15 +41,12 @@ export const getCrosshairVars = ({
 		? settings.adsResizeSize / 100
 		: baseScale / 100;
 
-	// Rotation is a Pro feature; ignore stored values without a license
-	const pro = (degrees: number) => (isPremium ? degrees : 0);
-	const crosshairRotationSecondary = pro(
-		windowState.crosshairRotationSecondary,
-	);
-	const reticleRotationSecondary = pro(windowState.reticleRotationSecondary);
+	// Rotation is free: v3 ships tilt with an angle slider, so the porting rule
+	// never allowed a gate here (LAC-7671).
+	const { crosshairRotationSecondary, reticleRotationSecondary } = windowState;
 	const rotation = secondary
 		? crosshairRotationSecondary
-		: pro(windowState.crosshairRotation);
+		: windowState.crosshairRotation;
 
 	const reticleScale = secondary
 		? windowState.reticleSizeSecondary
@@ -61,7 +56,7 @@ export const getCrosshairVars = ({
 		: windowState.reticleColor;
 	const reticleRotation = secondary
 		? reticleRotationSecondary
-		: pro(windowState.reticleRotation);
+		: windowState.reticleRotation;
 
 	return {
 		'--app-bg-color': windowState.backgroundColor,

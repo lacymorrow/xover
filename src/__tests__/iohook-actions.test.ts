@@ -35,8 +35,6 @@ jest.mock('electron-log', () => ({
 	error: jest.fn(),
 }));
 
-jest.mock('../main/license', () => ({ isPremium: () => true }));
-
 jest.mock('../main/windows', () => ({
 	__esModule: true,
 	default: {
@@ -246,5 +244,46 @@ describe('keyboard hide bind behaviors (v3 #573)', () => {
 
 		emit('mouseup', { button: 1 });
 		expect(actionState.hidden).toBe(false);
+	});
+});
+
+// LAC-7671: the secondary bind used to be registered only when
+// `isPremium()` returned true. v3 ships a duplicate crosshair for free, so the
+// gate was never allowed, and `iohook.ts` no longer imports the license at all.
+// No license mock here on purpose: a reinstated gate reads `isPremium` as
+// undefined and these fail.
+describe('secondary crosshair bind (LAC-7671)', () => {
+	const secondary = {
+		secondaryActionEnabled: true,
+		secondaryBind: 'keyboard:Alt',
+		secondaryBehavior: 'hold' as const,
+	};
+
+	it('registers with no license', async () => {
+		await startWith(secondary);
+
+		emit('keydown', { keycode: ALT });
+		expect(actionState.secondary).toBe(true);
+
+		emit('keyup', { keycode: ALT });
+		expect(actionState.secondary).toBe(false);
+	});
+
+	it('toggles when the behavior says toggle', async () => {
+		await startWith({ ...secondary, secondaryBehavior: 'toggle' });
+
+		emit('keydown', { keycode: ALT });
+		emit('keyup', { keycode: ALT });
+		expect(actionState.secondary).toBe(true);
+	});
+
+	// The panel hides the bind when the switch is off (SettingsSecondaryCrosshair
+	// only renders it inside `secondaryActionEnabled`), so a stored bind must go
+	// quiet with it. The hook used to key off the bind alone and keep firing.
+	it('stays quiet while the switch is off', async () => {
+		await startWith({ ...secondary, secondaryActionEnabled: false });
+
+		emit('keydown', { keycode: ALT });
+		expect(actionState.secondary).toBe(false);
 	});
 });

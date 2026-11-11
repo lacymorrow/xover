@@ -9,7 +9,7 @@ import '@/renderer/styles/crosshair.scss';
 import { useEffect, useState } from 'react';
 
 export default function CrosshairApp() {
-	const { settings, windowState, isPremium } = useGlobalContext();
+	const { settings, windowState } = useGlobalContext();
 	const { tilt, hidden, adsActive, secondary } = useActionStateContext();
 	const [isDragActive, setIsDragActive] = useState(false);
 
@@ -82,7 +82,6 @@ export default function CrosshairApp() {
 		const properties = getCrosshairVars({
 			settings,
 			windowState,
-			isPremium,
 			hidden,
 			adsActive,
 			secondary,
@@ -92,7 +91,7 @@ export default function CrosshairApp() {
 		Object.entries(properties).forEach(([key, value]) => {
 			document.documentElement.style.setProperty(key, String(value));
 		});
-	}, [settings, windowState, isPremium, hidden, adsActive, secondary]);
+	}, [settings, windowState, hidden, adsActive, secondary]);
 
 	useEffect(() => {
 		// Tilt
