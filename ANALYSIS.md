@@ -3,6 +3,11 @@
 > **Verified:** 2026-10-20 (LAC-5182)
 > **v3:** `~/repo/crossover` @ 3.4.7 (shipping)
 > **v4:** `~/repo/xover` @ 4.0.0-beta.4 (this repo)
+>
+> **Partly re-checked 2026-11-11 against v3.4.9 and 4.0.0-beta.8 (LAC-7671),**
+> for one question: what is v4-only, and therefore what Pro may charge for.
+> That pass corrected §1, §2, §3 and §7. Everything else still carries the
+> October date and the 3.4.7 baseline.
 
 This document exists for one decision: **can the v3 in-app banner send users to v4 without taking something away from them?** Every row below was read in both codebases on the date above.
 
@@ -16,7 +21,9 @@ v4 is at parity on everything a v3 user touches, except the five rows in §3.
 
 v4 is a rewrite, not a port, so some v3 behaviours are intentionally absent rather than missing. Those are in §6 and are not rollout blockers. Only §3 blocks.
 
-Everything in §3 and §4 is free in v3 and stays free in v4. Rotation and the secondary crosshair are the only Pro features.
+Everything in §3 and §4 is free in v3 and stays free in v4.
+
+Rotation and the secondary crosshair were Pro through beta.8, which broke the porting rule: v3 ships tilt with an angle slider and the duplicate crosshair, both free. Both gates are gone (LAC-7671) and v4 now enforces no feature gate at all. What Pro charges for is open on that ticket.
 
 ---
 
@@ -32,7 +39,7 @@ Everything in §3 and §4 is free in v3 and stays free in v4. Rotation and the s
 | Input hook | `uiohook-napi` | `uiohook-napi` |
 | Updates | `electron-updater` | `electron-updater` |
 | Tests | Playwright E2E | Playwright E2E + Jest unit |
-| Licensing | none (all free) | Polar.sh; rotation and secondary crosshair are Pro |
+| Licensing | none (all free) | Polar.sh wired up, no feature gated (LAC-7671) |
 
 Both ship the same crosshair assets: 200 Kenney SVGs plus the named sets.
 
@@ -46,6 +53,7 @@ Both ship the same crosshair assets: 200 Kenney SVGs plus the named sets.
 | Circle reticle thickness | `crosshair.circleThickness` | v4 has SVG stroke width but no circle-reticle thickness. `migrate-v3.ts` skips the key |
 | Developer alert system | `src/main/alert.js` | v3 fetches an urgent-notice file from GitHub and shows it. No v4 equivalent |
 | Windows Store auto-launch | `electron-winstore-auto-launch` | Only affects the AppX/Store build |
+| Presets | `src/main/presets.js` (PR #569, v3.4.8) | Named crosshair + actions sets, 10 of them, cycled with `Ctrl+Shift+Alt+P`. v4 has no profiles code at all, and `migrate-v3.ts` never reads `presets` or `hidden.presets`, so a v3 user's saved sets are dropped without even a `skip()` log. Landed in 3.4.8, after this doc's 3.4.7 baseline, which is why it was missing here. LAC-7713 |
 
 ---
 
@@ -119,20 +127,24 @@ Not gaps. Re-adding any of these needs a reason.
 
 Listed so the banner copy does not undersell the upgrade.
 
-- Per-window independent crosshair, size, opacity, rotation and reticle
-- 35+ reticle shapes (v3 has 4)
-- Crosshair and reticle rotation (Pro)
-- Secondary crosshair on a bind (Pro)
-- Tilt bound to mouse buttons as well as keys
-- Command-line flag UI (9 switches)
-- App size modes: normal, resizable, fullscreen
-- `crossover://` protocol handler and checkout deep link
+Re-measured 2026-11-11 against v3.4.9 (LAC-7671). Three rows were wrong and are
+struck below with the v3 evidence, because a false v4-only row is how a v3-free
+feature ends up gated.
+
+- Per-window independent crosshair, size, opacity, rotation and reticle. v3's shadow windows were clones (§6)
+- 36 reticle shapes. v3 has four: dot, cross, circle, off (`preferences.js:187-192`)
+- Crosshair and reticle rotation, free. v3 ships tilt with an angle slider
+- Secondary crosshair on a bind, free. v3 ships the duplicate crosshair
+- Tilt bound to mouse buttons as well as keys. v3 took keyboard accelerators only
+- Command-line flag UI (8 switches). v3 had one GPU checkbox
+- `crossover://` protocol handler and checkout deep link. Zero matches in v3
 - v3 settings import on first run (`import-v3.ts`)
-- Opt-in Aptabase analytics
-- Sound library for UI actions
+- Opt-in Aptabase analytics. v3 has no telemetry at all
 - Configurable transition duration
-- Dock, taskbar and tray icon toggles; quit-on-close
-- macOS notarization and a universal (Intel + Apple Silicon) build
+- Dock, taskbar and tray icon toggles; quit-on-close. v3 ships a tray (`src/main/tray.js`) with no toggles
+- ~~App size modes: normal, resizable, fullscreen~~. v3 has all three, `preferences.js:600-606`
+- ~~Sound library for UI actions~~. v3 has the `sounds` toggle and played a center cue; v4's set is curated, not new
+- ~~macOS notarization and a universal (Intel + Apple Silicon) build~~. v3's `package.json` declares both; v4 currently has `"notarize": false`
 
 ---
 
