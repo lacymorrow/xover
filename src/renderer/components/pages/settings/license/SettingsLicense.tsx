@@ -1,5 +1,6 @@
 import { Separator } from '@/components/ui/separator';
 import { LicenseStatus, POLAR_CHECKOUT_URL } from '@/config/license';
+import { PRO_NOTE } from '@/config/pro-note';
 import { useGlobalContext } from '@/renderer/context/global-context';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -178,10 +179,20 @@ export function SettingsLicense() {
 
 					<div className="space-y-2">
 						<p className="font-medium text-base">Get a License</p>
-						<p className="text-sm text-muted-foreground">
-							Pro is how CrossOver stays maintained. Pay once. Everything that
-							was free in v3 is still free.
-						</p>
+						{/*
+						 * Lacy's note, approved verbatim (LAC-7622). It reads as him
+						 * talking, so it is set apart rather than run in as UI copy.
+						 */}
+						<blockquote className="border-l-2 border-muted-foreground/30 pl-3 space-y-2">
+							{PRO_NOTE.map((paragraph) => (
+								<p key={paragraph} className="text-sm text-muted-foreground">
+									{paragraph}
+								</p>
+							))}
+							<footer className="text-sm text-muted-foreground/80">
+								Lacy, who makes CrossOver
+							</footer>
+						</blockquote>
 						<button
 							type="button"
 							className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
