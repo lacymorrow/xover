@@ -34,9 +34,14 @@ function LicenseRow() {
 					)}
 				</p>
 				<p className="text-sm text-muted-foreground">
+					{/*
+					 * Pro buys no feature that v3 shipped free (LAC-7671), so this
+					 * line sells maintenance, not a feature list. The final
+					 * first-person note is Lacy's to approve, LAC-7622 item 3.
+					 */}
 					{isPremium
 						? 'Pro is active on this computer.'
-						: 'A second crosshair and rotation are included with Pro. Pay once.'}
+						: 'Pro is how CrossOver stays maintained. Pay once.'}
 				</p>
 			</div>
 			{isPremium ? (

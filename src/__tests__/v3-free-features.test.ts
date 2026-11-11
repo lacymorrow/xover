@@ -107,3 +107,52 @@ describe('rotation renders without a license', () => {
 		expect(vars['--reticle-rotation-alt']).toBe('15deg');
 	});
 });
+
+/**
+ * The third level the rule can break at: the copy. beta.8 removed nothing from
+ * the paywall, and the App pane and the License pane both told the user that
+ * $9.99 buys "a second crosshair and rotation" while the License pane also
+ * said "everything that was free stays free", two sentences apart (LAC-7671).
+ *
+ * A gate that is gone from the code but still advertised is still a false
+ * claim in the shipping app, so any pane that links to checkout has to sell
+ * Pro without naming a feature v3 gave away. The final first-person note is
+ * Lacy's to approve (LAC-7622 item 3); this only pins what it may not say.
+ */
+const V3_FREE_FEATURE_CLAIMS = [
+	/second(ary)? crosshair/i,
+	/duplicate crosshair/i,
+	/\brotation\b/i,
+	/\btilt\b/i,
+];
+
+const walk = (dir: string): string[] =>
+	fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+		const full = path.join(dir, entry.name);
+
+		if (entry.isDirectory()) return walk(full);
+
+		return /\.tsx?$/.test(entry.name) ? [full] : [];
+	});
+
+const upsellSurfaces = walk(path.join(repoRoot, 'src'))
+	.filter((file) => !file.endsWith(path.join('config', 'license.ts')))
+	.filter((file) => file.includes(`${path.sep}__tests__${path.sep}`) === false)
+	.filter((file) =>
+		fs.readFileSync(file, 'utf8').includes('POLAR_CHECKOUT_URL'),
+	)
+	.map((file) => path.relative(repoRoot, file));
+
+describe('Pro upsell copy', () => {
+	it('is found by its link to checkout', () => {
+		expect(upsellSurfaces.length).toBeGreaterThan(0);
+	});
+
+	it.each(upsellSurfaces)('%s sells no v3-free feature', (file) => {
+		const text = source(file);
+
+		V3_FREE_FEATURE_CLAIMS.forEach((claim) => {
+			expect(text).not.toMatch(claim);
+		});
+	});
+});

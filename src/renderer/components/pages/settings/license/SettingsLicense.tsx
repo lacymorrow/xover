@@ -92,7 +92,7 @@ export function SettingsLicense() {
 			<div>
 				<h3 className="text-lg font-medium">License</h3>
 				<p className="text-sm text-muted-foreground">
-					Manage your CrossOver license to unlock premium features.
+					Manage your CrossOver Pro license.
 				</p>
 			</div>
 			<Separator />
@@ -147,7 +147,7 @@ export function SettingsLicense() {
 						<div className="space-y-2">
 							<h3 className="font-medium text-base">License Key</h3>
 							<p className="text-sm text-muted-foreground">
-								Enter your license key to activate premium features.
+								Enter your license key to activate Pro.
 							</p>
 							<div className="flex gap-2">
 								<input
@@ -179,9 +179,8 @@ export function SettingsLicense() {
 					<div className="space-y-2">
 						<p className="font-medium text-base">Get a License</p>
 						<p className="text-sm text-muted-foreground">
-							CrossOver Pro adds a secondary crosshair you can switch to
-							mid-game, plus crosshair and reticle rotation. Pay once.
-							Everything that was free stays free.
+							Pro is how CrossOver stays maintained. Pay once. Everything that
+							was free in v3 is still free.
 						</p>
 						<button
 							type="button"
