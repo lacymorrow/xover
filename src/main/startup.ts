@@ -35,7 +35,7 @@ export const startup = () => {
 
 		// Initialize analytics
 		analytics.initialize();
-		analytics.track('app_started');
+		analytics.appOpen();
 
 		// Initialize the error handler
 		errorHandling.initialize();

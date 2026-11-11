@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { BrowserWindow, net } from 'electron';
 import Logger from 'electron-log';
 import os from 'os';
+import analytics from './analytics';
 import {
 	DEFAULT_LICENSE_STATUS,
 	LICENSE_CACHE_DURATION,
@@ -126,6 +127,7 @@ export async function activateLicense(
 
 		store.set('license', licenseStatus);
 		Logger.info('License activated successfully');
+		analytics.feature('license_activated');
 
 		return { success: true };
 	} catch (error: unknown) {

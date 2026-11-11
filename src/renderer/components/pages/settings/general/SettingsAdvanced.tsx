@@ -93,8 +93,8 @@ export function SettingsAdvanced() {
 					onChange={() => {
 						handleChangeSetting({ allowAnalytics: !settings.allowAnalytics });
 					}}
-					label="Anonymous usage analytics"
-					description="Help improve the app by sending anonymous usage data."
+					label="Share anonymous usage data"
+					description="Counts when CrossOver opens, which features you use, and the kind of error that happened. Never your settings, your license key, or anything that identifies you. Off stops it immediately."
 					card
 				/>
 
