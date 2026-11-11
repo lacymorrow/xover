@@ -1,6 +1,7 @@
 import { app, dialog } from 'electron';
 import Logger from 'electron-log';
 import path from 'path';
+import analytics from './analytics';
 import { packageJsonFields } from '../config/config';
 import { $dialog, $init } from '../config/strings';
 import { shouldShowCrashDialog } from './crash-report';
@@ -15,6 +16,7 @@ const catchErrors = () => {
 	return Logger.errorHandler.startCatching({
 		showDialog: false,
 		onError({ createIssue, error, processType, versions }) {
+			analytics.error(error?.name ?? 'Error');
 			if (processType === 'renderer' || !shouldShowCrashDialog()) {
 				Logger.error(error);
 				return;
