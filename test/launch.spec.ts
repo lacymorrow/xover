@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import path from 'path';
 import { ElectronApplication, Page } from 'playwright';
 import {
+	APP_PATH,
 	closeApp,
 	delays,
 	focusedMinimizedVisible,
@@ -60,7 +60,7 @@ test('App path is correct', async () => {
 	const appPath = await electronApp.evaluate(async ({ app }) =>
 		app.getAppPath(),
 	);
-	expect(appPath).toBe(path.resolve(__dirname, '..'));
+	expect(appPath).toBe(APP_PATH);
 });
 
 test('Window count is correct on launch', async () => {
