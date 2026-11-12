@@ -47,6 +47,11 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
 
+    # `on: [push, pull_request]` fires both events for a branch that has a PR.
+    # The jest job has always paid that twice; this one builds the app first, so
+    # it runs once per PR commit and once per main push instead of twice each.
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v6
@@ -62,6 +67,16 @@ jobs:
 
       - name: Build main and renderer bundles
         run: npm run build
+
+      # Electron's Chromium aborts rather than run unsandboxed, and npm cannot
+      # give the helper the ownership it needs: "The SUID sandbox helper binary
+      # was found, but is not configured correctly." Configure it instead of
+      # passing --no-sandbox, so CI launches the app the way a user's machine
+      # does.
+      - name: Configure the Chromium SUID sandbox
+        run: |
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
 
       - name: Playwright e2e
         run: xvfb-run --auto-servernum npx playwright test test/launch.spec.ts
