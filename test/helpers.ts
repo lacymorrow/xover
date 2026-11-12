@@ -1,9 +1,31 @@
+import fs from 'fs';
+import path from 'path';
 import { _electron as electron, ElectronApplication, Page } from 'playwright';
 
 let electronApp: ElectronApplication;
 
 export const PRODUCT_NAME = 'CrossOver';
 export const SETTINGS_WINDOW = 'Settings - CrossOver';
+
+/**
+ * The Electron app directory this harness launches: `release/app`, whose
+ * package.json `main` is the webpack-built `dist/main/main.js`.
+ *
+ * Deliberately not the repo root. The root package.json `main` is
+ * `src/main/main.ts`; Electron's Node strips the types but its ESM resolver
+ * will not resolve this project's extensionless relative imports
+ * (`./portable`, `./ipc`, ...), so `electron .` dies during load with
+ * ERR_MODULE_NOT_FOUND and then holds an error dialog open until Playwright's
+ * 60s beforeAll timeout. Webpack resolves those specifiers, which is why
+ * `npm run build` and the packaged app are unaffected. See LAC-7782.
+ */
+export const APP_PATH = path.resolve(__dirname, '..', 'release', 'app');
+
+const REQUIRED_BUNDLE_FILES = [
+	path.join(APP_PATH, 'dist', 'main', 'main.js'),
+	path.join(APP_PATH, 'dist', 'renderer', 'index.html'),
+	path.join(APP_PATH, 'dist', 'renderer', 'crosshair.html'),
+];
 
 export const delays = {
 	short: 500,
@@ -23,7 +45,19 @@ export const startApp = async (): Promise<{
 }> => {
 	process.env.CI = 'e2e';
 
-	electronApp = await electron.launch({ args: ['.'] });
+	const missing = REQUIRED_BUNDLE_FILES.filter((file) => !fs.existsSync(file));
+	if (missing.length > 0) {
+		throw new Error(
+			[
+				'Playwright launches the built bundle and it is not there.',
+				'Run `npm run build` first (or `npm run test:e2e`, which builds).',
+				'Missing:',
+				...missing.map((file) => `  ${file}`),
+			].join('\n'),
+		);
+	}
+
+	electronApp = await electron.launch({ args: [APP_PATH] });
 	await wait(5000);
 
 	electronApp.on('window', async (page: Page) => {
