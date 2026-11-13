@@ -17,5 +17,4 @@ Everything that was free in v3 is still free. Pro doesn't take anything away fro
 
 The price is $4.99 one-time everywhere: this note, the Polar product, and the
 Mac App Store in-app purchase (Lacy, 2026-11-13). Change all three together or
-none. The founding-user code (50% off, 30 days, created **at** the release so
-the clock does not start early) is still LAC-7720's.
+none. No launch discount (Lacy, 2026-11-13).
