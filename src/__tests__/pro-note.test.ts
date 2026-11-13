@@ -20,7 +20,7 @@ import { PRO_NOTE, PRO_NOTE_TEXT, PRO_PRICE_USD } from '../config/pro-note';
 
 /** Transcribed from reports/lac-7622-pro-note.md as Lacy approved it. */
 const APPROVED = [
-	"I started CrossOver in October 2019 and it's been free the whole time, every feature, no paywall. I want to keep it that way, so v4 adds Pro at $9.99 once. That covers the Apple notarization, the code signing certificate, the store fees, and the hours that go into keeping Windows, macOS and Linux all working.",
+	"I started CrossOver in October 2019 and it's been free the whole time, every feature, no paywall. I want to keep it that way, so v4 adds Pro at $4.99 once. That covers the Apple notarization, the code signing certificate, the store fees, and the hours that go into keeping Windows, macOS and Linux all working.",
 	"Everything that was free in v3 is still free. Pro doesn't take anything away from you.",
 ];
 
