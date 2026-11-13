@@ -19,19 +19,19 @@
  *   six years. crossover@0058b63 was already one round of correcting an
  *   overstated public claim in this app's README, and this copy has a larger
  *   audience than the README.
- * - "$9.99" has to match what Polar actually charges. At the time of writing
- *   the live product charges $4.99 (LAC-7720), so the price has to be
- *   corrected before v4 ships or this note is a lie told by the app itself.
- *   The test pins the figure to PRO_PRICE_USD; LAC-7720 owns making Polar
- *   agree with it.
+ * - "$4.99" has to match what Polar actually charges (product 584b6ea6,
+ *   499 USD, checked 2026-11-13). Lacy had the note at $9.99 and asked for
+ *   one price everywhere on 2026-11-13; $4.99 won because Polar and the Mac
+ *   App Store IAP were already there and it's a crosshair app. The test pins
+ *   the figure to PRO_PRICE_USD.
  */
 
-/** The decided price, one-time. knowledge/portfolio.md, 2026-11-10. */
-export const PRO_PRICE_USD = 9.99;
+/** The decided price, one-time. Lacy, 2026-11-13. */
+export const PRO_PRICE_USD = 4.99;
 
 /** Paragraphs, so the UI can lay them out without parsing prose. */
 export const PRO_NOTE: readonly string[] = [
-	"I started CrossOver in October 2019 and it's been free the whole time, every feature, no paywall. I want to keep it that way, so v4 adds Pro at $9.99 once. That covers the Apple notarization, the code signing certificate, the store fees, and the hours that go into keeping Windows, macOS and Linux all working.",
+	"I started CrossOver in October 2019 and it's been free the whole time, every feature, no paywall. I want to keep it that way, so v4 adds Pro at $4.99 once. That covers the Apple notarization, the code signing certificate, the store fees, and the hours that go into keeping Windows, macOS and Linux all working.",
 	"Everything that was free in v3 is still free. Pro doesn't take anything away from you.",
 ];
 
