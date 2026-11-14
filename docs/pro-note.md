@@ -3,6 +3,11 @@
 This is the copy the v4 release notes are built from. It also ships on the
 in-app Pro screen, which reads it from `src/config/pro-note.ts`.
 
+`.erb/scripts/release-notes.js` reads the block below at release time and
+prints the GitHub release body; `release-v4.yml` in lacymorrow/crossover runs
+it and sets the body with `gh release edit`. Before that job existed every v4
+pre-release body on GitHub was empty (LAC-7622).
+
 Approved verbatim by Lacy on LAC-7622, 2026-11-11. `src/__tests__/pro-note.test.ts`
 keeps this file and the constant identical, so editing one without the other
 fails the build. Do not reword without his say so.
