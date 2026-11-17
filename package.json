@@ -317,6 +317,7 @@
       "artifactName": "${productName}-Portable-${version}.${ext}"
     },
     "nsis": {
+      "include": "assets/installer.nsh",
       "unicode": false,
       "artifactName": "${productName}-Installer-${version}.${ext}"
     },
