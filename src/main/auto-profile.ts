@@ -97,3 +97,65 @@ export const shouldWatch = (
 	supported &&
 	presetPermissions(isPremium).autoSwitch &&
 	presets.some((p) => !!p.app);
+
+export interface WatcherLifecycleDeps {
+	getPresets: () => PresetType[];
+	isPremium: () => boolean;
+	supported: () => boolean;
+	/** Start watching. Returns the handle that stops it. */
+	start: () => { stop: () => void } | null;
+	log?: (message: string) => void;
+}
+
+/**
+ * Starts and stops the foreground watcher to match what is true now. Idempotent:
+ * call it after any change that could flip the answer. The answer depends on
+ * three things, and each has a caller that must re-run this: the presets
+ * (an app added or cleared, a preset deleted), the license (activate,
+ * deactivate, and an expiry inside checkLicense), and startup.
+ */
+export const createWatcherLifecycle = (deps: WatcherLifecycleDeps) => {
+	let handle: { stop: () => void } | null = null;
+
+	const sync = () => {
+		const wanted = shouldWatch(
+			deps.getPresets(),
+			deps.isPremium(),
+			deps.supported(),
+		);
+		if (wanted && !handle) {
+			handle = deps.start();
+			if (handle) deps.log?.('Auto profiles: watching the foreground app');
+		} else if (!wanted && handle) {
+			handle.stop();
+			handle = null;
+			deps.log?.('Auto profiles: stopped watching');
+		}
+	};
+
+	return {
+		sync,
+		stop: () => {
+			handle?.stop();
+			handle = null;
+		},
+		isWatching: () => handle !== null,
+	};
+};
+
+/** Minimal shape of electron-store's change subscription. */
+export interface ChangeSource {
+	onDidChange: (key: any, callback: () => void) => unknown;
+}
+
+/**
+ * Re-sync on every write to `license` and `presets`, whoever makes it. That
+ * covers activate, deactivate, expiry and the grace-period revoke inside
+ * checkLicense (which writes the license from several places and has no single
+ * hook), plus every preset and app change, without each caller remembering.
+ */
+export const bindWatcherToStore = (source: ChangeSource, sync: () => void) => {
+	source.onDidChange('license', sync);
+	source.onDidChange('presets', sync);
+	sync();
+};

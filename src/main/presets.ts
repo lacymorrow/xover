@@ -21,10 +21,14 @@ import {
 import { ipcChannels } from '../config/ipc-channels';
 import { DEFAULT_CROSSHAIR_WINDOW_STATE } from '../config/settings';
 import { getUUID } from '../utils/getUUID';
-import { createAutoProfile, isSelfApp, shouldWatch } from './auto-profile';
+import {
+	bindWatcherToStore,
+	createAutoProfile,
+	createWatcherLifecycle,
+	isSelfApp,
+} from './auto-profile';
 import { createCrosshairWindow } from './create-window';
 import {
-	ForegroundWatcher,
 	foregroundSupported,
 	listRunningApps,
 	watchForeground,
@@ -273,27 +277,23 @@ const autoProfile = createAutoProfile({
 		isSelfApp(a, { pid: process.pid, ids: [app.getName(), 'CrossOver'] }),
 });
 
-let watcher: ForegroundWatcher | null = null;
+const lifecycle = createWatcherLifecycle({
+	getPresets: () => read().items,
+	isPremium,
+	supported: foregroundSupported,
+	start: () => watchForeground((a) => autoProfile.onForeground(a)),
+	log: (message) => Logger.info(message),
+});
 
 /**
- * Start or stop the foreground watcher to match what is true now. Safe to call
- * from anywhere, any number of times: after every preset change, when the
- * license changes and at startup.
+ * Start or stop the foreground watcher to match what is true now. Idempotent.
+ * Also bound to the store (initAutoProfiles), so a license or preset change
+ * from any path re-runs it.
  */
-export const syncAutoProfileWatcher = () => {
-	const wanted = shouldWatch(read().items, isPremium(), foregroundSupported());
+export const syncAutoProfileWatcher = () => lifecycle.sync();
 
-	if (wanted && !watcher) {
-		watcher = watchForeground((a) => autoProfile.onForeground(a));
-		Logger.info('Auto profiles: watching the foreground app');
-	} else if (!wanted && watcher) {
-		watcher.stop();
-		watcher = null;
-		Logger.info('Auto profiles: stopped watching');
-	}
-};
+/** Once at startup: subscribe to license and preset writes, then settle. */
+export const initAutoProfiles = () =>
+	bindWatcherToStore(store, syncAutoProfileWatcher);
 
-export const stopAutoProfileWatcher = () => {
-	watcher?.stop();
-	watcher = null;
-};
+export const stopAutoProfileWatcher = () => lifecycle.stop();

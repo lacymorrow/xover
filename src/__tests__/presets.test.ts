@@ -6,7 +6,9 @@
  */
 import { MAX_PRESETS, PresetType } from '../config/presets';
 import {
+	bindWatcherToStore,
 	createAutoProfile,
+	createWatcherLifecycle,
 	isSelfApp,
 	pickAutoPreset,
 	shouldWatch,
@@ -15,10 +17,10 @@ import {
 	linuxAutoSupported,
 	parseLsappinfoInfo,
 	parseLsappinfoList,
-	parseWindowsLine,
 	parseXpropActive,
 	parseXpropWindow,
 } from '../main/foreground';
+import { appFromExePath } from '../main/win-foreground';
 import { mapV3Preferences } from '../main/migrate-v3';
 import {
 	addPreset,
@@ -30,6 +32,12 @@ import {
 	sharingApp,
 	uniqueName,
 } from '../main/preset-model';
+
+jest.mock('electron-log', () => ({
+	warn: jest.fn(),
+	info: jest.fn(),
+	error: jest.fn(),
+}));
 
 const preset = (id: string, extra: Partial<PresetType> = {}): PresetType => ({
 	id,
@@ -266,13 +274,15 @@ describe('foreground parsers', () => {
 			{ id: 'com.apple.Safari', name: 'Safari', pid: 500 },
 		]);
 	});
-	it('Windows line', () => {
-		expect(parseWindowsLine('1234\tValorant-Win64-Shipping')).toEqual({
+	it('Windows exe path becomes the app, no window title involved', () => {
+		expect(
+			appFromExePath('C:\\Games\\Riot\\VALORANT-Win64-Shipping.EXE', 1234),
+		).toEqual({
 			id: 'valorant-win64-shipping',
-			name: 'Valorant-Win64-Shipping',
+			name: 'VALORANT-Win64-Shipping',
 			pid: 1234,
 		});
-		expect(parseWindowsLine('')).toBeNull();
+		expect(appFromExePath('', 1)).toBeNull();
 	});
 	it('X11', () => {
 		expect(
@@ -289,5 +299,81 @@ describe('foreground parsers', () => {
 			linuxAutoSupported({ DISPLAY: ':0', XDG_SESSION_TYPE: 'wayland' }),
 		).toBe(false);
 		expect(linuxAutoSupported({})).toBe(false);
+	});
+});
+
+describe('watcher lifecycle', () => {
+	const game = { id: 'game', name: 'Game' };
+
+	const setup = (initial: { premium: boolean; presets: PresetType[] }) => {
+		const state = { ...initial, supported: true };
+		const stop = jest.fn();
+		const start = jest.fn(() => ({ stop }));
+		const life = createWatcherLifecycle({
+			getPresets: () => state.presets,
+			isPremium: () => state.premium,
+			supported: () => state.supported,
+			start,
+		});
+		// A store that lets the test fire the same events electron-store would.
+		const handlers: Record<string, () => void> = {};
+		bindWatcherToStore(
+			{
+				onDidChange: (key: string, cb: () => void) => {
+					handlers[key] = cb;
+				},
+			},
+			life.sync,
+		);
+		return { state, start, stop, life, handlers };
+	};
+
+	it('settles at startup: off with no app, on with one', () => {
+		expect(
+			setup({ premium: true, presets: [preset('a')] }).start,
+		).not.toHaveBeenCalled();
+		expect(
+			setup({ premium: true, presets: [preset('a', { app: game })] }).start,
+		).toHaveBeenCalledTimes(1);
+	});
+
+	it('license activate starts it, deactivate and expiry stop it', () => {
+		const t = setup({ premium: false, presets: [preset('a', { app: game })] });
+		expect(t.life.isWatching()).toBe(false);
+
+		t.state.premium = true; // activate
+		t.handlers.license();
+		expect(t.life.isWatching()).toBe(true);
+
+		t.state.premium = false; // deactivate, or checkLicense revoking on expiry
+		t.handlers.license();
+		expect(t.life.isWatching()).toBe(false);
+		expect(t.stop).toHaveBeenCalledTimes(1);
+	});
+
+	it('every preset or app change re-evaluates, and starts only once', () => {
+		const t = setup({ premium: true, presets: [preset('a')] });
+		t.state.presets = [preset('a', { app: game })]; // app set
+		t.handlers.presets();
+		t.handlers.presets(); // idempotent
+		expect(t.start).toHaveBeenCalledTimes(1);
+
+		t.state.presets = [preset('a')]; // app cleared: stop watching
+		t.handlers.presets();
+		expect(t.life.isWatching()).toBe(false);
+
+		t.state.presets = [preset('a', { app: game })];
+		t.handlers.presets();
+		t.state.presets = []; // preset deleted
+		t.handlers.presets();
+		expect(t.life.isWatching()).toBe(false);
+	});
+
+	it('does not start where unsupported, or when the Windows reader failed to load', () => {
+		const t = setup({ premium: true, presets: [] });
+		t.state.supported = false;
+		t.state.presets = [preset('a', { app: game })];
+		t.handlers.presets();
+		expect(t.start).not.toHaveBeenCalled();
 	});
 });

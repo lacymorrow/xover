@@ -5,8 +5,8 @@
  * and shows a prompt. Nothing here needs a permission:
  *
  * - macOS: `lsappinfo`, which ships with the OS and reads LaunchServices.
- * - Windows: GetForegroundWindow + GetWindowThreadProcessId in one long-lived
- *   PowerShell. One process polling in memory, not a spawn per tick.
+ * - Windows: in-process koffi calls to user32 and kernel32 (win-foreground.ts).
+ *   No PowerShell and no child process, which anti-cheat flags.
  * - Linux X11: `xprop` on the root window. Best effort. Wayland is off,
  *   because a Wayland client cannot see which window has focus.
  *
@@ -16,9 +16,10 @@
  *
  * The parsers are pure and exported for the unit tests. The spawning is thin.
  */
-import { execFile, spawn } from 'child_process';
+import { execFile } from 'child_process';
 import fs from 'fs';
 import { RunningAppType } from '../config/presets';
+import { loadWin, winForeground, winRunningApps } from './win-foreground';
 
 export const POLL_MS = 1000;
 
@@ -77,18 +78,6 @@ export const parseLsappinfoList = (out: string): RunningAppType[] => {
 	return apps;
 };
 
-/** `pid<TAB>name` lines from the Windows helper. */
-export const parseWindowsLine = (line: string): ForegroundApp | null => {
-	const [pidText, name] = line.trim().split('\t');
-	const pid = Number(pidText);
-	if (!name) return null;
-	return {
-		id: normalizeAppId(name),
-		name,
-		...(Number.isFinite(pid) && pid > 0 ? { pid } : {}),
-	};
-};
-
 export const parseXpropActive = (out: string): string | null => {
 	const id = out.match(/#\s*(0x[0-9a-f]+)/i)?.[1];
 	return id && Number(id) !== 0 ? id : null;
@@ -120,7 +109,9 @@ export const foregroundSupported = (
 	platform: typeof process.platform = process.platform,
 	env: Record<string, string | undefined> = process.env,
 ) => {
-	if (platform === 'darwin' || platform === 'win32') return true;
+	if (platform === 'darwin') return true;
+	// Windows is supported when koffi loads. A load failure turns auto profiles off.
+	if (platform === 'win32') return loadWin() !== null;
 	if (platform === 'linux') return linuxAutoSupported(env);
 	return false;
 };
@@ -177,28 +168,6 @@ const dedupe = (apps: RunningAppType[]) => {
 	return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
 };
 
-const WINDOWS_LIST_SCRIPT =
-	'Get-Process | Where-Object { $_.MainWindowHandle -ne 0 } | ForEach-Object { "$($_.Id)`t$($_.ProcessName)" }';
-
-const WINDOWS_WATCH_SCRIPT = `
-Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class FG{[DllImport("user32.dll")]public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")]public static extern uint GetWindowThreadProcessId(IntPtr h,out uint p);}'
-$last = ''
-while ($true) {
-  $h = [FG]::GetForegroundWindow()
-  [uint32]$p = 0
-  [void][FG]::GetWindowThreadProcessId($h, [ref]$p)
-  if ($p -ne 0) {
-    $n = (Get-Process -Id $p -ErrorAction SilentlyContinue).ProcessName
-    $line = "$p\`t$n"
-    if ($n -and $line -ne $last) { $last = $line; [Console]::Out.WriteLine($line); [Console]::Out.Flush() }
-  }
-  Start-Sleep -Milliseconds ${POLL_MS}
-}
-`;
-
-const encodePowerShell = (script: string) =>
-	Buffer.from(script, 'utf16le').toString('base64');
-
 /** Apps the picker offers: running, with a window the user could have in front. */
 export const listRunningApps = async (
 	platform: typeof process.platform = process.platform,
@@ -209,17 +178,7 @@ export const listRunningApps = async (
 		);
 	}
 	if (platform === 'win32') {
-		const out = await run(
-			'powershell.exe',
-			['-NoProfile', '-NonInteractive', '-Command', WINDOWS_LIST_SCRIPT],
-			8000,
-		);
-		return dedupe(
-			out
-				.split(/\r?\n/)
-				.map(parseWindowsLine)
-				.filter((a): a is ForegroundApp => !!a),
-		);
+		return dedupe(winRunningApps());
 	}
 	if (platform === 'linux' && linuxAutoSupported(process.env)) {
 		const ids = parseXpropClientList(
@@ -247,32 +206,9 @@ export const watchForeground = (
 ): ForegroundWatcher | null => {
 	if (!foregroundSupported(platform)) return null;
 
-	if (platform === 'win32') {
-		const child = spawn(
-			'powershell.exe',
-			[
-				'-NoProfile',
-				'-NonInteractive',
-				'-EncodedCommand',
-				encodePowerShell(WINDOWS_WATCH_SCRIPT),
-			],
-			{ windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'] },
-		);
-		let buffer = '';
-		child.stdout.on('data', (chunk) => {
-			buffer += chunk.toString();
-			const lines = buffer.split(/\r?\n/);
-			buffer = lines.pop() ?? '';
-			lines.forEach((line) => {
-				const app = parseWindowsLine(line);
-				if (app) onChange(app);
-			});
-		});
-		child.on('error', () => {});
-		return { stop: () => child.kill() };
-	}
-
-	const read = platform === 'darwin' ? macForeground : linuxForeground;
+	let read: () => Promise<ForegroundApp | null> = linuxForeground;
+	if (platform === 'darwin') read = macForeground;
+	if (platform === 'win32') read = async () => winForeground();
 	let last = '';
 	let busy = false;
 	let stopped = false;
