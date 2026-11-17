@@ -97,6 +97,15 @@ export function SettingsKeyboard() {
 					}}
 				/>
 
+				<InputKeyboardShortcut
+					value={keybinds.cyclePreset}
+					label="Next Preset"
+					description="Switch to the next saved preset. Works while the crosshair is locked."
+					onChange={(value) => {
+						handleChangeKeybind('cyclePreset', value);
+					}}
+				/>
+
 				<MoreSettings label="More shortcuts">
 					<InputKeyboardShortcut
 						value={keybinds.newWindow}

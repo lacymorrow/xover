@@ -262,6 +262,9 @@ export function isPremium(): boolean {
 
 // License changes affect every window (e.g. rotation in crosshair windows)
 export function notifyLicenseChanged(): void {
+	// The auto-profile watcher only runs for Pro. Lazy: presets imports license.
+	// eslint-disable-next-line global-require
+	require('./presets').syncAutoProfileWatcher();
 	BrowserWindow.getAllWindows().forEach((win) => {
 		if (!win.isDestroyed()) {
 			win.webContents.send(ipcChannels.APP_UPDATED);

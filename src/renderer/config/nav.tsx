@@ -7,6 +7,7 @@ import {
 	KeyboardIcon,
 	LightningBoltIcon,
 	LockClosedIcon,
+	StackIcon,
 } from '@radix-ui/react-icons';
 
 import { SettingsApplication } from '@/renderer/components/pages/settings/general/SettingsApplication';
@@ -14,6 +15,7 @@ import { SettingsKeyboard } from '@/renderer/components/pages/settings/keyboard/
 import { SettingsCrosshair } from '../components/pages/settings/appearance/SettingsCrosshair';
 import { SettingsActions } from '../components/pages/settings/general/SettingsActions';
 import { SettingsAdvanced } from '../components/pages/settings/general/SettingsAdvanced';
+import { SettingsPresets } from '../components/pages/settings/presets/SettingsPresets';
 import { SettingsLicense } from '../components/pages/settings/license/SettingsLicense';
 
 export const nav = {
@@ -28,7 +30,7 @@ export const nav = {
 };
 
 /**
- * Four panes plus Advanced (LAC-5868). Appearance and Notifications are gone
+ * Four panes plus Advanced (LAC-5868), then Presets (LAC-5974). Appearance and Notifications are gone
  * as destinations, not as controls: theme and the two window-size settings
  * moved to App, app colours and the whole notification group moved to
  * Advanced. License and About stay reachable from the nav.
@@ -46,6 +48,12 @@ export const settingsNavItems = [
 		href: 'in-game',
 		element: <SettingsActions />,
 		icon: LightningBoltIcon,
+	},
+	{
+		title: 'Presets',
+		href: 'presets',
+		element: <SettingsPresets />,
+		icon: StackIcon,
 	},
 	{
 		title: 'Shortcuts',

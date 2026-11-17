@@ -29,9 +29,12 @@ export const POLAR_PRODUCT_ID = '584b6ea6-d3e3-471b-ab67-9bdcd85afffa';
  * and tilt with an angle slider (preferences.js:42-48), both with no licensing
  * code anywhere in v3.
  *
- * `profiles` is a placeholder with no implementation in `src/`. v3.4.8 ships
- * presets free (crossover `src/main/presets.js`), so under the same rule this
- * has to go false when profiles is built. LAC-7713.
+ * `profiles` is implemented and gated (LAC-5974). Lacy decided on 2026-11-16
+ * (LAC-7622): Pro = presets + auto profiles, with layouts folded in. v3.4.8
+ * shipped presets free, so the gate is narrow: creating new presets and auto
+ * profiles need Pro, while applying, cycling, renaming and deleting stay free
+ * for everyone, and v3 presets are imported flagged and keep working
+ * (`src/main/preset-model.ts` presetPermissions). Fullscreen overlay is later.
  *
  * Nothing reads this object: `isPremium()` and `<PremiumGate>` are what gate a
  * feature. `src/__tests__/v3-free-features.test.ts` pins both.
@@ -39,7 +42,7 @@ export const POLAR_PRODUCT_ID = '584b6ea6-d3e3-471b-ab67-9bdcd85afffa';
 export const PREMIUM_FEATURES = {
 	secondaryCrosshair: false,
 	rotation: false, // crosshair + reticle rotation sliders
-	profiles: true, // placeholder for future use
+	profiles: true, // new presets + auto profiles; see the comment above
 };
 
 // Checkout link created in Polar dashboard (Products > Checkout Links)

@@ -1,5 +1,6 @@
 import Store from 'electron-store';
 import { DEFAULT_LICENSE_STATUS, LicenseStatus } from '../config/license';
+import { DEFAULT_PRESETS_STATE, PresetsStateType } from '../config/presets';
 import {
 	ActionStateType,
 	CrosshairWindowStateType,
@@ -33,6 +34,7 @@ export interface StoreType {
 	activeWindow: string;
 	actionState: ActionStateType;
 	license: LicenseStatus;
+	presets: PresetsStateType; // saved setups; see src/main/presets.ts
 	migrations: MigrationsType; // survives settings resets, so imports never re-run
 }
 
@@ -67,6 +69,9 @@ const schema: Store.Schema<StoreType> = {
 				type: 'string',
 			},
 			changeDisplay: {
+				type: 'string',
+			},
+			cyclePreset: {
 				type: 'string',
 			},
 			focusNextWindow: {
@@ -124,6 +129,14 @@ const schema: Store.Schema<StoreType> = {
 			v3ImportedAt: { type: 'number' },
 		},
 		default: {},
+	},
+	presets: {
+		type: 'object',
+		properties: {
+			items: { type: 'array' },
+			activeId: { type: 'string' },
+		},
+		default: DEFAULT_PRESETS_STATE,
 	},
 	license: {
 		type: 'object',

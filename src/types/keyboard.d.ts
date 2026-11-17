@@ -14,6 +14,7 @@ export interface CustomAcceleratorsType {
 	changeDisplay?: string;
 	focusNextWindow?: string;
 	closeAll?: string;
+	cyclePreset?: string;
 }
 
 export interface KeyboardShortcut {
