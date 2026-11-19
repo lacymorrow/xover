@@ -1,8 +1,9 @@
 /**
  * @jest-environment node
  *
- * Presets, LAC-5974. The model, v3 import grandfathering, the gate and the
- * foreground matcher. Pro scope: Lacy, 2026-11-16, LAC-7622.
+ * Presets, LAC-5974. The model, v3 import, the gate and the foreground
+ * matcher. Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10.
+ * Do not restore a free carve-out for imported presets.
  */
 import { MAX_PRESETS, PresetType } from '../config/presets';
 import {
@@ -48,21 +49,22 @@ const preset = (id: string, extra: Partial<PresetType> = {}): PresetType => ({
 });
 
 describe('gate', () => {
-	it('free keeps every v3 action and loses only create and auto', () => {
+	// Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10.
+	// Do not restore a carve-out for presets imported from v3.
+	it('free can only delete', () => {
 		expect(presetPermissions(false)).toEqual({
-			apply: true,
-			cycle: true,
-			rename: true,
+			apply: false,
+			cycle: false,
+			rename: false,
 			delete: true,
-			clearApp: true,
+			clearApp: false,
 			create: false,
 			setApp: false,
 			autoSwitch: false,
 		});
 	});
-	it('Pro adds create and auto', () => {
-		const p = presetPermissions(true);
-		expect(p.create && p.setApp && p.autoSwitch).toBe(true);
+	it('Pro can do everything', () => {
+		expect(Object.values(presetPermissions(true)).every(Boolean)).toBe(true);
 	});
 });
 
@@ -114,7 +116,7 @@ describe('model', () => {
 	});
 });
 
-describe('v3 import grandfathering', () => {
+describe('v3 import keeps presets for Pro', () => {
 	const ctx = { crosshairsDir: '/c', fileExists: () => false };
 	const v3 = {
 		crosshair: { size: 40 },
@@ -156,13 +158,14 @@ describe('v3 import grandfathering', () => {
 	it('imports the cycle keybind', () => {
 		expect(result.keybinds.cyclePreset).toBe('Control+Shift+Alt+K');
 	});
-	it('imported presets stay usable for a free user', () => {
+	it('imported presets get no free carve-out', () => {
+		// Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10.
 		const can = presetPermissions(false);
 		expect(result.presets.every((p) => p.imported)).toBe(true);
 		expect([can.apply, can.cycle, can.rename, can.delete]).toEqual([
-			true,
-			true,
-			true,
+			false,
+			false,
+			false,
 			true,
 		]);
 		expect(nextPreset(result.presets, result.presets[0].id)).toBe(

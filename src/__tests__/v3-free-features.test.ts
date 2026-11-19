@@ -45,14 +45,12 @@ const V3_FREE_FEATURES = [
 /**
  * A flag may only stay `true` for a feature v3 never had.
  *
- * `profiles` stays true ON PURPOSE. Lacy decided on 2026-11-16 (recorded on
- * Paperclip LAC-7622) that Pro = presets + auto profiles, with layouts folded
- * in. v3.4.8 did ship presets free (crossover `src/main/presets.js`, hotkey
- * preferences.js:84), so the gate is limited to what v3 never had: CREATING
- * new presets and AUTO PROFILES. Apply, cycle, rename and delete are free and
- * v3 presets are imported flagged and stay usable (see
- * preset-grandfathering.test.ts). Do not "fix" this back to false, and do not
- * widen the gate to the free actions. This supersedes LAC-7713.
+ * `profiles` stays true ON PURPOSE. Pro = presets + auto profiles, with
+ * layouts folded in (LAC-7622). Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10.
+ * v3 shipped presets in 3.4.9 and removes them in 3.4.10, so nothing is taken
+ * from a v3 user. Without Pro only delete works; apply, cycle, save, rename
+ * and auto profiles are Pro, imported presets included. Do not "fix" this
+ * back to false and do not restore a carve-out for imported presets.
  */
 const ALLOWED_PREMIUM_FLAGS = ['profiles'];
 
@@ -164,39 +162,41 @@ describe('Pro upsell copy', () => {
 });
 
 /**
- * Presets (Lacy, 2026-11-16, LAC-7622): the gate is on creating presets and on
- * auto profiles only. The free actions must carry no gate at the call sites.
+ * Presets: Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10.
+ * Everything except delete is gated in the main process.
  */
-describe('presets gate only what v3 never had', () => {
-	const model = () => source('src/main/preset-model.ts');
+describe('presets are Pro for everyone', () => {
 	const glue = () => source('src/main/presets.ts');
 
-	it('grants every v3 preset action without a license', () => {
+	it('grants only delete without a license', () => {
 		const { presetPermissions } = jest.requireActual('../main/preset-model');
 		expect(presetPermissions(false)).toMatchObject({
-			apply: true,
-			cycle: true,
-			rename: true,
+			apply: false,
+			cycle: false,
+			rename: false,
+			create: false,
+			setApp: false,
 			delete: true,
 		});
 	});
 
-	it('gates create and auto profiles in the main process', () => {
-		expect(model()).toMatch(/create: isPremium/);
-		expect(model()).toMatch(/setApp: isPremium/);
-		expect(glue()).toMatch(/permissions|presetPermissions\(isPremium\(\)\)/);
-	});
-
-	it.each(['applyPreset', 'cyclePreset', 'renameSavedPreset', 'deletePreset'])(
-		'%s does not check the license',
+	it.each(['savePreset', 'applyPreset', 'cyclePreset', 'renameSavedPreset'])(
+		'%s checks the license in the main process',
 		(fn) => {
 			const text = glue();
 			const start = text.indexOf(`export const ${fn}`);
 			const end = text.indexOf('\nexport const', start + 10);
 			expect(start).toBeGreaterThan(-1);
-			expect(text.slice(start, end === -1 ? undefined : end)).not.toMatch(
-				/isPremium|presetPermissions/,
+			expect(text.slice(start, end === -1 ? undefined : end)).toMatch(
+				/presetPermissions\(isPremium\(\)\)/,
 			);
 		},
 	);
+
+	it('deletePreset does not check the license', () => {
+		const text = glue();
+		const start = text.indexOf('export const deletePreset');
+		const end = text.indexOf('\nexport const', start + 10);
+		expect(text.slice(start, end)).not.toMatch(/isPremium|presetPermissions/);
+	});
 });

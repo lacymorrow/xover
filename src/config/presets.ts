@@ -29,7 +29,7 @@ export interface PresetType {
 	windows: PresetWindowType[];
 	/** App-wide settings a v3 preset also carried (ADS, tilt, follow mouse). Imported only. */
 	settings?: Partial<SettingsType>;
-	/** Came from CrossOver v3. Imported presets stay fully usable without Pro. */
+	/** Provenance only. Imported presets get no special treatment: Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10. */
 	imported?: boolean;
 	/** Auto profile: "Switch to this when <app> is in front". Pro. */
 	app?: PresetAppType;
@@ -52,7 +52,6 @@ export const DEFAULT_PRESETS_STATE: PresetsStateType = {
 export interface PresetSummaryType {
 	id: string;
 	name: string;
-	imported: boolean;
 	windowCount: number;
 	app?: PresetAppType;
 	lastUsedAt: number;
