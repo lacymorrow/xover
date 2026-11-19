@@ -73,11 +73,9 @@ function AutoProfileRow({
 	return (
 		<div className="space-y-1">
 			<div className="flex flex-wrap items-center gap-2 text-sm">
-				<label htmlFor={`app-${preset.id}`} className="text-muted-foreground">
-					Switch to this when
-				</label>
+				<span className="text-muted-foreground">Switch to this when</span>
 				<select
-					id={`app-${preset.id}`}
+					aria-label={`App that switches to ${preset.name}`}
 					className={selectClass}
 					value={saved?.id ?? NO_APP}
 					onMouseDown={load}
