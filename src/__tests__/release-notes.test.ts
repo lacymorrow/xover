@@ -49,8 +49,9 @@ describe('the release job can run it with bare node', () => {
 		expect(body).toBe(PRO_NOTE_TEXT);
 	});
 
-	it('keeps the promise the note rests on', () => {
-		expect(body).toContain('Everything that was free in v3 is still free');
+	it('promises only what is true: the crosshair stays free, and no v3 claim', () => {
+		expect(body).toContain('It stays free.');
+		expect(body).not.toMatch(/\bv3\b/i);
 	});
 
 	it('quotes the price the app is configured to charge', () => {
