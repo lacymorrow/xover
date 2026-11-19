@@ -14,6 +14,7 @@ import os from 'os';
 import path from 'path';
 import {
 	CONFIG_FILE_NAME,
+	preserveUnreadableConfig,
 	repairConfigFile,
 	repairStoreFileOnDisk,
 } from '../main/config-file';
@@ -194,5 +195,60 @@ describe('the store reading a repaired config', () => {
 		expect(repairConfigFile(configPath).action).toBe('quarantined');
 
 		expect(loadStore().get('settings').showDockIcon).toBe(true);
+	});
+});
+
+describe('quarantine naming', () => {
+	// renameSync overwrites whatever is at its destination, so two quarantines
+	// that work out the same name lose the first file. A timestamp on its own
+	// collides inside a millisecond, which is well within reach of two repairs
+	// in one process (LAC-8624 item 3).
+	it('never overwrites a copy it already wrote', () => {
+		const frozen = jest
+			.spyOn(Date.prototype, 'toISOString')
+			.mockReturnValue('2026-11-19T00:00:00.000Z');
+
+		try {
+			write('{"first":');
+			const first = repairConfigFile(configPath);
+
+			write('{"second":');
+			const second = repairConfigFile(configPath);
+
+			expect(first.action).toBe('quarantined');
+			expect(second.action).toBe('quarantined');
+			expect(second.backupPath).not.toBe(first.backupPath);
+			expect(fs.readFileSync(first.backupPath as string, 'utf8')).toBe(
+				'{"first":',
+			);
+			expect(fs.readFileSync(second.backupPath as string, 'utf8')).toBe(
+				'{"second":',
+			);
+		} finally {
+			frozen.mockRestore();
+		}
+	});
+});
+
+describe('preserveUnreadableConfig', () => {
+	// store.ts's last resort, for the file electron-store refused to parse and
+	// the repair could not move aside. It copies rather than renames because the
+	// rename is what already failed.
+	it('copies the file aside and leaves the original where conf expects it', () => {
+		write('{"settings":');
+
+		const backupPath = preserveUnreadableConfig(configPath);
+
+		expect(backupPath).toBeDefined();
+		expect(fs.readFileSync(backupPath as string, 'utf8')).toBe('{"settings":');
+		expect(read()).toBe('{"settings":');
+	});
+
+	it('returns nothing instead of throwing when there is no file to copy', () => {
+		expect(preserveUnreadableConfig(configPath)).toBeUndefined();
+
+		fs.mkdirSync(configPath);
+
+		expect(preserveUnreadableConfig(configPath)).toBeUndefined();
 	});
 });
