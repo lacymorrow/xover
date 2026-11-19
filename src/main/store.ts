@@ -12,6 +12,7 @@ import {
 	WindowStateType,
 } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
+import { repairStoreFileOnDisk } from './config-file';
 
 export interface MigrationsType {
 	v3Imported?: boolean;
@@ -302,6 +303,17 @@ const schema: Store.Schema<StoreType> = {
 	},
 };
 
-const store = new Store<StoreType>({ schema });
+// electron-store reads and validates config.json inside its constructor, and
+// this module is evaluated at import time, before the logger's error handler
+// exists. A file it can't parse used to throw here and leave a running process
+// with no window and no log line (LAC-8618), so repair the file first.
+repairStoreFileOnDisk();
+
+const store = new Store<StoreType>({
+	schema,
+	// Last resort if the repair above could not run: start from defaults rather
+	// than throw out of this module. Only applies to a JSON parse error.
+	clearInvalidConfig: true,
+});
 
 export default store;
