@@ -40,6 +40,15 @@ const SET_WINDOW_STATE = 'set-window-state';
 const OPEN_SETTINGS = 'open-settings';
 const CLOSE_ALL_WINDOWS = 'close-all-windows';
 
+// Presets
+const PRESETS_GET = 'presets-get';
+const PRESET_SAVE = 'preset-save';
+const PRESET_APPLY = 'preset-apply';
+const PRESET_RENAME = 'preset-rename';
+const PRESET_DELETE = 'preset-delete';
+const PRESET_SET_APP = 'preset-set-app';
+const PRESETS_RUNNING_APPS = 'presets-running-apps';
+
 // License
 const ACTIVATE_LICENSE = 'activate-license';
 const DEACTIVATE_LICENSE = 'deactivate-license';
@@ -81,6 +90,15 @@ export const ipcChannels = {
 	SET_WINDOW_STATE,
 	OPEN_SETTINGS,
 	CLOSE_ALL_WINDOWS,
+
+	// Presets
+	PRESETS_GET,
+	PRESET_SAVE,
+	PRESET_APPLY,
+	PRESET_RENAME,
+	PRESET_DELETE,
+	PRESET_SET_APP,
+	PRESETS_RUNNING_APPS,
 
 	// License
 	ACTIVATE_LICENSE,

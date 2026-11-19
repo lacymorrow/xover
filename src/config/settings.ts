@@ -277,6 +277,8 @@ export const DEFAULT_KEYBINDS: CustomAcceleratorsType = {
 	moveLeft: `${accelerator}+Left`,
 	moveRight: `${accelerator}+Right`,
 	closeAll: `${accelerator}+W`,
+	// Next preset, wrapping. v3's default was the same combo (preferences.js:84)
+	cyclePreset: `${accelerator}+P`,
 	// profile1: `${accelerator}+1`,
 	// profile2: `${accelerator}+2`,
 	// profile3: `${accelerator}+3`,

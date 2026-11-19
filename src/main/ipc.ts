@@ -15,6 +15,15 @@ import {
 	getLicenseStatus,
 } from './license';
 import { notification } from './notifications';
+import {
+	applyPreset,
+	deletePreset,
+	getPresetsView,
+	getRunningApps,
+	renameSavedPreset,
+	savePreset,
+	setPresetApp,
+} from './presets';
 import { rendererPaths } from './paths';
 import { resetSettings } from './reset';
 import sounds from './sounds';
@@ -204,6 +213,34 @@ export default {
 		ipcMain.on(ipcChannels.FOCUS_WINDOW_MAIN, () => {
 			focusNextWindow();
 		});
+
+		// Presets. The gates live in presets.ts, not here or in the renderer.
+		ipcMain.handle(ipcChannels.PRESETS_GET, () => getPresetsView());
+		ipcMain.handle(ipcChannels.PRESET_SAVE, (_event, name?: string) =>
+			savePreset(typeof name === 'string' ? name : undefined),
+		);
+		ipcMain.handle(ipcChannels.PRESET_APPLY, async (_event, id: string) => ({
+			ok: await applyPreset(String(id)),
+		}));
+		ipcMain.handle(
+			ipcChannels.PRESET_RENAME,
+			(_event, id: string, name: string) =>
+				renameSavedPreset(String(id), String(name)),
+		);
+		ipcMain.handle(ipcChannels.PRESET_DELETE, (_event, id: string) =>
+			deletePreset(String(id)),
+		);
+		ipcMain.handle(
+			ipcChannels.PRESET_SET_APP,
+			(_event, id: string, appRef: { id: string; name: string } | null) =>
+				setPresetApp(
+					String(id),
+					appRef && typeof appRef.id === 'string' && appRef.id
+						? { id: appRef.id, name: String(appRef.name || appRef.id) }
+						: null,
+				),
+		);
+		ipcMain.handle(ipcChannels.PRESETS_RUNNING_APPS, () => getRunningApps());
 
 		// License
 		const withLicenseSync =

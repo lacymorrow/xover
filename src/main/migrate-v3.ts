@@ -16,6 +16,7 @@ import {
 	ThemeType,
 } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
+import { PresetType } from '../config/presets';
 
 export interface V3ImportContext {
 	/** Absolute path of the v4 bundled crosshairs directory */
@@ -31,6 +32,10 @@ export interface V3ImportResult {
 	customImages: string[];
 	imported: string[];
 	skipped: string[];
+	/** v3 presets, flagged `imported`. Usable without Pro (LAC-7622, 2026-11-16). */
+	presets: PresetType[];
+	/** Name of the preset v3 had active, to find it again by id. */
+	activePresetName: string;
 }
 
 type Dict = Record<string, unknown>;
@@ -64,6 +69,9 @@ const V3_RETICLES: Record<string, string> = {
 	off: 'none',
 };
 
+// v3 held at most ten presets (presets.js MAX_PRESETS)
+const MAX_V3_PRESETS = 10;
+
 const V3_APP_SIZES: Record<string, AppSizeModeType> = {
 	normal: 'normal',
 	resize: 'resizable',
@@ -81,6 +89,7 @@ const V3_KEYBINDS: Record<string, keyof CustomAcceleratorsType> = {
 	duplicate: 'duplicateWindow',
 	changeDisplay: 'changeDisplay',
 	nextWindow: 'focusNextWindow',
+	cyclePreset: 'cyclePreset',
 	moveUp: 'moveUp',
 	moveDown: 'moveDown',
 	moveLeft: 'moveLeft',
@@ -140,6 +149,66 @@ export const mapCrosshairImage = (
 	}
 
 	return undefined;
+};
+
+/**
+ * v3 stored presets as `hidden.presets: [{ name, settings: { crosshair, actions } }]`
+ * (v3 src/main/presets.js). Each one becomes a one-window v4 preset: the
+ * crosshair group is the window state and the actions group is app-wide
+ * settings, which v3 presets also restored. v3 never saved a position in a
+ * preset, so these have none and applying one leaves the window where it is.
+ *
+ * They are flagged `imported`, and an imported preset stays fully usable
+ * without Pro. Mapping reuses mapV3Preferences so a preset gets the same
+ * value conversions as the live crosshair.
+ */
+const mapV3Presets = (
+	prefs: Dict,
+	ctx: V3ImportContext,
+	customImages: string[],
+	imported: string[],
+	skipped: string[],
+): PresetType[] => {
+	const raw = isDict(prefs.hidden) ? prefs.hidden.presets : undefined;
+	if (!Array.isArray(raw)) return [];
+
+	const out: PresetType[] = [];
+	const names = new Set<string>();
+
+	raw.slice(0, MAX_V3_PRESETS).forEach((item, index) => {
+		if (!isDict(item) || !isDict(item.settings)) return;
+		const rawName = typeof item.name === 'string' ? item.name.trim() : '';
+		let name = (rawName || `Preset ${index + 1}`).slice(0, 60);
+		while (names.has(name)) name += ' (2)';
+		names.add(name);
+
+		// eslint-disable-next-line no-use-before-define
+		const mapped = mapV3Preferences(
+			{ crosshair: item.settings.crosshair, actions: item.settings.actions },
+			ctx,
+		);
+		if (!mapped) {
+			skipped.push(`hidden.presets[${index}] (${name}) (nothing to import)`);
+			return;
+		}
+
+		// Never carry a position: v3 excluded it from presets on purpose.
+		const { x: _x, y: _y, ...state } = mapped.windowState;
+		customImages.push(...mapped.customImages);
+		out.push({
+			id: `v3-${index}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+			name,
+			windows: [{ state }],
+			...(Object.keys(mapped.settings).length > 0
+				? { settings: mapped.settings }
+				: {}),
+			imported: true,
+			createdAt: 0,
+		});
+		imported.push(`hidden.presets[${index}] -> presets (imported, "${name}")`);
+	});
+
+	return out;
 };
 
 export const mapV3Preferences = (
@@ -425,6 +494,12 @@ export const mapV3Preferences = (
 		});
 	}
 
+	const presets = mapV3Presets(prefs, ctx, customImages, imported, skipped);
+	const activePresetName =
+		isDict(prefs.presets) && typeof prefs.presets.active === 'string'
+			? prefs.presets.active
+			: '';
+
 	return {
 		settings,
 		keybinds: kb,
@@ -432,5 +507,7 @@ export const mapV3Preferences = (
 		customImages,
 		imported,
 		skipped,
+		presets,
+		activePresetName,
 	};
 };

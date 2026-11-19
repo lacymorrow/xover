@@ -43,10 +43,16 @@ const V3_FREE_FEATURES = [
 ] as const;
 
 /**
- * A flag may only stay `true` for a feature v3 never had. `profiles` is a
- * placeholder with no implementation anywhere in `src/`, and v3.4.8 ships
- * presets free (crossover `src/main/presets.js`, hotkey preferences.js:84), so
- * it has to go false when profiles is actually built. Tracked on LAC-7713.
+ * A flag may only stay `true` for a feature v3 never had.
+ *
+ * `profiles` stays true ON PURPOSE. Lacy decided on 2026-11-16 (recorded on
+ * Paperclip LAC-7622) that Pro = presets + auto profiles, with layouts folded
+ * in. v3.4.8 did ship presets free (crossover `src/main/presets.js`, hotkey
+ * preferences.js:84), so the gate is limited to what v3 never had: CREATING
+ * new presets and AUTO PROFILES. Apply, cycle, rename and delete are free and
+ * v3 presets are imported flagged and stay usable (see
+ * preset-grandfathering.test.ts). Do not "fix" this back to false, and do not
+ * widen the gate to the free actions. This supersedes LAC-7713.
  */
 const ALLOWED_PREMIUM_FLAGS = ['profiles'];
 
@@ -155,4 +161,42 @@ describe('Pro upsell copy', () => {
 			expect(text).not.toMatch(claim);
 		});
 	});
+});
+
+/**
+ * Presets (Lacy, 2026-11-16, LAC-7622): the gate is on creating presets and on
+ * auto profiles only. The free actions must carry no gate at the call sites.
+ */
+describe('presets gate only what v3 never had', () => {
+	const model = () => source('src/main/preset-model.ts');
+	const glue = () => source('src/main/presets.ts');
+
+	it('grants every v3 preset action without a license', () => {
+		const { presetPermissions } = jest.requireActual('../main/preset-model');
+		expect(presetPermissions(false)).toMatchObject({
+			apply: true,
+			cycle: true,
+			rename: true,
+			delete: true,
+		});
+	});
+
+	it('gates create and auto profiles in the main process', () => {
+		expect(model()).toMatch(/create: isPremium/);
+		expect(model()).toMatch(/setApp: isPremium/);
+		expect(glue()).toMatch(/permissions|presetPermissions\(isPremium\(\)\)/);
+	});
+
+	it.each(['applyPreset', 'cyclePreset', 'renameSavedPreset', 'deletePreset'])(
+		'%s does not check the license',
+		(fn) => {
+			const text = glue();
+			const start = text.indexOf(`export const ${fn}`);
+			const end = text.indexOf('\nexport const', start + 10);
+			expect(start).toBeGreaterThan(-1);
+			expect(text.slice(start, end === -1 ? undefined : end)).not.toMatch(
+				/isPremium|presetPermissions/,
+			);
+		},
+	);
 });

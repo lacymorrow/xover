@@ -260,7 +260,9 @@
       "dist",
       "node_modules",
       "package.json",
-      "public"
+      "public",
+      "!node_modules/koffi/{doc,src,vendor}",
+      "!node_modules/koffi/build/koffi/{freebsd,openbsd,linux,musl}*"
     ],
     "npmRebuild": false,
     "afterSign": ".erb/scripts/notarize.js",

@@ -22,6 +22,7 @@ import { initializeAccessibilityCheck } from './accessibility';
 import { importV3Settings } from './import-v3';
 import { AutoUpdate } from './auto-update';
 import { checkLicense } from './license';
+import { initAutoProfiles } from './presets';
 import { debugInfo, is } from './util';
 import { scanImages } from './utils/getImages';
 import wayland from './wayland';
@@ -122,6 +123,9 @@ export const ready = async () => {
 	new AutoUpdate();
 
 	// Re-validate license if cache is stale
+	// Auto profiles only watch for a licensed user. Bound to license and preset
+	// writes, so the check below (and any expiry in it) re-syncs on its own.
+	initAutoProfiles();
 	checkLicense().catch((error) => {
 		Logger.error('License check on startup failed:', error);
 	});

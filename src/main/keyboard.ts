@@ -9,6 +9,7 @@ import windows from './windows';
 
 import { createDuplicateWindow, createNewWindow } from './create-window';
 import { notification } from './notifications';
+import { cyclePreset } from './presets';
 import { resetSettings } from './reset';
 import sounds from './sounds';
 import { getKeybinds, getSetting, setSettings } from './store-actions';
@@ -140,6 +141,15 @@ export const keyboardShortcuts: KeyboardShortcut[] = [
 		allowUnbind: true,
 		fn() {
 			focusNextWindow();
+		},
+	},
+
+	// Next preset. Not ignoreWhenLocked: it is for switching mid-game while locked.
+	{
+		action: 'cyclePreset',
+		allowUnbind: true,
+		fn() {
+			cyclePreset();
 		},
 	},
 

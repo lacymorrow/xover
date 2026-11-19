@@ -7,6 +7,7 @@ import { $appListeners, $errors, $init } from '../config/strings';
 import { createCrosshairWindow } from './create-window';
 import { stopIOHook } from './iohook';
 import keyboard from './keyboard';
+import { stopAutoProfileWatcher } from './presets';
 import {
 	startAlwaysOnTopGuard,
 	stopAlwaysOnTopGuard,
@@ -28,6 +29,7 @@ const releaseInput = () => {
 	stopIOHook();
 	keyboard.unregisterAll();
 	stopAlwaysOnTopGuard();
+	stopAutoProfileWatcher();
 };
 
 const register = () => {

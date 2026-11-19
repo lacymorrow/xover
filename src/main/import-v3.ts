@@ -86,6 +86,23 @@ export const importV3Settings = (): boolean => {
 			]);
 		}
 
+		// Presets: flagged imported, usable without Pro. A fresh uuid each, so the
+		// readable v3 id never collides with a later preset.
+		if (result.presets.length > 0) {
+			const items = result.presets.map((preset) => ({
+				...preset,
+				id: getUUID(),
+				createdAt: Date.now(),
+			}));
+			const active = items.find((p) => p.name === result.activePresetName);
+			store.set('presets', {
+				items,
+				// Only name an active preset v3 really had, else none: the list
+				// must not claim a preset the crosshair is not showing.
+				activeId: active?.id ?? '',
+			});
+		}
+
 		if (result.settings.startOnLogin) {
 			app.setLoginItemSettings({ openAtLogin: true });
 		}

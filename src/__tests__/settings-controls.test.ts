@@ -109,10 +109,10 @@ describe('settings window exposes every control it has keys for', () => {
 	// The counts are the second half of "remove nothing": without them a
 	// future change could delete a control and its key together and still
 	// pass every test above.
-	it('accounts for all 38 settings, 22 window-state keys and 14 keybinds', () => {
+	it('accounts for all 38 settings, 22 window-state keys and 15 keybinds', () => {
 		expect(settingKeys).toHaveLength(38);
 		expect(windowStateKeys).toHaveLength(22);
-		expect(keybindKeys).toHaveLength(14);
+		expect(keybindKeys).toHaveLength(15);
 	});
 });
 
@@ -121,6 +121,7 @@ describe('settings nav', () => {
 		expect(navItems.map((item) => item.title)).toEqual([
 			'Crosshair',
 			'In game',
+			'Presets',
 			'Shortcuts',
 			'App',
 			'Advanced',
