@@ -20,8 +20,8 @@ import { PRO_NOTE, PRO_NOTE_TEXT, PRO_PRICE_USD } from '../config/pro-note';
 
 /** Transcribed from reports/lac-7622-pro-note.md as Lacy approved it. */
 const APPROVED = [
-	"I started CrossOver in October 2019 and it's been free the whole time, every feature, no paywall. I want to keep it that way, so v4 adds Pro at $4.99 once. That covers the Apple notarization, the code signing certificate, the store fees, and the hours that go into keeping Windows, macOS and Linux all working.",
-	"Everything that was free in v3 is still free. Pro doesn't take anything away from you.",
+	'I started CrossOver in October 2019, and the crosshair has been free ever since. It stays free. CrossOver 4 adds Pro for $4.99, once.',
+	'Pro saves a crosshair for every game and switches to it the moment that game is in front. It also pays for the code signing, the store fees and the hours that keep CrossOver working on Windows, macOS and Linux.',
 ];
 
 const DOC = path.join(__dirname, '..', '..', 'docs', 'pro-note.md');
@@ -40,10 +40,9 @@ describe('the Pro note ships as approved', () => {
 		expect(PRO_NOTE_TEXT).not.toMatch(/decade/i);
 	});
 
-	it('keeps the promise the whole note rests on', () => {
-		expect(PRO_NOTE_TEXT).toContain(
-			'Everything that was free in v3 is still free',
-		);
+	it('promises only what is true: the crosshair stays free, and no v3 claim', () => {
+		expect(PRO_NOTE_TEXT).toContain('It stays free.');
+		expect(PRO_NOTE_TEXT).not.toMatch(/\bv3\b/i);
 	});
 
 	it('quotes the price the app is configured to charge', () => {

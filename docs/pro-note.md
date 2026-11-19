@@ -8,14 +8,14 @@ prints the GitHub release body; `release-v4.yml` in lacymorrow/crossover runs
 it and sets the body with `gh release edit`. Before that job existed every v4
 pre-release body on GitHub was empty (LAC-7622).
 
-Approved verbatim by Lacy on LAC-7622, 2026-11-11. `src/__tests__/pro-note.test.ts`
+Approved by Lacy 2026-11-19 (replaces the 2026-11-11 wording; public copy no longer mentions v3). `src/__tests__/pro-note.test.ts`
 keeps this file and the constant identical, so editing one without the other
 fails the build. Do not reword without his say so.
 
 <!-- BEGIN PRO NOTE -->
-I started CrossOver in October 2019 and it's been free the whole time, every feature, no paywall. I want to keep it that way, so v4 adds Pro at $4.99 once. That covers the Apple notarization, the code signing certificate, the store fees, and the hours that go into keeping Windows, macOS and Linux all working.
+I started CrossOver in October 2019, and the crosshair has been free ever since. It stays free. CrossOver 4 adds Pro for $4.99, once.
 
-Everything that was free in v3 is still free. Pro doesn't take anything away from you.
+Pro saves a crosshair for every game and switches to it the moment that game is in front. It also pays for the code signing, the store fees and the hours that keep CrossOver working on Windows, macOS and Linux.
 <!-- END PRO NOTE -->
 
 ## Before this ships
