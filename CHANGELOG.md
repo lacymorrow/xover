@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.0.0-beta.9
+
+### Changes
+
+- **Presets (Pro).** A preset saves every crosshair window: its crosshair, position and display. Apply one from Settings or cycle with Control+Shift+Alt+P. Presets you saved in CrossOver 3 come across and keep working without Pro.
+- **Auto profiles (Pro).** A preset can name an app. When that app comes to the front, CrossOver switches to the preset, and switches back when you leave it.
+- **Rotation and the second crosshair are free.** They were free in CrossOver 3.
+- **Pro is $4.99, once.**
+
+### Bug Fixes
+
+- Windows: the crosshair stays on top instead of falling behind fullscreen games.
+- Windows: the installer stops on systems CrossOver 4 can't run (32-bit Windows, or ARM on Windows 10) and leaves CrossOver 3 installed.
+- Windows builds are x64 again, not ARM.
+
 ## 4.0.0-beta.8
 
 ### Changes
