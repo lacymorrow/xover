@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.0-beta.10
+
+### Changes
+
+- **Presets and auto profiles are part of Pro.** Without Pro, saved presets are listed and locked. This replaces the beta.9 note about imported presets.
+- **New Pro note** on the License pane and the release page.
+
 ## 4.0.0-beta.9
 
 ### Changes
