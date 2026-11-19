@@ -20,19 +20,20 @@ export interface DisplayInfo {
 }
 
 /**
- * Who may do what. Pro adds creating presets and auto profiles. It takes
- * nothing away: applying, cycling, renaming and deleting are never gated, so a
- * v3 user keeps everything they had (LAC-7622, 2026-11-16).
+ * Who may do what. Presets are Pro for everyone. Without Pro a user sees their
+ * presets (listed, locked) and can delete them; apply, cycle, save, rename and
+ * auto profiles all need Pro. There is no carve-out for presets imported from
+ * v3. Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10. Do not restore one.
  */
 export const presetPermissions = (isPremium: boolean) => ({
-	apply: true,
-	cycle: true,
-	rename: true,
+	apply: isPremium,
+	cycle: isPremium,
+	rename: isPremium,
+	/** Deleting is always allowed, so nobody is stuck with presets they can't use. */
 	delete: true,
-	/** Clearing an app assignment removes behavior, so it is free. */
-	clearApp: true,
 	create: isPremium,
 	setApp: isPremium,
+	clearApp: isPremium,
 	/** The watcher only runs for Pro. Saved assignments are kept either way. */
 	autoSwitch: isPremium,
 });
@@ -71,7 +72,6 @@ export const uniqueName = (
 export const toSummary = (preset: PresetType): PresetSummaryType => ({
 	id: preset.id,
 	name: preset.name,
-	imported: !!preset.imported,
 	windowCount: preset.windows.length,
 	app: preset.app,
 	lastUsedAt: preset.lastUsedAt ?? 0,

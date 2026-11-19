@@ -186,8 +186,8 @@ function PresetRow({
 			<>
 				<button
 					type="button"
-					className={active ? buttonClass : primaryClass}
-					disabled={active}
+					className={active || !view.isPremium ? buttonClass : primaryClass}
+					disabled={active || !view.isPremium}
 					onClick={async () => {
 						await invoke(ipcChannels.PRESET_APPLY, preset.id);
 						onChanged();
@@ -198,6 +198,7 @@ function PresetRow({
 				<button
 					type="button"
 					className={buttonClass}
+					disabled={!view.isPremium}
 					onClick={() => setRenaming(true)}
 				>
 					Rename
@@ -237,11 +238,6 @@ function PresetRow({
 									Active
 								</span>
 							)}
-							{preset.imported && (
-								<span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-									Imported
-								</span>
-							)}
 						</p>
 					)}
 					<p className="text-sm text-muted-foreground">
@@ -254,7 +250,7 @@ function PresetRow({
 			</div>
 
 			{/* Auto profile: Pro. A licensed user gets the picker. Anyone else gets
-			    the badge and a link, plus a way to clear an app they already have. */}
+			    the badge and a link. */}
 			<PremiumGate
 				locked={
 					<div className="flex flex-wrap items-center gap-3">
@@ -264,18 +260,6 @@ function PresetRow({
 								: 'Switch to this when an app is in front.'}
 						</span>
 						<ProLink />
-						{preset.app && (
-							<button
-								type="button"
-								className="text-sm text-muted-foreground hover:text-foreground hover:underline"
-								onClick={async () => {
-									await invoke(ipcChannels.PRESET_SET_APP, preset.id, null);
-									onChanged();
-								}}
-							>
-								Clear
-							</button>
-						)}
 					</div>
 				}
 			>
@@ -294,10 +278,10 @@ function PresetRow({
 }
 
 /**
- * Presets (Pro to create). A preset is the whole setup: every crosshair
- * window, its look, position and display. Apply, cycle, rename and delete are
- * free, so presets imported from v3 keep working without a license.
- * Lacy, 2026-11-16, LAC-7622.
+ * Presets (Pro). A preset is the whole setup: every crosshair window, its
+ * look, position and display. Without Pro the list is shown locked and only
+ * delete works. Lacy 2026-11-19: presets are Pro for everyone; v3 drops
+ * presets in 3.4.10.
  */
 export function SettingsPresets() {
 	const { keybinds, app } = useGlobalContext();
@@ -339,6 +323,10 @@ export function SettingsPresets() {
 	const { presets, activeId } = view;
 	const cycle = keybinds.cyclePreset;
 	const modifierName = app.os === 'mac' ? 'Option' : 'Alt';
+	let hint = 'Cycling presets has no shortcut. Set one under Shortcuts.';
+	if (!view.isPremium) hint = 'Presets and auto profiles are part of Pro.';
+	else if (cycle)
+		hint = `Press ${cycle.replace('Alt', modifierName)} to switch to the next preset without opening this window.`;
 
 	return (
 		<div className="space-y-6">
@@ -383,11 +371,7 @@ export function SettingsPresets() {
 				{error && (
 					<p className="text-sm text-red-600 dark:text-red-400">{error}</p>
 				)}
-				<p className="text-sm text-muted-foreground">
-					{cycle
-						? `Press ${cycle.replace('Alt', modifierName)} to switch to the next preset without opening this window.`
-						: 'Cycling presets has no shortcut. Set one under Shortcuts.'}
-				</p>
+				<p className="text-sm text-muted-foreground">{hint}</p>
 			</div>
 
 			{presets.length === 0 ? (
@@ -396,7 +380,7 @@ export function SettingsPresets() {
 					<p className="mt-1 text-sm text-muted-foreground">
 						{view.isPremium
 							? 'Set up your crosshairs the way you want them, then save the setup here.'
-							: 'Presets you import from CrossOver v3, or save with Pro, appear here.'}
+							: 'Presets and auto profiles are part of Pro.'}
 					</p>
 				</div>
 			) : (

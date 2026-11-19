@@ -86,7 +86,7 @@ export const importV3Settings = (): boolean => {
 			]);
 		}
 
-		// Presets: flagged imported, usable without Pro. A fresh uuid each, so the
+		// Presets: flagged imported, kept for when someone buys Pro. A fresh uuid each, so the
 		// readable v3 id never collides with a later preset.
 		if (result.presets.length > 0) {
 			const items = result.presets.map((preset) => ({

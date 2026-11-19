@@ -1,13 +1,14 @@
 /**
- * Presets (Pro to create) and auto profiles (Pro). Port of v3 presets
+ * Presets and auto profiles (Pro). Port of v3 presets
  * (crossover #569, `src/main/presets.js`), widened from "crosshair settings" to
  * "the whole setup": every crosshair window, its own crosshair state, position
  * and display. That is the layouts feature, folded in (Lacy, 2026-11-16,
  * LAC-7622). The model and the rules live in preset-model.ts and
  * auto-profile.ts; this file is the Electron side.
  *
- * Pro gates creating presets and auto profiles only. Apply, cycle, rename and
- * delete are never gated, so a v3 user's imported presets keep working.
+ * Presets are Pro for everyone, imported ones included. Without Pro only
+ * delete works; the gate is presetPermissions in preset-model.ts.
+ * Lacy 2026-11-19: presets are Pro for everyone; v3 drops presets in 3.4.10.
  */
 import { app, screen } from 'electron';
 import Logger from 'electron-log';
@@ -180,6 +181,7 @@ export const applyPreset = (
 	id: string,
 	source: 'manual' | 'cycle' | 'auto' = 'manual',
 ): Promise<boolean> => {
+	if (!presetPermissions(isPremium()).apply) return Promise.resolve(false);
 	const preset = findPreset(read().items, id);
 	if (!preset) return Promise.resolve(false);
 	// eslint-disable-next-line no-use-before-define
@@ -206,6 +208,8 @@ export const applyPreset = (
 };
 
 export const cyclePreset = () => {
+	// Without Pro the keybind does nothing, not even a notification.
+	if (!presetPermissions(isPremium()).cycle) return Promise.resolve(false);
 	const { items, activeId } = read();
 	const next = nextPreset(items, activeId);
 	if (!next) {
@@ -224,6 +228,8 @@ export const renameSavedPreset = (
 	id: string,
 	name: string,
 ): PresetActionResult => {
+	if (!presetPermissions(isPremium()).rename)
+		return { ok: false, reason: 'pro' };
 	const state = read();
 	if (!findPreset(state.items, id)) return { ok: false, reason: 'missing' };
 	write({ ...state, items: renamePreset(state.items, id, name) });

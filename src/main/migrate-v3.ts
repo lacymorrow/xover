@@ -32,7 +32,7 @@ export interface V3ImportResult {
 	customImages: string[];
 	imported: string[];
 	skipped: string[];
-	/** v3 presets, flagged `imported`. Usable without Pro (LAC-7622, 2026-11-16). */
+	/** v3 presets, flagged `imported`. They need Pro like any preset (Lacy 2026-11-19). */
 	presets: PresetType[];
 	/** Name of the preset v3 had active, to find it again by id. */
 	activePresetName: string;
@@ -158,8 +158,9 @@ export const mapCrosshairImage = (
  * settings, which v3 presets also restored. v3 never saved a position in a
  * preset, so these have none and applying one leaves the window where it is.
  *
- * They are flagged `imported`, and an imported preset stays fully usable
- * without Pro. Mapping reuses mapV3Preferences so a preset gets the same
+ * They are flagged `imported` (provenance only: they need Pro like any
+ * preset, Lacy 2026-11-19, and are kept so they are there when someone buys
+ * Pro). Mapping reuses mapV3Preferences so a preset gets the same
  * value conversions as the live crosshair.
  */
 const mapV3Presets = (
