@@ -13,18 +13,20 @@
  * after electron-builder:
  *
  *   npm run assert:win-arch
+ *
+ * The classification lives in `win-payload.js` so `npm test` can cover it
+ * without a build (LAC-8625).
  */
 
 import fs from 'fs';
 import path from 'path';
 import { build, productName } from '../../package.json';
-
-// IMAGE_FILE_MACHINE_*, winnt.h
-const PE_MACHINE = {
-	x64: 0x8664,
-	arm64: 0xaa64,
-	ia32: 0x014c,
-};
+import {
+	PE_MACHINE,
+	classifyAddons,
+	machineName,
+	peMachine,
+} from './win-payload';
 
 // electron-builder names the x64 output dir `win-unpacked` and every other
 // arch `win-<arch>-unpacked`.
@@ -33,29 +35,6 @@ const unpackedDirFor = (arch) =>
 
 const failures = [];
 const checked = [];
-
-/** Machine field of a PE file, or null if it is not a PE file at all. */
-const peMachine = (file) => {
-	const fd = fs.openSync(file, 'r');
-	try {
-		const head = Buffer.alloc(0x40);
-		if (fs.readSync(fd, head, 0, head.length, 0) < head.length) return null;
-		if (head.readUInt16LE(0) !== 0x5a4d) return null; // 'MZ'
-
-		const peOffset = head.readUInt32LE(0x3c);
-		const sig = Buffer.alloc(6);
-		if (fs.readSync(fd, sig, 0, sig.length, peOffset) < sig.length) return null;
-		if (sig.readUInt32LE(0) !== 0x00004550) return null; // 'PE\0\0'
-
-		return sig.readUInt16LE(4);
-	} finally {
-		fs.closeSync(fd);
-	}
-};
-
-const machineName = (machine) =>
-	Object.keys(PE_MACHINE).find((arch) => PE_MACHINE[arch] === machine) ??
-	`0x${(machine ?? 0).toString(16)}`;
 
 const expectArch = (file, arch) => {
 	const machine = peMachine(file);
@@ -70,40 +49,6 @@ const expectArch = (file, arch) => {
 		checked.push(file);
 	}
 };
-
-/** Every `.node` addon under a directory, however deep. */
-const addons = (dir) =>
-	fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-		const full = path.join(dir, entry.name);
-		if (entry.isDirectory()) return addons(full);
-		return entry.name.endsWith('.node') ? [full] : [];
-	});
-
-/**
- * The `prebuilds/<platform>-<arch>/` directory an addon sits in, if any.
- * node-gyp-build loads the one matching the running platform at runtime, so
- * the other platforms' copies ride along in the package and prove nothing.
- */
-const prebuildTarget = (file) => {
-	const parts = file.split(path.sep);
-	const at = parts.lastIndexOf('prebuilds');
-	return at >= 0 ? parts[at + 1] : null;
-};
-
-/** The Windows addons that should be loadable on `arch`, flagging the rest. */
-const windowsAddonsIn = (resources, arch) =>
-	addons(resources)
-		.filter((addon) => {
-			const prebuild = prebuildTarget(addon);
-			return prebuild === null || prebuild.startsWith('win32-');
-		})
-		.filter((addon) => {
-			const prebuild = prebuildTarget(addon);
-			if (prebuild === null || prebuild === `win32-${arch}`) return true;
-
-			failures.push(`${addon}: a Windows prebuild for the wrong arch`);
-			return false;
-		});
 
 const checkArch = (arch) => {
 	if (!PE_MACHINE[arch]) {
@@ -122,14 +67,16 @@ const checkArch = (arch) => {
 	// A cross-build can get the Electron shell right and still bundle the
 	// host's native modules, which fails at runtime instead of at build.
 	const resources = path.join(unpacked, 'resources');
-	const found = fs.existsSync(resources)
-		? windowsAddonsIn(resources, arch)
-		: [];
-	found.forEach((addon) => expectArch(addon, arch));
+	const payload = fs.existsSync(resources)
+		? classifyAddons(resources, arch)
+		: { load: [], failures: [] };
+
+	failures.push(...payload.failures);
+	payload.load.forEach((addon) => expectArch(addon, arch));
 
 	// The global input hook is a native addon, so an app packaged without one
 	// launches and then ignores every shortcut.
-	if (found.length === 0)
+	if (payload.load.length === 0)
 		failures.push(`${unpacked}: no win32-${arch} native addon in the package`);
 };
 
