@@ -50,11 +50,37 @@ const isPlainObject = (value: unknown): boolean =>
 const errorMessage = (error: unknown): string =>
 	error instanceof Error ? error.message : String(error);
 
-// Colons are not legal in Windows filenames, so no toISOString() as-is.
-const stamp = (): string => new Date().toISOString().replace(/[:.]/g, '-');
+let sequence = 0;
+
+// Colons are not legal in Windows filenames, so no toISOString() as-is. The pid
+// and counter are what keep two repairs in the same millisecond apart: renameSync
+// overwrites its destination, so a repeated name silently destroys the copy the
+// previous one kept (LAC-8624 item 3).
+const stamp = (): string => {
+	sequence += 1;
+
+	return `${new Date().toISOString().replace(/[:.]/g, '-')}-${
+		process.pid
+	}-${sequence}`;
+};
+
+// Belt and braces for the one case the pid and counter cannot cover: a name left
+// by an earlier run of a recycled pid, after a clock that went backwards.
+const freePath = (candidate: string): string => {
+	let result = candidate;
+
+	for (let attempt = 1; attempt < 100 && fs.existsSync(result); attempt += 1) {
+		result = `${candidate}-${attempt}`;
+	}
+
+	return result;
+};
+
+const backupPathFor = (filePath: string): string =>
+	freePath(`${filePath}.corrupt-${stamp()}`);
 
 const quarantine = (filePath: string): ConfigRepairResult => {
-	const backupPath = `${filePath}.corrupt-${stamp()}`;
+	const backupPath = backupPathFor(filePath);
 
 	try {
 		fs.renameSync(filePath, backupPath);
@@ -137,6 +163,27 @@ export const repairConfigFile = (filePath: string): ConfigRepairResult => {
 	}
 
 	return hasBom ? rewriteWithoutBom(filePath, body) : { action: 'none' };
+};
+
+/**
+ * Keep a copy of a config file that electron-store refused to parse and that
+ * repairConfigFile() could not move aside, so the next thing to write the file
+ * is not the only record of what was in it. Copies instead of renaming: the
+ * rename is the call that already failed. Never throws, and returns undefined
+ * when no copy could be made.
+ */
+export const preserveUnreadableConfig = (
+	filePath: string,
+): string | undefined => {
+	const backupPath = backupPathFor(filePath);
+
+	try {
+		fs.copyFileSync(filePath, backupPath);
+	} catch {
+		return undefined;
+	}
+
+	return backupPath;
 };
 
 export const resolveConfigFilePath = (): string =>

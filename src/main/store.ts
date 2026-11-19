@@ -1,3 +1,4 @@
+import Logger from 'electron-log';
 import Store from 'electron-store';
 import { DEFAULT_LICENSE_STATUS, LicenseStatus } from '../config/license';
 import { DEFAULT_PRESETS_STATE, PresetsStateType } from '../config/presets';
@@ -12,7 +13,12 @@ import {
 	WindowStateType,
 } from '../config/settings';
 import { CustomAcceleratorsType } from '../types/keyboard';
-import { repairStoreFileOnDisk } from './config-file';
+import {
+	CONFIG_FILE_NAME,
+	preserveUnreadableConfig,
+	repairStoreFileOnDisk,
+	resolveConfigFilePath,
+} from './config-file';
 
 export interface MigrationsType {
 	v3Imported?: boolean;
@@ -307,13 +313,50 @@ const schema: Store.Schema<StoreType> = {
 // this module is evaluated at import time, before the logger's error handler
 // exists. A file it can't parse used to throw here and leave a running process
 // with no window and no log line (LAC-8618), so repair the file first.
-repairStoreFileOnDisk();
+const repair = repairStoreFileOnDisk();
 
-const store = new Store<StoreType>({
-	schema,
-	// Last resort if the repair above could not run: start from defaults rather
-	// than throw out of this module. Only applies to a JSON parse error.
-	clearInvalidConfig: true,
-});
+// `clearInvalidConfig` lets conf discard a config.json it cannot parse and
+// overwrite it on the first set(), keeping no copy of what the user had, so it
+// is only safe once the file is known-good: the repair above either found
+// nothing wrong ('none') or fixed it in place ('bom-stripped'). On 'quarantined'
+// the bad file is already saved aside and gone from this path, and on 'failed'
+// it may still be sitting there as the user's only copy (LAC-8624 item 2).
+const configIsKnownGood =
+	repair.action === 'none' || repair.action === 'bom-stripped';
+
+const openStore = (clearInvalidConfig: boolean) =>
+	new Store<StoreType>({ schema, clearInvalidConfig });
+
+// The one failure conf will swallow if asked to, and the only one a retry can
+// get past. Same check conf makes internally.
+const isParseError = (error: unknown): boolean =>
+	error instanceof Error && error.name === 'SyntaxError';
+
+const openStoreWithRecovery = (): Store<StoreType> => {
+	try {
+		return openStore(configIsKnownGood);
+	} catch (error) {
+		// Throwing out of this module is the windowless process of LAC-8618, so a
+		// parse error has to end in a working store. Keep a copy of the file
+		// before the retry, because the retry is what lets conf overwrite it.
+		if (!isParseError(error)) {
+			throw error;
+		}
+
+		const backupPath = preserveUnreadableConfig(resolveConfigFilePath());
+
+		Logger.error(
+			`[config] electron-store could not parse ${CONFIG_FILE_NAME}: ${
+				(error as Error).message
+			}. ${
+				backupPath ? `Kept a copy at ${backupPath}.` : 'Could not keep a copy.'
+			} Starting from defaults.`,
+		);
+
+		return openStore(true);
+	}
+};
+
+const store = openStoreWithRecovery();
 
 export default store;
