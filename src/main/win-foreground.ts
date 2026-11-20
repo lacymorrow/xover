@@ -9,13 +9,16 @@
  * PROCESS_QUERY_LIMITED_INFORMATION + QueryFullProcessImageNameW). No window
  * title, no process memory, no hooks.
  *
- * koffi is loaded lazily. If it cannot load (missing binary, blocked by
+ * koffi is loaded lazily, on Windows only. If it cannot load (missing binary, blocked by
  * policy) `loadWin()` returns null once, logs one line, and auto profiles turn
  * themselves off. Nothing throws into the app.
  */
 import Logger from 'electron-log';
 import path from 'path';
 import { RunningAppType } from '../config/presets';
+
+// eslint-disable-next-line camelcase, no-underscore-dangle
+declare const __non_webpack_require__: typeof require | undefined;
 
 const PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
 const PATH_CHARS = 1024;
@@ -29,9 +32,17 @@ interface WinApi {
 let api: WinApi | null | undefined;
 
 const build = (): WinApi => {
-	// Lazy and by name so webpack leaves the native module to node's resolver.
-	// eslint-disable-next-line global-require, import/no-unresolved
-	const koffi = require('koffi');
+	// Never a bare require('koffi'): webpack hoists every bare external require
+	// into the bundle's first line, which loaded koffi at startup on macOS and
+	// Linux too (the Linux package ships no koffi binary). Unbundled (dev, jest)
+	// there is no __non_webpack_require__, so fall back to node's own.
+	/* eslint-disable camelcase */
+	const nodeRequire =
+		typeof __non_webpack_require__ === 'function'
+			? __non_webpack_require__
+			: require;
+	/* eslint-enable camelcase */
+	const koffi = nodeRequire('koffi');
 	const user32 = koffi.load('user32.dll');
 	const kernel32 = koffi.load('kernel32.dll');
 

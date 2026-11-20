@@ -2,7 +2,7 @@
   "name": "crossover",
   "productName": "CrossOver",
   "appId": "com.lacymorrow.crossover",
-  "version": "4.0.0-beta.10",
+  "version": "4.0.0-beta.11",
   "description": "A Crosshair Overlay for any screen.",
   "company": "Fly5",
   "license": "CC-BY-NC-SA-4.0",
@@ -39,7 +39,7 @@
   "main": "./src/main/main.ts",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
-    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
+    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts && node ./.erb/scripts/assert-lazy-natives.js",
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
@@ -268,6 +268,9 @@
     "npmRebuild": false,
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
+      "files": [
+        "!node_modules/uiohook-napi/{build,bin}"
+      ],
       "target": {
         "target": "default",
         "arch": [

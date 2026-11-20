@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.0-beta.11
+
+### Bug Fixes
+
+- macOS: CrossOver opens on Intel Macs again. The universal build carried an Apple silicon copy of the input hook where Intel looked first.
+- Linux: CrossOver no longer loads the Windows-only foreground reader at startup.
+
 ## 4.0.0-beta.10
 
 ### Changes
