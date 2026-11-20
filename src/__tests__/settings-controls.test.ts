@@ -135,3 +135,86 @@ describe('settings nav', () => {
 		expect(navItems.find((item) => item.index)?.href).toBe('crosshair');
 	});
 });
+
+/**
+ * The other half of "remove nothing": a control that costs money has to keep
+ * its gate.
+ *
+ * LAC-6072 asked for this on the three gates PR #65 moved across file
+ * boundaries - crosshair rotation, reticle rotation, secondary crosshair.
+ * Those are not gated any more and must not be: beta.8 shipped them behind
+ * the paywall, Lacy retracted it (LAC-7671), and `v3-free-features.test.ts`
+ * now asserts both of those panes carry no gate at all. Asserting a gate
+ * there would re-break the rule it was filed to protect.
+ *
+ * Presets are where the live gates ended up (LAC-7622, Lacy 2026-11-19), and
+ * nothing guarded them: deleting either `<PremiumGate>` from
+ * SettingsPresets.tsx left all 78 tests here green. The main process still
+ * refuses the operation either way (`presetPermissions(isPremium())`, pinned
+ * in `v3-free-features.test.ts`), so a dropped gate is not a licensing
+ * bypass - it hands a free user live controls that silently fail.
+ */
+const presetsPaneSource = fs.readFileSync(
+	path.join(SETTINGS_UI_ROOT, 'presets', 'SettingsPresets.tsx'),
+	'utf8',
+);
+
+/**
+ * The source between each `<PremiumGate` and its matching close, so a control
+ * can be checked for being *inside* a gate rather than merely near one. A
+ * self-closing gate wraps nothing, so it is deliberately not matched here and
+ * shows up as a missing region below.
+ */
+const gatedRegions = (source: string): string[] => {
+	const regions: string[] = [];
+	const token = /<PremiumGate(?![\w-])|<\/PremiumGate>/g;
+	let depth = 0;
+	let start = 0;
+	let match: RegExpExecArray | null = token.exec(source);
+
+	while (match !== null) {
+		if (match[0].startsWith('</')) {
+			depth -= 1;
+			if (depth === 0) regions.push(source.slice(start, match.index));
+		} else {
+			if (depth === 0) start = match.index;
+			depth += 1;
+		}
+
+		match = token.exec(source);
+	}
+
+	return regions;
+};
+
+// Anchored on the real control, never on the locked fallback's copy: the
+// fallback dies with the gate, so matching it would prove nothing.
+const PRO_CONTROLS = [
+	{ control: 'save the current setup', anchor: 'aria-label="New preset name"' },
+	{ control: 'pick the app a profile follows', anchor: '<AutoProfileRow' },
+];
+
+describe('Pro controls in the Presets pane keep their gate', () => {
+	const regions = gatedRegions(presetsPaneSource);
+
+	it('imports PremiumGate', () => {
+		expect(presetsPaneSource).toMatch(
+			/import \{[^}]*\bPremiumGate\b[^}]*\} from/,
+		);
+	});
+
+	it.each(PRO_CONTROLS)('$control is inside a gate', ({ anchor }) => {
+		expect(presetsPaneSource).toContain(anchor);
+		expect(regions.some((region) => region.includes(anchor))).toBe(true);
+	});
+
+	// The count is what makes a deleted gate fail even if its control is also
+	// deleted, and it makes an added gate a decision rather than a drive-by.
+	it('is exactly those gates, each with a way to buy Pro', () => {
+		expect(regions).toHaveLength(PRO_CONTROLS.length);
+
+		regions.forEach((region) => {
+			expect(region).toMatch(/<ProLink(?![\w-])/);
+		});
+	});
+});
