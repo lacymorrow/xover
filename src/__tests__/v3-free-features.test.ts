@@ -180,18 +180,21 @@ describe('presets are Pro for everyone', () => {
 		});
 	});
 
-	it.each(['savePreset', 'applyPreset', 'cyclePreset', 'renameSavedPreset'])(
-		'%s checks the license in the main process',
-		(fn) => {
-			const text = glue();
-			const start = text.indexOf(`export const ${fn}`);
-			const end = text.indexOf('\nexport const', start + 10);
-			expect(start).toBeGreaterThan(-1);
-			expect(text.slice(start, end === -1 ? undefined : end)).toMatch(
-				/presetPermissions\(isPremium\(\)\)/,
-			);
-		},
-	);
+	it.each([
+		'savePreset',
+		'applyPreset',
+		'cyclePreset',
+		'renameSavedPreset',
+		'setPresetApp',
+	])('%s checks the license in the main process', (fn) => {
+		const text = glue();
+		const start = text.indexOf(`export const ${fn}`);
+		const end = text.indexOf('\nexport const', start + 10);
+		expect(start).toBeGreaterThan(-1);
+		expect(text.slice(start, end === -1 ? undefined : end)).toMatch(
+			/presetPermissions\(isPremium\(\)\)/,
+		);
+	});
 
 	it('deletePreset does not check the license', () => {
 		const text = glue();
