@@ -138,14 +138,15 @@ const setElectron = (version: string | undefined) => {
  */
 const inSession = (
 	env: Record<string, string>,
-	{
+	session: Session = {},
+): Harness => {
+	const {
 		argv = [],
 		electron = ELECTRON_40,
 		platform = 'linux',
-		relaunchSetting: relaunchOnX11 = true,
+		relaunchSetting: relaunchOnX11,
 		switchesStripped = false,
-	}: Session = {},
-): Harness => {
+	} = session;
 	switches = {};
 	if (!switchesStripped) {
 		argv.forEach((argument) => {
@@ -157,7 +158,11 @@ const inSession = (
 	appended.length = 0;
 	relaunches.length = 0;
 	exits.length = 0;
-	relaunchSetting = relaunchOnX11;
+	// Read off the object, not a destructuring default: `relaunchSetting:
+	// undefined` is the upgraded-config case, and `= true` on the parameter would
+	// silently turn it into `true`, which is what made the test below vacuous.
+	// Omitting the key still means "a store that has it, set on".
+	relaunchSetting = 'relaunchSetting' in session ? relaunchOnX11 : true;
 
 	process.argv = ['electron', ...argv];
 	setPlatform(platform);
